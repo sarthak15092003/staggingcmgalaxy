@@ -32,11 +32,11 @@ jobs:
 
       # Example FTP Deployment Step (Requires GitHub Secrets: FTP_SERVER, FTP_USERNAME, FTP_PASSWORD)
       # Uncomment and configure this step when you are ready to deploy.
-      # - name: FTP Deploy
-      #   uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      #   with:
-      #     server: ${{ secrets.FTP_SERVER }}
-      #     username: ${{ secrets.FTP_USERNAME }}
-      #     password: ${{ secrets.FTP_PASSWORD }}
-      #     local-dir: ./
-      #     server-dir: /public_html/wp-content/themes/hello-elementor/
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /wp-content/themes/hello-elementor/
