@@ -47,4 +47,18 @@ $header_nav_menu = wp_nav_menu( [
 			?>
 		</nav>
 	<?php endif; ?>
+
+	<div class="nav-rating">
+		<div class="nav-rating-avatars">
+			<img src="https://i.pravatar.cc/100?img=12" alt="User 1" class="nav-rating-avatar">
+			<img src="https://i.pravatar.cc/100?img=5" alt="User 2" class="nav-rating-avatar">
+			<img src="https://i.pravatar.cc/100?img=9" alt="User 3" class="nav-rating-avatar">
+			<img src="https://i.pravatar.cc/100?img=11" alt="User 4" class="nav-rating-avatar">
+		</div>
+		<div class="nav-rating-content">
+			<span class="nav-rating-star">★</span> 
+			<span>5.0 Rated by Users</span>
+		</div>
+	</div>
+
 </header>

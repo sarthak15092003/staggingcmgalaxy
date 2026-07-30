@@ -163,7 +163,7 @@ if ( ! function_exists( 'hello_elementor_scripts_styles' ) ) {
 			'hello-elementor-main',
 			HELLO_THEME_STYLE_URL . 'main.css',
 			[ 'hello-elementor' ],
-			HELLO_ELEMENTOR_VERSION
+			filemtime( HELLO_THEME_STYLE_PATH . 'main.css' )
 		);
 	}
 }
