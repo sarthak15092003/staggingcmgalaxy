@@ -1,0 +1,42 @@
+.nav-rating {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    padding: 4px 16px 4px 4px;
+    font-family: inherit;
+}
+
+.nav-rating-avatars {
+    display: flex;
+}
+
+.nav-rating-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    margin-left: -12px; /* Negative margin for overlapping */
+    position: relative;
+    object-fit: cover;
+}
+
+/* Ensure proper z-indexing so left avatars are on top */
+.nav-rating-avatar:nth-child(1) { z-index: 4; margin-left: 0; }
+.nav-rating-avatar:nth-child(2) { z-index: 3; }
+.nav-rating-avatar:nth-child(3) { z-index: 2; }
+.nav-rating-avatar:nth-child(4) { z-index: 1; }
+
+.nav-rating-content {
+    display: flex;
+    align-items: center;
+    margin-left: 12px;
+    color: #2c4a7b; /* Matches the slate/blue text color */
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.nav-rating-star {
+    margin-right: 6px;
+}
