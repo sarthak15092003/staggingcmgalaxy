@@ -162,8 +162,8 @@ if ( ! function_exists( 'hello_elementor_scripts_styles' ) ) {
 		wp_enqueue_style(
 			'hello-elementor-main',
 			HELLO_THEME_STYLE_URL . 'main.css',
-			[],
-			time()
+			[ 'hello-elementor' ],
+			HELLO_ELEMENTOR_VERSION
 		);
 	}
 }
