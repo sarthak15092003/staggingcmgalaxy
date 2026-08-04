@@ -2,8 +2,9 @@
 /**
  * The template for displaying the footer.
  *
- * Renders the ElementsKit global footer template (ID 557) site-wide
- * using ElementsKit's own shortcode renderer for proper layout context.
+ * Renders the ElementsKit global footer template (ID 557) site-wide.
+ * ElementsKit's template already contains its own full-width container,
+ * so we output it directly without any extra wrapper tags.
  * Falls back to the theme's default footer if ElementsKit/Elementor is not active.
  *
  * @package HelloElementor
@@ -14,22 +15,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * ElementsKit Global Footer Template ID.
- * This is the post ID of the "global-footer" ElementsKit template.
- * To verify: ElementsKit > Header & Footer > your footer row > check the post ID.
+ * Post ID of the "global-footer" ElementsKit template (slug: global-footer).
+ * To verify: ElementsKit > Header & Footer > your footer row > note the post ID.
  */
 $elementskit_footer_id = 557;
 
 $footer_rendered = false;
 
 // Method 1: Use ElementsKit's own shortcode — the correct and fully supported way.
-// This ensures ElementsKit loads its own layout, styles, and scripts properly.
+// ElementsKit's template already has its own full-width container, so output directly.
 if ( shortcode_exists( 'elementskit_template' ) && $elementskit_footer_id ) {
 	$footer_content = do_shortcode( '[elementskit_template id="' . absint( $elementskit_footer_id ) . '"]' );
 	if ( ! empty( trim( $footer_content ) ) ) {
-		echo '<footer id="site-footer" class="site-footer elementskit-footer">';
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ElementsKit shortcode renders trusted builder content.
 		echo $footer_content;
-		echo '</footer>';
 		$footer_rendered = true;
 	}
 }
@@ -40,10 +39,8 @@ if ( ! $footer_rendered && did_action( 'elementor/loaded' ) && class_exists( '\E
 	if ( isset( $elementor_instance->frontend ) ) {
 		$footer_content = $elementor_instance->frontend->get_builder_content_for_display( $elementskit_footer_id, true );
 		if ( ! empty( $footer_content ) ) {
-			echo '<footer id="site-footer" class="site-footer elementskit-footer">';
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Elementor renders trusted builder content.
 			echo $footer_content;
-			echo '</footer>';
 			$footer_rendered = true;
 		}
 	}
@@ -67,3 +64,4 @@ if ( ! $footer_rendered ) {
 
 </body>
 </html>
+
