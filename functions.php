@@ -1675,6 +1675,17 @@ if (!function_exists('cmg_glossary_shortcode')) {
             margin: 0;
           }
           
+          .wd-term-title-link {
+            color: rgb(22, 28, 82);
+            text-decoration: none;
+            transition: color 0.2s ease;
+          }
+          
+          .wd-term-title-link:hover {
+            color: #3a7dff;
+            text-decoration: underline;
+          }
+          
           .wd-chevron {
             color: #9ca3af;
             transition: transform 0.3s ease;
@@ -1753,11 +1764,11 @@ if (!function_exists('cmg_glossary_shortcode')) {
             <div class="wd-glossary-list" id="wd-glossary-list">
               <?php if (!empty($terms)) : ?>
                 <?php foreach ($terms as $index => $item) : ?>
-                  <div class="wd-term-card <?php echo $index === 0 ? 'open' : ''; ?>" data-term="<?php echo esc_attr($item['title']); ?>" data-letter="<?php echo esc_attr($item['letter']); ?>">
+                  <div class="wd-term-card" data-term="<?php echo esc_attr($item['title']); ?>" data-letter="<?php echo esc_attr($item['letter']); ?>">
                     <div class="wd-term-header">
                       <div class="wd-term-left">
                         <div class="wd-term-icon"><?php echo esc_html($item['letter']); ?></div>
-                        <h3 class="wd-term-title" style="margin:0;"><?php echo esc_html($item['title']); ?></h3>
+                        <h3 class="wd-term-title" style="margin:0;"><a href="<?php echo esc_url($item['link']); ?>" class="wd-term-title-link"><?php echo esc_html($item['title']); ?></a></h3>
                       </div>
                       <svg class="wd-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -1765,7 +1776,6 @@ if (!function_exists('cmg_glossary_shortcode')) {
                     </div>
                     <div class="wd-term-definition">
                       <div><?php echo $item['definition']; ?></div>
-                      <a href="<?php echo esc_url($item['link']); ?>" class="wd-single-page-link" target="_blank">View dedicated term page &rarr;</a>
                     </div>
                   </div>
                 <?php endforeach; ?>
@@ -1861,7 +1871,7 @@ if (!function_exists('cmg_glossary_shortcode')) {
           
           cards.forEach(card => {
             card.addEventListener("click", (e) => {
-              if (e.target.closest('.wd-single-page-link')) return;
+              if (e.target.closest('.wd-term-title-link')) return;
               card.classList.toggle("open");
             });
           });
