@@ -291,10 +291,74 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+/**
+ * Server-Side AJAX Handler for CMGalaxy Lead Submissions
+ * Prevents CORS errors and avoids browser timeouts by proxying to the API server.
+ */
+if ( ! function_exists( 'cmg_handle_lead_submission' ) ) {
+function cmg_handle_lead_submission() {
+    $raw_input = file_get_contents( 'php://input' );
+    $data = json_decode( $raw_input, true );
+
+    if ( empty( $data ) || empty( $data['full_name'] ) || empty( $data['email_address'] ) ) {
+        wp_send_json_error( array( 'message' => 'Missing required fields' ), 400 );
+    }
+
+    $payload = array(
+        'full_name'     => sanitize_text_field( $data['full_name'] ),
+        'email_address' => sanitize_email( $data['email_address'] ),
+        'phone_number'  => sanitize_text_field( $data['phone_number'] ),
+        'company_name'  => sanitize_text_field( $data['company_name'] ),
+        'ad_spend'      => sanitize_text_field( $data['ad_spend'] ),
+        'website'       => esc_url_raw( $data['website'] ),
+        'utm_source'    => sanitize_text_field( isset( $data['utm_source'] ) ? $data['utm_source'] : '' ),
+        'utm_medium'    => sanitize_text_field( isset( $data['utm_medium'] ) ? $data['utm_medium'] : '' ),
+        'utm_campaign'  => sanitize_text_field( isset( $data['utm_campaign'] ) ? $data['utm_campaign'] : '' ),
+        'page_url'      => esc_url_raw( isset( $data['page_url'] ) ? $data['page_url'] : '' ),
+    );
+
+    // Primary: Staging API (with fast 4s timeout)
+    $response = wp_remote_post( 'https://staging-api.cmgalaxy.com/api/v2/event_emailer/cmgalaxy-enquiry/', array(
+        'headers'     => array( 'Content-Type' => 'application/json' ),
+        'body'        => json_encode( $payload ),
+        'timeout'     => 4,
+        'redirection' => 5,
+        'sslverify'   => false,
+    ) );
+
+    // Fallback: Production API if staging server is down/timing out
+    if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
+        $response = wp_remote_post( 'https://api.cmgalaxy.com/api/v2/event_emailer/cmgalaxy-enquiry/', array(
+            'headers'     => array( 'Content-Type' => 'application/json' ),
+            'body'        => json_encode( $payload ),
+            'timeout'     => 10,
+            'redirection' => 5,
+            'sslverify'   => false,
+        ) );
+    }
+
+    if ( is_wp_error( $response ) ) {
+        wp_send_json_error( array( 'message' => $response->get_error_message() ), 500 );
+    }
+
+    $code = wp_remote_retrieve_response_code( $response );
+    $body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+    if ( $code >= 200 && $code < 300 ) {
+        wp_send_json_success( $body ? $body : array( 'message' => 'Enquiry submitted successfully' ) );
+    } else {
+        $error_msg = isset( $body['message'] ) ? $body['message'] : 'Submission failed';
+        wp_send_json_error( array( 'message' => $error_msg ), $code );
+    }
+}
+add_action( 'wp_ajax_cmg_lead_submit', 'cmg_handle_lead_submission' );
+add_action( 'wp_ajax_nopriv_cmg_lead_submit', 'cmg_handle_lead_submission' );
+}
+
 if ( ! function_exists( 'cmg_lead_form_shortcode' ) ) {
 function cmg_lead_form_shortcode( $atts ) {
     $atts = shortcode_atts( array(
-        'api_url'      => 'https://staging-api.cmgalaxy.com/api/v2/event_emailer/cmgalaxy-enquiry/',
+        'ajax_url'     => admin_url( 'admin-ajax.php?action=cmg_lead_submit' ),
         'redirect_url' => 'https://www.cmgalaxy.com/thank-you',
         'event_name'   => 'Book A Demo Sendmessage Clicked',
         'section_name' => 'Book A Demo Form',
@@ -459,7 +523,7 @@ function cmg_lead_form_shortcode( $atts ) {
 
     <script>
         (function () {
-            const API_URL = "<?php echo esc_url( $atts['api_url'] ); ?>";
+            const AJAX_URL = "<?php echo esc_url( $atts['ajax_url'] ); ?>";
             const REDIRECT_URL = "<?php echo esc_url( $atts['redirect_url'] ); ?>";
             const EVENT_NAME = "<?php echo esc_js( $atts['event_name'] ); ?>";
             const SECTION_NAME = "<?php echo esc_js( $atts['section_name'] ); ?>";
@@ -572,13 +636,17 @@ function cmg_lead_form_shortcode( $atts ) {
                 submitBtn.textContent = "Sending...";
 
                 try {
-                    const response = await fetch(API_URL, {
+                    const response = await fetch(AJAX_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload)
                     });
 
-                    if (!response.ok) throw new Error("API failed with status " + response.status);
+                    const resData = await response.json();
+
+                    if (!response.ok || !resData.success) {
+                        throw new Error(resData.data && resData.data.message ? resData.data.message : "API failed");
+                    }
 
                     if (window.amplitude) {
                         amplitude.logEvent(EVENT_NAME, {
