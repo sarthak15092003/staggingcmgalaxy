@@ -805,3 +805,526 @@ function cmg_lead_form_shortcode( $atts ) {
 }
 add_shortcode( 'cmg_lead_form', 'cmg_lead_form_shortcode' );
 add_shortcode( 'book_a_demo_form', 'cmg_lead_form_shortcode' );
+
+
+/* ==========================================================================
+   CMG SITE-WIDE TRACKING & AMPLITUDE ANALYTICS INTEGRATION
+   ========================================================================== */
+
+if (!function_exists('cmg_site_wide_analytics_head')) {
+    function cmg_site_wide_analytics_head() {
+        ?>
+        <!-- Domain Verifications -->
+        <meta name="p:domain_verify" content="5534472da58e08f50a0a9db68c170f9c"/>
+        <meta name="facebook-domain-verification" content="q94uy9j71fnua1bu0mdk3seuk12az3" />
+
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-PQ89VXN4');</script>
+
+        <!-- Meta Pixel Code -->
+        <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1267004614826386');
+        fbq('track', 'PageView');
+        </script>
+        <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1267004614826386&ev=PageView&noscript=1"/></noscript>
+
+        <!-- MS Clarity -->
+        <script type="text/javascript">
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "sfpdpddt3k");
+        </script>
+
+        <!-- Amplitude Browser SDK & Session Replay -->
+        <script src="https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz"></script>
+        <script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.8.0-min.js.gz"></script>
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            if (window.amplitude && window.sessionReplay) {
+              try {
+                const replay = window.sessionReplay.plugin({
+                  sampleRate: 1,
+                  maskAllInputs: false,
+                  blockAllMedia: false
+                });
+                window.amplitude.add(replay);
+              } catch(e) { console.warn("Amplitude Session Replay warning:", e); }
+
+              window.amplitude.init(
+                "3abb5a02f6d1968cb3a120c0bf9b94bb",
+                {
+                  instanceName: "default",
+                  autocapture: { elementInteractions: false },
+                  flushQueueSize: 1,
+                  flushIntervalMillis: 1000,
+                  defaultTracking: {
+                    sessions: true,
+                    pageViews: true,
+                    formInteractions: true,
+                    fileDownloads: true
+                  }
+                }
+              );
+            }
+          });
+        </script>
+
+        <!-- CMGalaxy Pixel Tag -->
+        <script src="https://cmg-backend.s3.eu-north-1.amazonaws.com/static/js/cmgalaxy.js" async></script>
+
+        <!-- Finsweet Cookie Consent -->
+        <script async src="https://cdn.jsdelivr.net/npm/@finsweet/cookie-consent@1/fs-cc.js" fs-cc-mode="opt-in"></script>
+
+        <style>
+          .header-2.fix { z-index: 10; }
+          .header-2.fix.is-scrolled { z-index: 10; }
+          body.modal-open .header-2.fix,
+          body.modal-open .header-2.fix.is-scrolled { z-index: 5 !important; }
+        </style>
+        <?php
+    }
+}
+add_action('wp_head', 'cmg_site_wide_analytics_head', 1);
+
+if (!function_exists('cmg_site_wide_analytics_footer')) {
+    function cmg_site_wide_analytics_footer() {
+        ?>
+        <!-- GTM Noscript -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PQ89VXN4" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+        <!-- Cookie Consent Banner -->
+        <style>
+          .cmg-cookie-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #fff;
+            color: #444;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            z-index: 9999;
+            font-family: 'Segoe UI', sans-serif;
+          }
+          .cmg-cookie-banner.show { display: flex; }
+          .cmg-cookie-icon {
+            font-size: 24px;
+            background-color: #f2f2f2;
+            border-radius: 50%;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .cmg-cookie-text { flex: 1; font-size: 14px; line-height: 1.5; color: #484a61; font-weight: 400; }
+          .cmg-cookie-btn { border: none; padding: 10px 18px; border-radius: 24px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s ease; }
+          .cmg-accept-btn { background-color: #36D462; color: white; }
+          .cmg-close-btn { background: none; border: none; font-size: 20px; color: #999; cursor: pointer; margin-left: 8px; }
+          @media (max-width: 600px) {
+            .cmg-cookie-banner { flex-direction: column; align-items: flex-start; text-align: left; padding: 16px; gap: 12px; left: 50%; transform: translateX(-50%); width: 95%; }
+            .cmg-cookie-btn { width: 100%; text-align: center; }
+            .cmg-close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
+          }
+        </style>
+        <div class="cmg-cookie-banner" id="cmg-cookie-banner">
+          <div class="cmg-cookie-icon">🍪</div>
+          <div class="cmg-cookie-text">
+            Our website uses cookies. By continuing navigating, we assume your permission to deploy cookies as detailed in our
+            <a href="/privacy-policy" style="color: #3A7DFF; text-decoration: underline;">Privacy Policy</a>.
+          </div>
+          <button class="cmg-cookie-btn cmg-accept-btn" onclick="cmgAcceptCookies()">Accept cookies</button>
+          <button class="cmg-close-btn" onclick="cmgDeclineCookies()">×</button>
+        </div>
+
+        <script>
+          function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+              const date = new Date();
+              date.setTime(date.getTime() + (days*24*60*60*1000));
+              expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + value + expires + "; path=/";
+          }
+
+          function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i=0; i < ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) === ' ') c = c.substring(1);
+              if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+          }
+
+          function cmgAcceptCookies() {
+            setCookie('cmgCookiesConsent', 'accepted', 365);
+            const banner = document.getElementById('cmg-cookie-banner');
+            if (banner) banner.classList.remove('show');
+          }
+
+          function cmgDeclineCookies() {
+            setCookie('cmgCookiesConsent', 'declined', 365);
+            const banner = document.getElementById('cmg-cookie-banner');
+            if (banner) banner.classList.remove('show');
+          }
+
+          window.addEventListener('DOMContentLoaded', function () {
+            const banner = document.getElementById('cmg-cookie-banner');
+            const consent = getCookie('cmgCookiesConsent');
+            if (!consent && banner) {
+              banner.classList.add('show');
+            }
+          });
+        </script>
+
+        <!-- UTM Persistence & Page View Event -->
+        <script>
+        (function () {
+          function getParam(name) {
+            return new URLSearchParams(window.location.search).get(name);
+          }
+
+          function setFirstTouch(name, value) {
+            if (!value) return;
+            if (!localStorage.getItem("initial_" + name)) {
+              localStorage.setItem("initial_" + name, value);
+            }
+          }
+
+          const params = [
+            "utm_source","utm_medium","utm_campaign",
+            "utm_content","utm_term","utm_id",
+            "twclid","wbraid"
+          ];
+
+          params.forEach(param => {
+            const value = getParam(param);
+            setFirstTouch(param, value);
+          });
+
+          function fireEvent() {
+            if (!window.amplitude) {
+              setTimeout(fireEvent, 300);
+              return;
+            }
+
+            const eventData = {
+              page_name: document.title || window.location.pathname,
+              utm_source: getParam("utm_source") || localStorage.getItem("initial_utm_source") || "",
+              utm_medium: getParam("utm_medium") || localStorage.getItem("initial_utm_medium") || "",
+              utm_campaign: getParam("utm_campaign") || localStorage.getItem("initial_utm_campaign") || "",
+              utm_content: getParam("utm_content") || localStorage.getItem("initial_utm_content") || "",
+              utm_term: getParam("utm_term") || localStorage.getItem("initial_utm_term") || "",
+              utm_id: getParam("utm_id") || localStorage.getItem("initial_utm_id") || "",
+              twclid: getParam("twclid") || localStorage.getItem("initial_twclid") || "",
+              wbraid: getParam("wbraid") || localStorage.getItem("initial_wbraid") || "",
+              initiated_at: document.title || window.location.pathname,
+              device_category: (function() {
+                const ua = navigator.userAgent;
+                if (/tablet|ipad|playbook|silk/i.test(ua)) return "tablet";
+                if (/mobile|iphone|ipod|android/i.test(ua)) return "mobile";
+                return "desktop";
+              })(),
+              os_clean: (function() {
+                const ua = navigator.userAgent;
+                if (/windows nt/i.test(ua)) return "Windows";
+                if (/mac os x/i.test(ua) && !/iphone|ipad|ipod/i.test(ua)) return "macOS";
+                if (/android/i.test(ua)) return "Android";
+                if (/iphone|ipad|ipod/i.test(ua)) return "iOS";
+                if (/linux/i.test(ua)) return "Linux";
+                return "Unknown";
+              })()
+            };
+
+            if (typeof window.amplitude.logEvent === 'function') {
+              window.amplitude.logEvent("Website Page Viewed", eventData);
+            } else if (typeof window.amplitude.track === 'function') {
+              window.amplitude.track("Website Page Viewed", eventData);
+            }
+
+            if (window.amplitude && typeof window.amplitude.flush === 'function') {
+              window.amplitude.flush();
+            }
+
+            console.log("✅ Amplitude Event Fired: Website Page Viewed", eventData);
+          }
+
+          fireEvent();
+        })();
+        </script>
+
+        <!-- CTA Click Event Listener & Modal/Navbar Handlers -->
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const pageName = document.title || window.location.pathname;
+
+          function getDeviceCategory() {
+            const ua = navigator.userAgent;
+            if (/tablet|ipad|playbook|silk/i.test(ua)) return "tablet";
+            if (/mobile|iphone|ipod|android/i.test(ua)) return "mobile";
+            return "desktop";
+          }
+
+          function getOSClean() {
+            const ua = navigator.userAgent;
+            if (/windows nt/i.test(ua)) return "Windows";
+            if (/mac os x/i.test(ua) && !/iphone|ipad|ipod/i.test(ua)) return "macOS";
+            if (/android/i.test(ua)) return "Android";
+            if (/iphone|ipad|ipod/i.test(ua)) return "iOS";
+            if (/linux/i.test(ua)) return "Linux";
+            return "Unknown";
+          }
+
+          const deviceCategory = getDeviceCategory();
+          const osClean = getOSClean();
+
+          const sectionMap = {
+            "btn-book-demo-omnichannel-hero": "Hero Section",
+            "btn-start-a-free-trial-omnichannel": "Hero Section",
+            "btn-try-cmgalaxy-omnichannel": "Feature List",
+            "btn-book-demo-omnichannel": "Feature List",
+            "btn-book-demo-omnichannel-footer": "Footer Section",
+
+            "nav-home": "Nav Bar",
+            "nav-features": "Nav Bar",
+            "nav-omnichannel": "Nav Bar",
+            "nav-ai-agent": "Nav Bar",
+            "nav-full-funnel": "Nav Bar",
+            "nav-integration": "Nav Bar",
+            "nav-lex": "Nav Bar",
+            "nav-about-us": "Nav Bar",
+            "nav-blog": "Nav Bar",
+            "nav-sign-in": "Nav Bar",
+            "nav-sign-up-free": "Nav Bar",
+
+            "footer-email-input": "Footer Section",
+            "footer-email-submit": "Footer Section",
+            "footer-omnichannel": "Footer Section",
+            "footer-ai-agent": "Footer Section",
+            "footer-full-funnel": "Footer Section",
+            "footer-integration": "Footer Section",
+            "footer-lex": "Footer Section",
+            "footer-about-us": "Footer Section",
+            "footer-privacy-policy": "Footer Section",
+            "footer-terms": "Footer Section",
+            "footer-blog": "Footer Section",
+            "footer-social-linkedin": "Footer Section",
+            "footer-social-facebook": "Footer Section",
+            "footer-social-instagram": "Footer Section",
+            "footer-social-youtube": "Footer Section",
+
+            "home-start-free-trial": "Home Page Hero Section",
+            "home-book-demo": "Home Page Hero Section",
+            "home-hero-play-video": "Home Page Hero Section",
+            "home-growth-banner-book-demo": "Growth Banner Section",
+            "home-growth-banner-try-cmgalaxy": "Growth Banner Section",
+            "proven-results-book-demo": "Proven Results Section",
+            "proven-results-try-cmgalaxy": "Proven Results Section",
+            "home-footer-cta-book-demo": "Footer Section",
+
+            "aboutus-footer-book-demo": "About Us Footer Section",
+            "aboutus-footer-try-cmgalaxy": "About Us Footer Section",
+            "blog-footer-cta-book-demo": "Blog Footer Section",
+            "blog-detail-banner-try-cmgalaxy": "Blog Detail CTA Banner",
+            "blog-detail-banner-book-demo": "Blog Detail CTA Banner",
+            "blog-detail-footer-book-demo": "Blog Detail Footer Section",
+
+            "audit-hero-start-analysis-desktop": "Hero Section",
+            "audit-hero-start-analysis-mobile": "Hero Section"
+          };
+
+          const eventNameMap = {
+            "btn-book-demo-omnichannel-hero": "Website Book Demo Clicked",
+            "btn-start-a-free-trial-omnichannel": "Website Start a Free Trial Clicked",
+            "btn-try-cmgalaxy-omnichannel": "Website Try CM Galaxy Clicked",
+            "btn-book-demo-omnichannel": "Website Book Demo Clicked",
+            "btn-book-demo-omnichannel-footer": "Website Book Demo Clicked",
+
+            "nav-home": "Nav Bar Home Clicked",
+            "nav-features": "Nav Bar Features Clicked",
+            "nav-omnichannel": "Nav Bar Omnichannel Clicked",
+            "nav-ai-agent": "Nav Bar AI Agent Clicked",
+            "nav-full-funnel": "Nav Bar Full Funnel Attribution Clicked",
+            "nav-integration": "Nav Bar Integration Clicked",
+            "nav-lex": "Nav Bar Lex Clicked",
+            "nav-about-us": "Nav Bar About Us Clicked",
+            "nav-blog": "Nav Bar Blog Clicked",
+            "nav-sign-in": "Nav Bar Sign In Clicked",
+            "nav-sign-up-free": "Nav Bar Sign Up Free Clicked",
+
+            "footer-email-input": "Subscribe Email Entered",
+            "footer-email-submit": "Footer Subscribe Email Clicked",
+            "footer-omnichannel": "Footer Omnichannel Dashboard Clicked",
+            "footer-ai-agent": "Footer Features AI Agent Clicked",
+            "footer-full-funnel": "Footer Features Full Funnel Clicked",
+            "footer-integration": "Footer Features Integration Clicked",
+            "footer-lex": "Footer Features Lex Clicked",
+            "footer-about-us": "Footer Company AboutUs Clicked",
+            "footer-privacy-policy": "Footer Privacy Policy Clicked",
+            "footer-terms": "Footer Terms and Conditions Clicked",
+            "footer-blog": "Footer Company Blog Clicked",
+            "footer-social-linkedin": "Footer Social LinkedIn Clicked",
+            "footer-social-facebook": "Footer Social Facebook Clicked",
+            "footer-social-instagram": "Footer Social Instagram Clicked",
+            "footer-social-youtube": "Footer Social YouTube Clicked",
+
+            "home-start-free-trial": "Home Start Free Trial Clicked",
+            "home-book-demo": "Home Book Demo Clicked",
+            "home-hero-play-video": "Home Page Hero Play Video Clicked",
+            "home-growth-banner-book-demo": "Home Page Growth Banner Book Demo Clicked",
+            "home-growth-banner-try-cmgalaxy": "Home Page Growth Banner Try CMGalaxy Clicked",
+            "proven-results-book-demo": "Proven Results Book Demo Clicked",
+            "proven-results-try-cmgalaxy": "Proven Results Try CMGalaxy Clicked",
+            "home-footer-cta-book-demo": "Home Footer Cta Book Demo Clicked",
+
+            "aboutus-footer-book-demo": "Aboutus Footer Cta Book Demo Clicked",
+            "aboutus-footer-try-cmgalaxy": "Aboutus Footer Cta Try Cmgalaxy Clicked",
+            "blog-footer-cta-book-demo": "Blog Footer Cta Book Demo Clicked",
+            "blog-detail-banner-try-cmgalaxy": "Blog Detail Cta Banner Try CMGalaxy Clicked",
+            "blog-detail-banner-book-demo": "Blog Detail Cta Banner Book Demo Clicked",
+            "blog-detail-footer-book-demo": "Blog Detail Footer Cta Book Demo Clicked",
+
+            "audit-hero-start-analysis-desktop": "Website Start Analysis Clicked desktop",
+            "audit-hero-start-analysis-mobile": "Website Start Analysis Clicked mobile"
+          };
+
+          function logAmplitudeEvent(eventName, buttonId) {
+            if (!window.amplitude) return;
+            const props = {
+              page_name: pageName,
+              initiated_at: pageName,
+              section_at: sectionMap[buttonId] || "Unknown Section",
+              device_category: deviceCategory,
+              os_clean: osClean
+            };
+
+            if (typeof window.amplitude.logEvent === 'function') {
+              window.amplitude.logEvent(eventName, props);
+            } else if (typeof window.amplitude.track === 'function') {
+              window.amplitude.track(eventName, props);
+            }
+
+            if (window.amplitude && typeof window.amplitude.flush === 'function') {
+              window.amplitude.flush();
+            }
+
+            console.log(`✅ Amplitude Event Fired: ${eventName}`, props);
+          }
+
+          // Document delegation for all CTA element IDs
+          document.addEventListener("click", function (e) {
+            const el = e.target.closest("[id]");
+            if (!el || !el.id) return;
+            if (eventNameMap[el.id]) {
+              logAmplitudeEvent(eventNameMap[el.id], el.id);
+            }
+          });
+
+          const footerEmailInput = document.getElementById("footer-email-input");
+          if (footerEmailInput) {
+            footerEmailInput.addEventListener("input", function () {
+              logAmplitudeEvent("Subscribe Email Entered", "footer-email-input");
+            });
+          }
+
+          // Modal Video Handler
+          const body = document.body;
+          const modal = document.querySelector(".modal-video");
+          const openBtns = document.querySelectorAll(".open-video");
+          const closeBtn = document.querySelector(".close-btn-video");
+
+          if (modal) {
+            openBtns.forEach(btn => {
+              btn.addEventListener("click", () => {
+                body.classList.add("modal-open");
+                modal.classList.add("active");
+                body.style.overflow = "hidden";
+              });
+            });
+
+            function closeModal() {
+              body.classList.remove("modal-open");
+              modal.classList.remove("active");
+              body.style.overflow = "";
+            }
+
+            if (closeBtn) closeBtn.addEventListener("click", closeModal);
+            modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+            document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+          }
+
+          // Scrolled Navbar Handler
+          const header = document.querySelector(".header-2");
+          if (header) {
+            function handleScroll() {
+              if (window.scrollY > 10) { header.classList.add("is-scrolled"); }
+              else { header.classList.remove("is-scrolled"); }
+            }
+            header.classList.remove("is-scrolled");
+            handleScroll();
+            window.addEventListener("scroll", handleScroll);
+          }
+
+          // Lazy load images, iframes & background images
+          document.querySelectorAll("img").forEach(img => {
+            if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
+            img.setAttribute("decoding", "async");
+          });
+          document.querySelectorAll("iframe").forEach(iframe => {
+            iframe.setAttribute("loading", "lazy");
+          });
+
+          const bgElements = document.querySelectorAll("[data-bg]");
+          if ("IntersectionObserver" in window && bgElements.length > 0) {
+            const observer = new IntersectionObserver(entries => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const el = entry.target;
+                  el.style.backgroundImage = "url('" + el.getAttribute("data-bg") + "')";
+                  observer.unobserve(el);
+                }
+              });
+            });
+            bgElements.forEach(el => observer.observe(el));
+          }
+        });
+
+        // Blog Click DataLayer Event
+        document.addEventListener("mousedown", function (e) {
+          const el = e.target.closest("[data-blog-title]");
+          if (!el) return;
+          const blogTitle = el.getAttribute("data-blog-title");
+          if (!blogTitle) return;
+          console.log("Blog Clicked:", blogTitle);
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "Blog Clicked",
+            blog_title: blogTitle
+          });
+        });
+        </script>
+        <?php
+    }
+}
+add_action('wp_footer', 'cmg_site_wide_analytics_footer', 100);
