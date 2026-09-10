@@ -1395,7 +1395,7 @@ if (!function_exists('cmg_register_glossary_cpt')) {
 }
 add_action('init', 'cmg_register_glossary_cpt', 0);
 
-/* Shortcode [cmg_glossary] */
+/* Shortcode [cmg_glossary] - Exact CMGalaxy.com Design */
 if (!function_exists('cmg_glossary_shortcode')) {
     function cmg_glossary_shortcode($atts) {
         $args = array(
@@ -1435,347 +1435,411 @@ if (!function_exists('cmg_glossary_shortcode')) {
         ob_start();
         ?>
         <style>
-          .wd-glossary-wrapper {
-            font-family: "Onest", sans-serif;
-            max-width: 1200px;
+          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+          .cmg-glossary-container {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 960px;
             margin: 0 auto;
             padding: 40px 20px;
+            color: #111827;
           }
-          .wd-glossary-app {
-            background-color: transparent;
-            border-radius: 12px;
-            padding: 20px 0;
-          }
-          .wd-header-container {
+
+          .cmg-glossary-header {
             text-align: center;
-            margin-bottom: 24px;
-            padding-top: 24px;
+            margin-bottom: 36px;
           }
-          .wd-breadcrumb {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 16px;
-          }
-          .wd-breadcrumb strong {
-            color: #1f2937;
-            font-weight: 600;
-          }
-          .wd-main-title {
+
+          .cmg-glossary-title {
             font-size: 48px;
-            font-weight: 700;
-            color: rgb(22, 28, 82);
-            margin: 0 0 16px 0;
-            letter-spacing: -0.5px;
+            font-weight: 800;
+            color: #0b1f4f;
+            margin: 0 0 12px 0;
+            letter-spacing: -1px;
+            line-height: 1.1;
           }
-          .wd-subtitle {
+
+          .cmg-glossary-subtitle {
             font-size: 16px;
-            color: rgb(22, 28, 82);
-            max-width: 600px;
+            color: #4b5563;
+            max-width: 580px;
             margin: 0 auto;
             line-height: 1.5;
+            font-weight: 400;
           }
-          .stylish-search__shell {
-            padding: 10px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, rgba(79,140,255,0.08), rgba(61,220,151,0.08));
-            margin-bottom: 32px;
+
+          /* Search Box */
+          .cmg-search-wrapper {
+            position: relative;
+            max-width: 760px;
+            margin: 0 auto 32px auto;
           }
-          .stylish-search__body {
+
+          .cmg-search-inner {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0 22px;
-            height: 57px;
-            border-radius: 999px;
-            border: 1px solid transparent;
-            background: linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(135deg, #4f8cff, #3ddc97) border-box;
-            position: relative;
+            background: #ffffff;
+            border: 1px solid #3A7DFF;
+            border-radius: 50px;
+            padding: 6px 8px 6px 20px;
+            box-shadow: 0px 4px 20px rgba(58, 125, 255, 0.08);
+            transition: all 0.25s ease;
           }
-          .stylish-search__sparkle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+
+          .cmg-search-inner:focus-within {
+            box-shadow: 0px 6px 24px rgba(58, 125, 255, 0.16);
+            border-color: #2563eb;
+          }
+
+          .cmg-search-icon {
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-right: 12px;
           }
-          .stylish-search__sparkle img {
-            width: 18px;
-            height: 18px;
+
+          .cmg-search-icon svg {
+            width: 20px;
+            height: 20px;
           }
-          .stylish-search__input {
+
+          .cmg-search-input {
             flex: 1;
             border: none;
             outline: none;
-            font-size: 18px;
             background: transparent;
-            color: #0b1f4f;
+            font-size: 16px;
+            color: #1f2937;
+            font-family: inherit;
           }
-          .stylish-search__submit {
-            position: absolute;
-            right: 6px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 43px;
-            height: 43px;
+
+          .cmg-search-input::placeholder {
+            color: #9ca3af;
+          }
+
+          .cmg-search-button {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
+            background: #3A7DFF;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(36.82% 41.72% at 49.73% 100%, rgba(175, 244, 251, 0.45) 0%, rgba(58, 125, 255, 0) 100%), radial-gradient(50.19% 67.5% at 49.73% 50%, #3A7DFF 0%, #3A7DFF 100%);
-            background-blend-mode: plus-lighter, normal;
-            box-shadow: 0px 1px 2px rgba(58, 125, 255, 0.08), 0px 10px 10px rgba(58, 125, 255, 0.21), inset 0px 0px 6px rgba(255, 255, 255, 0.5);
-            transition: all 0.25s ease;
+            transition: background 0.2s ease, transform 0.2s ease;
           }
-          .stylish-search__submit:hover { transform: translateY(-50%) scale(1.08); }
-          .stylish-search__input::placeholder { color: rgba(11, 31, 79, 0.35); font-size: 15px; }
 
-          .wd-alphabet-filter {
+          .cmg-search-button:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+          }
+
+          .cmg-search-button svg {
+            width: 18px;
+            height: 18px;
+            fill: #ffffff;
+          }
+
+          /* Alphabet Switch Bar */
+          .cmg-alpha-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            background-color: transparent;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            justify-content: center;
-          }
-          .wd-alpha-btn {
-            width: 32px;
-            height: 32px;
-            display: flex;
             align-items: center;
             justify-content: center;
+            gap: 6px;
+            margin-bottom: 40px;
+          }
+
+          .cmg-alpha-btn {
+            min-width: 34px;
+            height: 34px;
+            padding: 0 8px;
+            border-radius: 8px;
             border: none;
             background: transparent;
-            font-size: 16px;
-            font-weight: 600;
-            color: rgb(22, 28, 82);
+            color: #1f2937;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
-          }
-          .wd-alpha-btn:hover { background-color: #e5e7eb; }
-          .wd-alpha-btn.active { background-color: #3a7dff; color: white; }
-
-          .wd-glossary-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background-color: #fff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-          }
-          .wd-term-card {
-            border: 1px solid #f3f4f6;
-            border-radius: 8px;
-            padding: 16px;
-            background-color: #fff;
-            cursor: pointer;
-            transition: border-color 0.2s;
-          }
-          .wd-term-card:hover { border-color: #e5e7eb; }
-          .wd-term-header { display: flex; align-items: center; justify-content: space-between; }
-          .wd-term-left { display: flex; align-items: center; gap: 12px; }
-          .wd-term-icon {
-            width: 32px;
-            height: 32px;
-            background-color: rgba(58, 125, 255, 0.1);
-            color: #3a7dff;
-            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
           }
-          .wd-term-title { font-weight: 700; font-size: 16px; color: rgb(22, 28, 82); margin: 0; }
-          .wd-chevron { color: #9ca3af; transition: transform 0.3s ease; }
-          .wd-term-card.open .wd-chevron { transform: rotate(180deg); }
-          .wd-term-definition {
-            margin-top: 12px;
-            font-size: 16px;
-            font-weight: normal;
-            line-height: 1.6;
+
+          .cmg-alpha-btn:hover {
+            background: #f3f4f6;
+            color: #3A7DFF;
+          }
+
+          .cmg-alpha-btn.active {
+            background: #3A7DFF !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(58, 125, 255, 0.3);
+          }
+
+          /* Glossary List & Accordion Cards */
+          .cmg-term-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+
+          .cmg-term-card {
+            background: #ffffff;
+            border: 1px solid #f3f4f6;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            transition: all 0.25s ease;
+            cursor: pointer;
+          }
+
+          .cmg-term-card:hover {
+            border-color: #e5e7eb;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+          }
+
+          .cmg-term-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+
+          .cmg-term-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+          }
+
+          .cmg-term-letter-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #eef2ff;
+            color: #3A7DFF;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .cmg-term-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0b1f4f;
+            margin: 0;
+          }
+
+          .cmg-term-chevron {
+            width: 20px;
+            height: 20px;
+            color: #9ca3af;
+            transition: transform 0.3s ease;
+          }
+
+          .cmg-term-card.open .cmg-term-chevron {
+            transform: rotate(180deg);
+          }
+
+          .cmg-term-body {
+            margin-top: 16px;
+            padding-left: 52px;
             color: #4b5563;
+            font-size: 15px;
+            line-height: 1.6;
             display: none;
-            padding-left: 44px;
           }
-          .wd-term-card.open .wd-term-definition { display: block; animation: fadeIn 0.3s ease; }
-          .wd-single-page-link {
-            display: inline-block;
+
+          .cmg-term-card.open .cmg-term-body {
+            display: block;
+            animation: cmgFadeIn 0.3s ease;
+          }
+
+          .cmg-single-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             margin-top: 12px;
             font-size: 14px;
             font-weight: 600;
-            color: #3a7dff;
+            color: #3A7DFF;
+            text-decoration: none;
+          }
+
+          .cmg-single-link:hover {
             text-decoration: underline;
           }
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
+
+          @keyframes cmgFadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
           }
-          .wd-no-results { text-align: center; padding: 32px; color: #6b7280; font-size: 14px; }
+
+          .cmg-no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            font-size: 15px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+          }
+
+          @media (max-width: 640px) {
+            .cmg-glossary-title { font-size: 32px; }
+            .cmg-term-body { padding-left: 0; }
+          }
         </style>
 
-        <div class="wd-glossary-wrapper">
-          <div class="wd-header-container">
-            <div class="wd-breadcrumb">Home / <strong>Glossary</strong></div>
-            <h1 class="wd-main-title">CMGalaxy Glossary</h1>
-            <p class="wd-subtitle">A platform created to bring clarity, speed, and intelligence <br>to every marketer's workflow.</p>
+        <div class="cmg-glossary-container">
+          <div class="cmg-glossary-header">
+            <h1 class="cmg-glossary-title">CMGalaxy Glossary</h1>
+            <p class="cmg-glossary-subtitle">A platform created to bring clarity, speed, and intelligence to every marketer's workflow.</p>
           </div>
-          
-          <div class="wd-glossary-app">
-            <form onsubmit="event.preventDefault();">
-              <div class="stylish-search stylish-search--banner">
-                  <div class="stylish-search__shell">
-                      <div class="stylish-search__body">
-                          <span class="stylish-search__sparkle">
-                              <img src="https://cdn.prod.website-files.com/67b5e5b07dee6e1ed91f0f5a/68997abd3f21edb670a1ae3f_Group%201000003734.svg" alt="icon">
-                          </span>
-                          <input type="text" id="wd-search-input" class="stylish-search__input" placeholder="Search by term">
-                          <button type="submit" id="wd-search-btn" class="stylish-search__submit">
-                              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                                  <path d="M14.707 13.293a1 1 0 0 1 1.32-.083l.094.083 2.5 2.5a1 1 0 0 1-1.32 1.497l-.094-.083-2.5-2.5a1 1 0 0 1 0-1.414z" fill="white"/>
-                                  <path d="M9 2a7 7 0 1 1 0 14A7 7 0 0 1 9 2zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 9 4z" fill="white"/>
-                              </svg>
-                          </button>
-                      </div>
-                  </div>
-              </div>
-            </form>
-          
-            <div class="wd-alphabet-filter" id="wd-alphabet-filter"></div>
 
-            <div class="wd-glossary-list" id="wd-glossary-list">
-              <?php if (!empty($terms)) : ?>
-                <?php foreach ($terms as $index => $item) : ?>
-                  <div class="wd-term-card <?php echo $index === 0 ? 'open' : ''; ?>" data-term="<?php echo esc_attr($item['title']); ?>" data-letter="<?php echo esc_attr($item['letter']); ?>">
-                    <div class="wd-term-header">
-                      <div class="wd-term-left">
-                        <div class="wd-term-icon"><?php echo esc_html($item['letter']); ?></div>
-                        <h3 class="wd-term-title"><?php echo esc_html($item['title']); ?></h3>
-                      </div>
-                      <svg class="wd-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                      </svg>
-                    </div>
-                    <div class="wd-term-definition">
-                      <div><?php echo $item['definition']; ?></div>
-                      <a href="<?php echo esc_url($item['link']); ?>" class="wd-single-page-link" target="_blank">View dedicated term page &rarr;</a>
-                    </div>
-                  </div>
-                <?php endforeach; ?>
-              <?php else : ?>
-                <div class="wd-no-results">No glossary terms found. Add terms under CMG Glossary in WP Admin!</div>
-              <?php endif; ?>
+          <!-- Search Box -->
+          <div class="cmg-search-wrapper">
+            <div class="cmg-search-inner">
+              <span class="cmg-search-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#3A7DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+              </span>
+              <input type="text" id="cmg-search-input" class="cmg-search-input" placeholder="Search by term">
+              <button type="button" id="cmg-search-submit" class="cmg-search-button">
+                <svg viewBox="0 0 20 20">
+                  <path d="M14.707 13.293a1 1 0 0 1 1.32-.083l.094.083 2.5 2.5a1 1 0 0 1-1.32 1.497l-.094-.083-2.5-2.5a1 1 0 0 1 0-1.414z"/>
+                  <path d="M9 2a7 7 0 1 1 0 14A7 7 0 0 1 9 2zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 9 4z"/>
+                </svg>
+              </button>
             </div>
+          </div>
+
+          <!-- Alphabet Switch Bar (ALL + A to Z) -->
+          <div class="cmg-alpha-bar" id="cmg-alpha-bar"></div>
+
+          <!-- Term Cards List -->
+          <div class="cmg-term-list" id="cmg-term-list">
+            <?php if (!empty($terms)) : ?>
+              <?php foreach ($terms as $index => $item) : ?>
+                <div class="cmg-term-card <?php echo $index === 0 ? 'open' : ''; ?>" data-term="<?php echo esc_attr($item['title']); ?>" data-letter="<?php echo esc_attr($item['letter']); ?>">
+                  <div class="cmg-term-header">
+                    <div class="cmg-term-left">
+                      <div class="cmg-term-letter-box"><?php echo esc_html($item['letter']); ?></div>
+                      <h3 class="cmg-term-title"><?php echo esc_html($item['title']); ?></h3>
+                    </div>
+                    <svg class="cmg-term-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  <div class="cmg-term-body">
+                    <div><?php echo $item['definition']; ?></div>
+                    <a href="<?php echo esc_url($item['link']); ?>" class="cmg-single-link" target="_blank">
+                      View full term page &rarr;
+                    </a>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else : ?>
+              <div class="cmg-no-results">No terms available. Add terms under CMG Glossary in WP Admin!</div>
+            <?php endif; ?>
           </div>
         </div>
 
         <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          let currentFilter = "A";
-          let currentSearch = "";
-          
-          const filterContainer = document.getElementById("wd-alphabet-filter");
-          const searchInput = document.getElementById("wd-search-input");
-          const cards = Array.from(document.querySelectorAll(".wd-term-card"));
-          
-          const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-          
-          function renderFilters() {
-            if (!filterContainer) return;
-            filterContainer.innerHTML = "";
-            alphabets.forEach(letter => {
+        document.addEventListener("DOMContentLoaded", function () {
+          let activeLetter = "A";
+          let searchQuery = "";
+
+          const alphaBar = document.getElementById("cmg-alpha-bar");
+          const searchInput = document.getElementById("cmg-search-input");
+          const cards = Array.from(document.querySelectorAll(".cmg-term-card"));
+
+          const letters = ["ALL", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")];
+
+          function renderAlphaBar() {
+            if (!alphaBar) return;
+            alphaBar.innerHTML = "";
+            letters.forEach(letItem => {
               const btn = document.createElement("button");
-              btn.className = "wd-alpha-btn";
-              btn.textContent = letter;
-              
-              if (letter === currentFilter) {
+              btn.type = "button";
+              btn.className = "cmg-alpha-btn" + (letItem === activeLetter ? " active" : "");
+              btn.textContent = letItem;
+
+              btn.addEventListener("click", function () {
+                activeLetter = letItem;
+                document.querySelectorAll(".cmg-alpha-btn").forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
-              }
-              
-              btn.addEventListener("click", () => {
-                if (currentFilter === letter) {
-                  currentFilter = "";
-                  btn.classList.remove("active");
-                } else {
-                  currentFilter = letter;
-                  document.querySelectorAll(".wd-alpha-btn").forEach(b => b.classList.remove("active"));
-                  btn.classList.add("active");
-                }
-                applyFilters();
+                filterTerms();
               });
-              
-              filterContainer.appendChild(btn);
+
+              alphaBar.appendChild(btn);
             });
           }
-          
-          function applyFilters() {
-            let hasVisibleGlobal = false;
-            
+
+          function filterTerms() {
+            let visibleCount = 0;
+
             cards.forEach(card => {
-              const term = card.getAttribute("data-term").toLowerCase();
-              const defEl = card.querySelector(".wd-term-definition");
-              const def = defEl ? defEl.textContent.toLowerCase() : "";
-              const letter = card.getAttribute("data-letter");
-              
-              const matchesSearch = currentSearch === "" || term.includes(currentSearch) || def.includes(currentSearch);
-              const matchesFilter = currentSearch !== "" ? true : (currentFilter === "" || letter === currentFilter);
-              
-              if (matchesSearch && matchesFilter) {
+              const title = (card.getAttribute("data-term") || "").toLowerCase();
+              const bodyEl = card.querySelector(".cmg-term-body");
+              const bodyText = bodyEl ? bodyEl.textContent.toLowerCase() : "";
+              const cardLetter = card.getAttribute("data-letter");
+
+              const matchesSearch = searchQuery === "" || title.includes(searchQuery) || bodyText.includes(searchQuery);
+              const matchesLetter = searchQuery !== "" ? true : (activeLetter === "ALL" || cardLetter === activeLetter);
+
+              if (matchesSearch && matchesLetter) {
                 card.style.display = "block";
-                hasVisibleGlobal = true;
+                visibleCount++;
               } else {
                 card.style.display = "none";
               }
             });
-            
-            let noResults = document.getElementById("wd-no-results");
-            const listEl = document.getElementById("wd-glossary-list");
-            
-            if (!hasVisibleGlobal) {
-              if (!noResults && listEl) {
-                noResults = document.createElement("div");
-                noResults.id = "wd-no-results";
-                noResults.className = "wd-no-results";
-                noResults.textContent = "No matching glossary terms found.";
-                listEl.appendChild(noResults);
+
+            let noRes = document.getElementById("cmg-no-results-box");
+            const listContainer = document.getElementById("cmg-term-list");
+
+            if (visibleCount === 0) {
+              if (!noRes && listContainer) {
+                noRes = document.createElement("div");
+                noRes.id = "cmg-no-results-box";
+                noRes.className = "cmg-no-results";
+                noRes.textContent = "No glossary terms match your search.";
+                listContainer.appendChild(noRes);
               }
-              if (noResults) noResults.style.display = "block";
+              if (noRes) noRes.style.display = "block";
             } else {
-              if (noResults) noResults.style.display = "none";
+              if (noRes) noRes.style.display = "none";
             }
           }
-          
+
           if (searchInput) {
-            searchInput.addEventListener("input", (e) => {
-              currentSearch = e.target.value.toLowerCase();
-              applyFilters();
+            searchInput.addEventListener("input", function (e) {
+              searchQuery = e.target.value.toLowerCase().trim();
+              filterTerms();
             });
           }
-          
+
           cards.forEach(card => {
-            card.addEventListener("click", (e) => {
-              if (e.target.closest('.wd-single-page-link')) return;
+            card.addEventListener("click", function (e) {
+              if (e.target.closest('.cmg-single-link')) return;
               card.classList.toggle("open");
             });
           });
 
-          renderFilters();
-          applyFilters();
+          renderAlphaBar();
+          filterTerms();
         });
         </script>
         <?php
         return ob_get_clean();
     }
 }
-add_shortcode('cmg_glossary', 'cmg_glossary_shortcode');
-add_shortcode('glossary_app', 'cmg_glossary_shortcode');
 
 
 /* Auto populate initial Glossary Terms if empty */
