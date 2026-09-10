@@ -1067,7 +1067,7 @@ if (!function_exists('cmg_site_wide_analytics_footer')) {
               window.amplitude.flush();
             }
 
-            console.log("✅ Amplitude Event Fired: Website Page Viewed", eventData);
+            console.log("✅ Amplitude Event Fired: Staging - Website Page Viewed", eventData);
           }
 
           fireEvent();
@@ -1316,7 +1316,7 @@ if (!function_exists('cmg_site_wide_analytics_footer')) {
           if (!el) return;
           const blogTitle = el.getAttribute("data-blog-title");
           if (!blogTitle) return;
-          console.log("Blog Clicked:", blogTitle);
+          console.log("✅ Amplitude Event Fired: Staging - Blog Clicked", blogTitle);
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push({
             event: "Staging - Blog Clicked",
