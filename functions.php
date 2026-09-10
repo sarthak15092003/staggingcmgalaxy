@@ -1764,18 +1764,14 @@ if (!function_exists('cmg_glossary_shortcode')) {
             <div class="wd-glossary-list" id="wd-glossary-list">
               <?php if (!empty($terms)) : ?>
                 <?php foreach ($terms as $index => $item) : ?>
-                  <div class="wd-term-card" data-term="<?php echo esc_attr($item['title']); ?>" data-letter="<?php echo esc_attr($item['letter']); ?>">
+                  <div class="wd-term-card" data-term="<?php echo esc_attr($item['title']); ?>" data-letter="<?php echo esc_attr($item['letter']); ?>" data-def="<?php echo esc_attr(wp_strip_all_tags($item['definition'])); ?>" onclick="window.location.href='<?php echo esc_url($item['link']); ?>';">
                     <div class="wd-term-header">
                       <div class="wd-term-left">
                         <div class="wd-term-icon"><?php echo esc_html($item['letter']); ?></div>
-                        <h3 class="wd-term-title" style="margin:0;"><a href="<?php echo esc_url($item['link']); ?>" class="wd-term-title-link"><?php echo esc_html($item['title']); ?></a></h3>
+                        <h3 class="wd-term-title" style="margin:0;">
+                          <a href="<?php echo esc_url($item['link']); ?>" class="wd-term-title-link" onclick="event.stopPropagation();"><?php echo esc_html($item['title']); ?></a>
+                        </h3>
                       </div>
-                      <svg class="wd-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                      </svg>
-                    </div>
-                    <div class="wd-term-definition">
-                      <div><?php echo $item['definition']; ?></div>
                     </div>
                   </div>
                 <?php endforeach; ?>
@@ -1830,8 +1826,7 @@ if (!function_exists('cmg_glossary_shortcode')) {
             
             cards.forEach(card => {
               const term = card.getAttribute("data-term").toLowerCase();
-              const defEl = card.querySelector(".wd-term-definition");
-              const def = defEl ? defEl.textContent.toLowerCase() : "";
+              const def = (card.getAttribute("data-def") || "").toLowerCase();
               const letter = card.getAttribute("data-letter");
               
               const matchesSearch = currentSearch === "" || term.includes(currentSearch) || def.includes(currentSearch);
@@ -1869,12 +1864,7 @@ if (!function_exists('cmg_glossary_shortcode')) {
             });
           }
           
-          cards.forEach(card => {
-            card.addEventListener("click", (e) => {
-              if (e.target.closest('.wd-term-title-link')) return;
-              card.classList.toggle("open");
-            });
-          });
+          
 
           renderFilters();
           applyFilters();
