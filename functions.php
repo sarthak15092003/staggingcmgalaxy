@@ -1646,13 +1646,17 @@ if (!function_exists('cmg_glossary_shortcode')) {
           .wd-term-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
+            text-align: center;
           }
           
           .wd-term-left {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
+            width: 100%;
+            text-align: center;
           }
           
           .wd-term-icon {
@@ -1938,6 +1942,7 @@ if (!function_exists('cmg_render_single_glossary_content')) {
             font-size: 14px;
             color: #6b7280;
             margin-bottom: 24px;
+            text-align: center;
           }
 
           .cmg-single-breadcrumb a {
@@ -1956,15 +1961,18 @@ if (!function_exists('cmg_render_single_glossary_content')) {
             border-radius: 16px;
             padding: 40px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            text-align: center;
           }
 
           .cmg-single-header {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 16px;
             margin-bottom: 24px;
             padding-bottom: 20px;
             border-bottom: 1px solid #f3f4f6;
+            text-align: center;
           }
 
           .cmg-single-icon {
@@ -1986,6 +1994,7 @@ if (!function_exists('cmg_render_single_glossary_content')) {
             color: #0b1f4f;
             margin: 0;
             letter-spacing: -0.5px;
+            text-align: center;
           }
 
           .cmg-single-body {
@@ -1993,14 +2002,16 @@ if (!function_exists('cmg_render_single_glossary_content')) {
             line-height: 1.7;
             color: #374151;
             margin-bottom: 32px;
+            text-align: center;
           }
 
           .cmg-single-actions {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             padding-top: 20px;
             border-top: 1px solid #f3f4f6;
+            text-align: center;
           }
 
           .cmg-back-btn {
