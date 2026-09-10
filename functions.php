@@ -1767,7 +1767,6 @@ if (!function_exists('cmg_glossary_shortcode')) {
                   <div class="wd-term-card" data-term="<?php echo esc_attr($item['title']); ?>" data-letter="<?php echo esc_attr($item['letter']); ?>" data-def="<?php echo esc_attr(wp_strip_all_tags($item['definition'])); ?>" onclick="window.location.href='<?php echo esc_url($item['link']); ?>';">
                     <div class="wd-term-header">
                       <div class="wd-term-left">
-                        <div class="wd-term-icon"><?php echo esc_html($item['letter']); ?></div>
                         <h3 class="wd-term-title" style="margin:0;">
                           <a href="<?php echo esc_url($item['link']); ?>" class="wd-term-title-link" onclick="event.stopPropagation();"><?php echo esc_html($item['title']); ?></a>
                         </h3>
@@ -2034,7 +2033,6 @@ if (!function_exists('cmg_render_single_glossary_content')) {
 
           <div class="cmg-single-term-card">
             <div class="cmg-single-header">
-              <div class="cmg-single-icon"><?php echo esc_html($letter); ?></div>
               <h1 class="cmg-single-title"><?php echo esc_html($title); ?></h1>
             </div>
 
