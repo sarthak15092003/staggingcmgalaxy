@@ -1870,7 +1870,6 @@ if (!function_exists('cmg_glossary_shortcode')) {
 
     add_shortcode('cmg_glossary_app', 'cmg_glossary_shortcode');
     add_shortcode('cmgalaxy_glossary', 'cmg_glossary_shortcode');
-}
 
 
 /* Automatic Flush Rewrite Rules for Glossary CPT Permalinks */
