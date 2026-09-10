@@ -2040,3 +2040,168 @@ if (function_exists('cmg_glossary_shortcode')) {
     add_shortcode('cmg_glossary_app', 'cmg_glossary_shortcode');
     add_shortcode('cmgalaxy_glossary', 'cmg_glossary_shortcode');
 }
+
+
+/* Automatic Flush Rewrite Rules for Glossary CPT Permalinks */
+if (!function_exists('cmg_flush_glossary_rewrite_rules')) {
+    function cmg_flush_glossary_rewrite_rules() {
+        if (!get_option('cmg_glossary_flushed_rules_v2')) {
+            flush_rewrite_rules();
+            update_option('cmg_glossary_flushed_rules_v2', 1);
+        }
+    }
+}
+add_action('admin_init', 'cmg_flush_glossary_rewrite_rules');
+add_action('init', function() { flush_rewrite_rules(false); }, 99);
+
+/* Single Template for individual Glossary Term pages /glossary/term-slug/ */
+if (!function_exists('cmg_glossary_single_template')) {
+    function cmg_glossary_single_template($single_template) {
+        global $post;
+        if ($post && $post->post_type === 'cmg_glossary') {
+            add_filter('the_content', 'cmg_render_single_glossary_content', 20);
+        }
+        return $single_template;
+    }
+}
+add_filter('single_template', 'cmg_glossary_single_template');
+
+if (!function_exists('cmg_render_single_glossary_content')) {
+    function cmg_render_single_glossary_content($content) {
+        if (!is_singular('cmg_glossary')) return $content;
+
+        $title = get_the_title();
+        $letter = strtoupper(substr($title, 0, 1));
+        $glossary_url = home_url('/glossary/');
+
+        ob_start();
+        ?>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+          .cmg-single-term-wrapper {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 860px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #111827;
+          }
+
+          .cmg-single-breadcrumb {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+          }
+
+          .cmg-single-breadcrumb a {
+            color: #3A7DFF;
+            text-decoration: none;
+            font-weight: 500;
+          }
+
+          .cmg-single-breadcrumb a:hover {
+            text-decoration: underline;
+          }
+
+          .cmg-single-term-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+          }
+
+          .cmg-single-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f3f4f6;
+          }
+
+          .cmg-single-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #eef2ff;
+            color: #3A7DFF;
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .cmg-single-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #0b1f4f;
+            margin: 0;
+            letter-spacing: -0.5px;
+          }
+
+          .cmg-single-body {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #374151;
+            margin-bottom: 32px;
+          }
+
+          .cmg-single-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #f3f4f6;
+          }
+
+          .cmg-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: #3A7DFF;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+          }
+
+          .cmg-back-btn:hover {
+            background: #2563eb;
+            color: #ffffff;
+            transform: translateY(-1px);
+          }
+        </style>
+
+        <div class="cmg-single-term-wrapper">
+          <div class="cmg-single-breadcrumb">
+            <a href="<?php echo esc_url(home_url('/')); ?>">Home</a> / 
+            <a href="<?php echo esc_url($glossary_url); ?>">Glossary</a> / 
+            <strong><?php echo esc_html($title); ?></strong>
+          </div>
+
+          <div class="cmg-single-term-card">
+            <div class="cmg-single-header">
+              <div class="cmg-single-icon"><?php echo esc_html($letter); ?></div>
+              <h1 class="cmg-single-title"><?php echo esc_html($title); ?></h1>
+            </div>
+
+            <div class="cmg-single-body">
+              <?php echo $content; ?>
+            </div>
+
+            <div class="cmg-single-actions">
+              <a href="<?php echo esc_url($glossary_url); ?>" class="cmg-back-btn">
+                &larr; Back to Glossary Overview
+              </a>
+            </div>
+          </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
