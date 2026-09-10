@@ -2030,3 +2030,13 @@ if (has_filter('elementor/widget/render_content')) {
 
 add_shortcode('cmg_glossary_app', 'cmg_glossary_shortcode');
 add_shortcode('cmgalaxy_glossary', 'cmg_glossary_shortcode');
+
+
+/* Register All Glossary Shortcode Aliases */
+if (function_exists('cmg_glossary_shortcode')) {
+    add_shortcode('cmg_glossary', 'cmg_glossary_shortcode');
+    add_shortcode('glossary', 'cmg_glossary_shortcode');
+    add_shortcode('glossary_app', 'cmg_glossary_shortcode');
+    add_shortcode('cmg_glossary_app', 'cmg_glossary_shortcode');
+    add_shortcode('cmgalaxy_glossary', 'cmg_glossary_shortcode');
+}
