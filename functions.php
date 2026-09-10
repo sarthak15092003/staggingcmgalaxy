@@ -2040,16 +2040,18 @@ if (!function_exists('cmg_render_single_glossary_content')) {
 }
 
 
+
+
 /* Ensure Archive Page (/glossary/) renders the Glossary UI Shortcode */
 if (!function_exists('cmg_glossary_archive_template')) {
-    function cmg_glossary_archive_template() {
+    function cmg_glossary_archive_template($template) {
         if (is_post_type_archive('cmg_glossary')) {
-             = locate_template('archive-cmg_glossary.php');
-            if (!empty()) {
-                return ;
+            $archive_file = locate_template('archive-cmg_glossary.php');
+            if (!empty($archive_file)) {
+                return $archive_file;
             }
         }
-        return ;
+        return $template;
     }
 }
 add_filter('template_include', 'cmg_glossary_archive_template', 99);
