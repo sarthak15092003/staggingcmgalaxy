@@ -1920,6 +1920,13 @@ if (!function_exists('cmg_render_single_glossary_content')) {
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
+          body.single-cmg_glossary .page-header,
+          body.single-cmg_glossary .entry-header,
+          body.single-cmg_glossary h1.entry-title,
+          body.single-cmg_glossary header.entry-header {
+            display: none !important;
+          }
+
           .cmg-single-term-wrapper {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             max-width: 860px;
@@ -2063,3 +2070,11 @@ if (!function_exists('cmg_glossary_archive_template')) {
     }
 }
 add_filter('template_include', 'cmg_glossary_archive_template', 99);
+
+/* Hide Hello Elementor default header title on single glossary term pages */
+add_filter('hello_elementor_page_title', function($title) {
+    if (is_singular('cmg_glossary')) {
+        return false;
+    }
+    return $title;
+});
