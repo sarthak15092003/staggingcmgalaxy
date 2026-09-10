@@ -285,6 +285,7 @@ HelloTheme\Theme::instance();
  * 
  * Usage:
  * [cmg_lead_form] or [book_a_demo_form]
+ * [cmg_lead_form amplitude_api_key="YOUR_AMPLITUDE_API_KEY"]
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -293,7 +294,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Server-Side AJAX Handler for CMGalaxy Lead Submissions
- * Prevents CORS errors and avoids browser timeouts by proxying to the API server.
  */
 if ( ! function_exists( 'cmg_handle_lead_submission' ) ) {
 function cmg_handle_lead_submission() {
@@ -358,10 +358,11 @@ add_action( 'wp_ajax_nopriv_cmg_lead_submit', 'cmg_handle_lead_submission' );
 if ( ! function_exists( 'cmg_lead_form_shortcode' ) ) {
 function cmg_lead_form_shortcode( $atts ) {
     $atts = shortcode_atts( array(
-        'ajax_url'     => admin_url( 'admin-ajax.php?action=cmg_lead_submit' ),
-        'redirect_url' => 'https://www.cmgalaxy.com/thank-you',
-        'event_name'   => 'Book A Demo Sendmessage Clicked',
-        'section_name' => 'Book A Demo Form',
+        'ajax_url'           => admin_url( 'admin-ajax.php?action=cmg_lead_submit' ),
+        'redirect_url'       => 'https://www.cmgalaxy.com/thank-you',
+        'event_name'         => 'Book A Demo Sendmessage Clicked',
+        'section_name'       => 'Book A Demo Form',
+        'amplitude_api_key'  => '', // Optional: Pass your Amplitude API Key in shortcode
     ), $atts, 'cmg_lead_form' );
 
     ob_start();
@@ -527,12 +528,43 @@ function cmg_lead_form_shortcode( $atts ) {
             const REDIRECT_URL = "<?php echo esc_url( $atts['redirect_url'] ); ?>";
             const EVENT_NAME = "<?php echo esc_js( $atts['event_name'] ); ?>";
             const SECTION_NAME = "<?php echo esc_js( $atts['section_name'] ); ?>";
+            const AMPLITUDE_API_KEY = "<?php echo esc_js( $atts['amplitude_api_key'] ); ?>";
 
             const form = document.getElementById("lead-form");
             const statusEl = document.getElementById("form-status");
             const submitBtn = document.getElementById("lead-submit-btn");
             const phoneInput = document.getElementById("phone-input");
             const dialHidden = document.getElementById("countryDialHidden");
+
+            /* Optional: Auto-load Amplitude SDK if API Key provided and not loaded */
+            if (AMPLITUDE_API_KEY && (!window.amplitude || !window.amplitude.init)) {
+                const s = document.createElement("script");
+                s.src = "https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz";
+                s.async = true;
+                s.onload = function() {
+                    if (window.amplitude && typeof window.amplitude.init === "function") {
+                        window.amplitude.init(AMPLITUDE_API_KEY);
+                    }
+                };
+                document.head.appendChild(s);
+            }
+
+            /* Helper function to trigger Amplitude events across all SDK versions */
+            function trackAmplitudeEvent(name, props) {
+                try {
+                    if (window.amplitude) {
+                        if (typeof window.amplitude.track === "function") {
+                            window.amplitude.track(name, props);
+                        } else if (typeof window.amplitude.logEvent === "function") {
+                            window.amplitude.logEvent(name, props);
+                        } else if (typeof window.amplitude.getInstance === "function") {
+                            window.amplitude.getInstance().logEvent(name, props);
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Amplitude tracking exception:", e);
+                }
+            }
 
             let iti = null;
             if (window.intlTelInput) {
@@ -648,12 +680,15 @@ function cmg_lead_form_shortcode( $atts ) {
                         throw new Error(resData.data && resData.data.message ? resData.data.message : "API failed");
                     }
 
-                    if (window.amplitude) {
-                        amplitude.logEvent(EVENT_NAME, {
-                            initiated_at: document.title || window.location.pathname,
-                            section_at: SECTION_NAME
-                        });
-                    }
+                    /* Track Amplitude Event on Success */
+                    trackAmplitudeEvent(EVENT_NAME, {
+                        initiated_at: document.title || window.location.pathname,
+                        section_at: SECTION_NAME,
+                        full_name: fullName,
+                        email_address: emailAddress,
+                        company_name: companyName,
+                        ad_spend: payload.ad_spend
+                    });
 
                     localStorage.removeItem('utm_data');
                     statusEl.textContent = "✅ Form submitted successfully!";
