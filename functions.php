@@ -571,18 +571,12 @@ function cmg_lead_form_shortcode( $atts ) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = "Sending...";
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
-
                 try {
                     const response = await fetch(API_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                        signal: controller.signal
+                        body: JSON.stringify(payload)
                     });
-
-                    clearTimeout(timeoutId);
 
                     if (!response.ok) throw new Error("API failed with status " + response.status);
 
@@ -603,13 +597,8 @@ function cmg_lead_form_shortcode( $atts ) {
                     }
 
                 } catch (err) {
-                    clearTimeout(timeoutId);
                     console.error(err);
-                    if (err.name === 'AbortError') {
-                        statusEl.textContent = "❌ Request timed out. Please try again.";
-                    } else {
-                        statusEl.textContent = "❌ Submission failed. Please try again.";
-                    }
+                    statusEl.textContent = "❌ Submission failed. Please try again.";
                     statusEl.className = "form-status error";
                 } finally {
                     submitBtn.disabled = false;
