@@ -1929,7 +1929,7 @@ if (!function_exists('cmg_render_single_glossary_content')) {
 
           .cmg-single-term-wrapper {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            max-width: 860px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 0 20px;
             color: #111827;
