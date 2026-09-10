@@ -279,13 +279,22 @@ require HELLO_THEME_PATH . '/theme.php';
 
 HelloTheme\Theme::instance();
 
+
 /**
- * ============================================================
- * CMGALAXY LEAD FORM ("BOOK A DEMO") SHORTCODE
- * Usage: [cmg_lead_form] or [book_a_demo_form]
- * ============================================================
+ * CMGalaxy Lead Form ("Book A Demo") WordPress Shortcode
+ * 
+ * Usage:
+ * [cmg_lead_form] or [book_a_demo_form]
+ *
+ * Add this file or paste its contents into your theme's functions.php file.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 function cmg_lead_form_shortcode( $atts ) {
+    // Parse attributes if any custom options are passed
     $atts = shortcode_atts( array(
         'api_url'      => 'https://staging-api.cmgalaxy.com/api/v2/event_emailer/cmgalaxy-enquiry/',
         'redirect_url' => 'https://www.cmgalaxy.com/thank-you',
@@ -302,9 +311,24 @@ function cmg_lead_form_shortcode( $atts ) {
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <style>
-        .iti__flag-container, .iti__country-list { display: none !important; }
-        .iti { display: block !important; width: 100% !important; }
-        .iti__tel-input { width: 100% !important; }
+        /* Hide intl-tel-input's built-in dropdown completely but keep input visible */
+        .iti__flag-container {
+            display: none !important;
+        }
+
+        .iti__country-list {
+            display: none !important;
+        }
+
+        /* Make sure the input itself is visible */
+        .iti {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .iti__tel-input {
+            width: 100% !important;
+        }
 
         .lead-form-wrapper {
             max-width: 600px;
@@ -317,10 +341,20 @@ function cmg_lead_form_shortcode( $atts ) {
             box-sizing: border-box;
         }
 
-        .lead-form-row { margin-bottom: 20px; }
-        .lead-form-label { display: block; font-size: 14px; font-weight: 600; color: #1b2230; margin-bottom: 6px; }
+        .lead-form-row {
+            margin-bottom: 20px;
+        }
 
-        .lead-form-input, .lead-form-select {
+        .lead-form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1b2230;
+            margin-bottom: 6px;
+        }
+
+        .lead-form-input,
+        .lead-form-select {
             width: 100%;
             border-radius: 8px;
             border: 1px solid #dde3f0;
@@ -343,71 +377,236 @@ function cmg_lead_form_shortcode( $atts ) {
             cursor: pointer;
         }
 
-        .lead-form-input:focus, .lead-form-select:focus {
+        .lead-form-input:focus,
+        .lead-form-select:focus {
             border-color: #3a7dff;
             box-shadow: 0 0 0 1px rgba(58, 125, 255, 0.08);
         }
 
-        .lead-phone-row { display: flex; gap: 10px; align-items: center; }
-        .country-dropdown { flex: 0 0 140px; position: relative; font-size: 14px; }
-        .country-selected { display: flex; align-items: center; justify-content: space-between; padding: 16px 12px; border-radius: 8px; border: 1px solid #dde3f0; background: #fff; cursor: pointer; }
-        .country-selected-left { display: flex; align-items: center; gap: 6px; overflow: hidden; }
-        #countrySelectedFlag { display: inline-block; width: 20px; height: 14px; border-radius: 2px; flex-shrink: 0; object-fit: cover; }
-        #countrySelectedLabel { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #1b2230; white-space: nowrap; }
-        .country-arrow { border-width: 6px 5px 0 5px; border-style: solid; border-color: #9aa3b5 transparent transparent transparent; flex-shrink: 0; }
+        /* ===== PHONE ROW ===== */
+        .lead-phone-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
+        .country-dropdown {
+            flex: 0 0 140px;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .country-selected {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 12px;
+            border-radius: 8px;
+            border: 1px solid #dde3f0;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .country-selected-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+        }
+
+        #countrySelectedFlag {
+            display: inline-block;
+            width: 20px;
+            height: 14px;
+            border-radius: 2px;
+            flex-shrink: 0;
+            object-fit: cover;
+        }
+
+        #countrySelectedLabel {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #1b2230;
+            white-space: nowrap;
+        }
+
+        .country-arrow {
+            border-width: 6px 5px 0 5px;
+            border-style: solid;
+            border-color: #9aa3b5 transparent transparent transparent;
+            flex-shrink: 0;
+        }
+
+        /* Dropdown panel */
         .country-options {
             position: absolute;
-            top: 100%; left: 0; right: auto;
-            width: 280px; margin-top: 4px;
-            background: #fff; border-radius: 8px; border: 1px solid #dde3f0;
-            max-height: 300px; overflow-y: auto; overflow-x: hidden; white-space: normal;
-            box-shadow: 0 14px 30px rgba(15, 35, 52, 0.16); z-index: 9999; display: none;
+            top: 100%;
+            left: 0;
+            right: auto;
+            width: 280px;
+            margin-top: 4px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #dde3f0;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            white-space: normal;
+            box-shadow: 0 14px 30px rgba(15, 35, 52, 0.16);
+            z-index: 9999;
+            display: none;
         }
-        .country-options.open { display: block; }
-        .country-search { position: sticky; top: 0; background: #fff; padding: 10px; border-bottom: 1px solid #eee; }
-        .country-search input { width: 100%; padding: 8px 10px; border: 1px solid #dde3f0; border-radius: 6px; font-size: 14px; outline: none; box-sizing: border-box; }
-        .country-search input:focus { border-color: #3a7dff; }
-        .country-option { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; font-size: 14px; white-space: normal; }
-        .country-option img { width: 20px; height: 14px; flex-shrink: 0; border-radius: 2px; object-fit: cover; }
-        .country-option span { flex: 1; }
-        .country-option:hover { background: #f3f6ff; }
-        .country-option.hidden { display: none; }
-        .lead-phone-row .iti { flex: 1; }
-        #phone-input::placeholder { opacity: 0.6; }
 
-        .lead-form-button-wrap { margin-top: 30px; }
+        .country-options.open {
+            display: block;
+        }
+
+        /* Search input inside dropdown */
+        .country-search {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .country-search input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #dde3f0;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .country-search input:focus {
+            border-color: #3a7dff;
+        }
+
+        .country-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: normal;
+        }
+
+        .country-option img {
+            width: 20px;
+            height: 14px;
+            flex-shrink: 0;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+
+        .country-option span {
+            flex: 1;
+        }
+
+        .country-option:hover {
+            background: #f3f6ff;
+        }
+
+        .country-option.hidden {
+            display: none;
+        }
+
+        /* Right-side phone input */
+        .lead-phone-row .iti {
+            flex: 1;
+        }
+
+        #phone-input::placeholder {
+            opacity: 0.6;
+        }
+
+        /* Button */
+        .lead-form-button-wrap {
+            margin-top: 30px;
+        }
+
         .lead-form-button {
-            width: 100%; padding: 16px; border-radius: 999px; border: none;
-            font-size: 17px; font-weight: 600; cursor: pointer;
-            background: #1ec653; color: #ffffff; transition: background-color 0.2s ease, transform 0.15s ease;
+            width: 100%;
+            padding: 16px;
+            border-radius: 999px;
+            border: none;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #1ec653;
+            color: #ffffff;
+            transition: background-color 0.2s ease, transform 0.15s ease;
         }
-        .lead-form-button:hover { background: #17b047; transform: translateY(-1px); }
-        .form-status { margin-top: 10px; font-size: 14px; }
-        .form-status.success { color: #1a9c4b; }
-        .form-status.error { color: #d63939; }
 
+        .lead-form-button:hover {
+            background: #17b047;
+            transform: translateY(-1px);
+        }
+
+        .form-status {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .form-status.success {
+            color: #1a9c4b;
+        }
+
+        .form-status.error {
+            color: #d63939;
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 767px) {
-            .lead-phone-row { flex-direction: row; gap: 10px; align-items: center; }
-            .country-dropdown { flex: 0 0 110px; }
-            .lead-phone-row .iti { flex: 1; }
-            .lead-form-wrapper { padding: 20px 20px; border-radius: 20px; }
-            .country-options { width: 260px; }
+            .lead-phone-row {
+                flex-direction: row;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .country-dropdown {
+                flex: 0 0 110px;
+            }
+
+            .lead-phone-row .iti {
+                flex: 1;
+            }
+
+            .lead-form-wrapper {
+                padding: 20px 20px;
+                border-radius: 20px;
+            }
+
+            .country-options {
+                width: 260px;
+            }
         }
     </style>
 
     <div class="lead-form-wrapper">
         <form id="lead-form" data-wf-ignore="true" onsubmit="return false;">
+
+            <!-- Full Name -->
             <div class="lead-form-row">
                 <label class="lead-form-label" for="full_name">Full Name</label>
                 <input id="full_name" type="text" class="lead-form-input" required>
             </div>
+
+            <!-- Email -->
             <div class="lead-form-row">
                 <label class="lead-form-label" for="email_address">Email Address</label>
                 <input id="email_address" type="email" class="lead-form-input" required>
             </div>
+
+            <!-- Phone -->
             <div class="lead-form-row">
                 <label class="lead-form-label" for="phone-input">Phone Number</label>
+
                 <div class="lead-phone-row">
                     <div class="country-dropdown" id="countryDropdown">
                         <div class="country-selected" id="countrySelected">
@@ -425,14 +624,19 @@ function cmg_lead_form_shortcode( $atts ) {
                         </div>
                         <input type="hidden" id="countryDialHidden" value="+91">
                     </div>
+
                     <input id="phone-input" type="tel" class="lead-form-input" placeholder="+91" required pattern="[0-9]*"
                         inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
             </div>
+
+            <!-- Company Name -->
             <div class="lead-form-row">
                 <label class="lead-form-label" for="company_name">Company Name</label>
                 <input id="company_name" type="text" class="lead-form-input" required>
             </div>
+
+            <!-- Ad Spend -->
             <div class="lead-form-row">
                 <label class="lead-form-label" for="ad_spend">Ad Spend</label>
                 <select id="ad_spend" class="lead-form-select" required>
@@ -443,10 +647,15 @@ function cmg_lead_form_shortcode( $atts ) {
                     <option>greater than $10M / year</option>
                 </select>
             </div>
+
             <div class="lead-form-button-wrap">
+                <!-- RECAPTCHA (Uncomment to enable) -->
+                <!-- <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY" style="display: flex; justify-content: center; margin-bottom: 20px;"></div> -->
+
                 <button type="button" id="lead-submit-btn" class="lead-form-button">Send Message</button>
                 <div id="form-status" class="form-status"></div>
             </div>
+
         </form>
     </div>
 
@@ -456,6 +665,7 @@ function cmg_lead_form_shortcode( $atts ) {
             const REDIRECT_URL = "<?php echo esc_url( $atts['redirect_url'] ); ?>";
             const EVENT_NAME = "<?php echo esc_js( $atts['event_name'] ); ?>";
             const SECTION_NAME = "<?php echo esc_js( $atts['section_name'] ); ?>";
+            const ENABLE_API_CALL = true;
 
             const form = document.getElementById("lead-form");
             const statusEl = document.getElementById("form-status");
@@ -463,6 +673,7 @@ function cmg_lead_form_shortcode( $atts ) {
             const phoneInput = document.getElementById("phone-input");
             const dialHidden = document.getElementById("countryDialHidden");
 
+            /* Initialize intl-tel-input */
             let iti = null;
             if (window.intlTelInput) {
                 iti = window.intlTelInput(phoneInput, {
@@ -479,6 +690,7 @@ function cmg_lead_form_shortcode( $atts ) {
                 });
             }
 
+            /* Submit Handler */
             submitBtn.addEventListener("click", async function () {
                 statusEl.textContent = "";
                 statusEl.className = "form-status";
@@ -490,23 +702,46 @@ function cmg_lead_form_shortcode( $atts ) {
                 const companyName = document.getElementById("company_name").value.trim();
                 const adSpend = document.getElementById("ad_spend").value;
 
-                if (!fullName) return showError("? Please enter your full name.", "full_name");
-                document.getElementById("full_name").style.borderColor = "#dde3f0";
+                if (!fullName) {
+                    showError("❌ Please enter your full name.", "full_name");
+                    return;
+                } else {
+                    document.getElementById("full_name").style.borderColor = "#dde3f0";
+                }
 
-                if (!emailAddress) return showError("? Please enter your email address.", "email_address");
-                document.getElementById("email_address").style.borderColor = "#dde3f0";
+                if (!emailAddress) {
+                    showError("❌ Please enter your email address.", "email_address");
+                    return;
+                } else {
+                    document.getElementById("email_address").style.borderColor = "#dde3f0";
+                }
 
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(emailAddress)) return showError("? Please enter a valid email address.", "email_address");
+                if (!emailRegex.test(emailAddress)) {
+                    showError("❌ Please enter a valid email address.", "email_address");
+                    return;
+                }
 
-                if (!phoneNumber) return showError("? Please enter your phone number.", "phone-input");
+                if (!phoneNumber) {
+                    showError("❌ Please enter your phone number.", "phone-input");
+                    return;
+                }
 
-                if (!companyName) return showError("? Please enter your company name.", "company_name");
-                document.getElementById("company_name").style.borderColor = "#dde3f0";
+                if (!companyName) {
+                    showError("❌ Please enter your company name.", "company_name");
+                    return;
+                } else {
+                    document.getElementById("company_name").style.borderColor = "#dde3f0";
+                }
 
-                if (!adSpend) return showError("? Please select your ad spend.", "ad_spend");
-                document.getElementById("ad_spend").style.borderColor = "#dde3f0";
+                if (!adSpend) {
+                    showError("❌ Please select your ad spend.", "ad_spend");
+                    return;
+                } else {
+                    document.getElementById("ad_spend").style.borderColor = "#dde3f0";
+                }
 
+                /* Phone Validation */
                 if (iti && !iti.isValidNumber()) {
                     const errorCode = iti.getValidationError();
                     const selectedCountryData = iti.getSelectedCountryData();
@@ -534,19 +769,27 @@ function cmg_lead_form_shortcode( $atts ) {
                     let expectedLength = phoneLengths[iso2] || null;
                     let errorMessage = "Invalid phone number";
 
-                    if (errorCode === 1) errorMessage = "Invalid country code";
-                    else if (errorCode === 2) errorMessage = expectedLength ? Number too short for $countryName. Expected $expectedLength digits. : Number too short for $countryName.;
-                    else if (errorCode === 3) errorMessage = expectedLength ? Number too long for $countryName. Expected $expectedLength digits. : Number too long for $countryName.;
-                    else errorMessage = expectedLength ? Invalid phone number for $countryName. Expected $expectedLength digits. : Invalid phone number for $countryName.;
+                    if (errorCode === 1) {
+                        errorMessage = "Invalid country code";
+                    } else if (errorCode === 2) {
+                        errorMessage = expectedLength ? `Number too short for ${countryName}. Expected ${expectedLength} digits.` : `Number too short for ${countryName}.`;
+                    } else if (errorCode === 3) {
+                        errorMessage = expectedLength ? `Number too long for ${countryName}. Expected ${expectedLength} digits.` : `Number too long for ${countryName}.`;
+                    } else {
+                        errorMessage = expectedLength ? `Invalid phone number for ${countryName}. Expected ${expectedLength} digits.` : `Invalid phone number for ${countryName}.`;
+                    }
 
-                    return showError("? " + errorMessage, "phone-input");
+                    showError("❌ " + errorMessage, "phone-input");
+                    return;
                 }
 
                 let utmData = {};
                 try {
                     const stored = localStorage.getItem("utm_data");
                     if (stored) utmData = JSON.parse(stored);
-                } catch (e) { utmData = {}; }
+                } catch (e) {
+                    utmData = {};
+                }
 
                 const payload = {
                     full_name: fullName,
@@ -562,7 +805,7 @@ function cmg_lead_form_shortcode( $atts ) {
                 };
 
                 submitBtn.disabled = true;
-                submitBtn.textContent = "Sending�";
+                submitBtn.textContent = "Sending…";
 
                 try {
                     const response = await fetch(API_URL, {
@@ -581,17 +824,19 @@ function cmg_lead_form_shortcode( $atts ) {
                     }
 
                     localStorage.removeItem('utm_data');
-                    statusEl.textContent = "? Form submitted successfully!";
+                    statusEl.textContent = "✅ Form submitted successfully!";
                     statusEl.className = "form-status success";
                     form.reset();
 
                     if (REDIRECT_URL) {
-                        setTimeout(() => { window.location.href = REDIRECT_URL; }, 1000);
+                        setTimeout(() => {
+                            window.location.href = REDIRECT_URL;
+                        }, 1000);
                     }
 
                 } catch (err) {
                     console.error(err);
-                    statusEl.textContent = "? Submission failed. Please try again.";
+                    statusEl.textContent = "❌ Submission failed. Please try again.";
                     statusEl.className = "form-status error";
                 }
 
@@ -610,6 +855,7 @@ function cmg_lead_form_shortcode( $atts ) {
             }
         })();
 
+        /* Country Dropdown Logic */
         document.addEventListener("DOMContentLoaded", function () {
             const phoneInput = document.getElementById("phone-input");
             const flagImg = document.getElementById("countrySelectedFlag");
@@ -649,8 +895,12 @@ function cmg_lead_form_shortcode( $atts ) {
                 try {
                     const res = await fetch("https://ipapi.co/json/");
                     const data = await res.json();
-                    if (data && data.country_code) countryCode = data.country_code.toLowerCase();
-                } catch (err) { }
+                    if (data && data.country_code) {
+                        countryCode = data.country_code.toLowerCase();
+                    }
+                } catch (err) {
+                    console.warn("Geo lookup fallback to IN", err);
+                }
                 const detected = allCountries.find(c => c.iso2 === countryCode);
                 selectCountry(detected || allCountries.find(c => c.iso2 === "in"));
             })();
@@ -663,8 +913,13 @@ function cmg_lead_form_shortcode( $atts ) {
                 }
             });
 
-            searchInput.addEventListener("input", function (e) { filterCountries(e.target.value.toLowerCase()); });
-            searchInput.addEventListener("click", function (e) { e.stopPropagation(); });
+            searchInput.addEventListener("input", function (e) {
+                filterCountries(e.target.value.toLowerCase());
+            });
+
+            searchInput.addEventListener("click", function (e) {
+                e.stopPropagation();
+            });
 
             function filterCountries(query) {
                 const options = countryList.querySelectorAll(".country-option");
@@ -672,25 +927,38 @@ function cmg_lead_form_shortcode( $atts ) {
                     const name = option.dataset.name;
                     const dial = option.dataset.dial;
                     const iso2 = option.dataset.iso2;
-                    if (name.includes(query) || dial.includes(query) || iso2.includes(query)) option.classList.remove("hidden");
-                    else option.classList.add("hidden");
+                    if (name.includes(query) || dial.includes(query) || iso2.includes(query)) {
+                        option.classList.remove("hidden");
+                    } else {
+                        option.classList.add("hidden");
+                    }
                 });
             }
 
-            document.addEventListener("click", function () { countryOptions.classList.remove("open"); });
-            countryOptions.addEventListener("click", function (e) { e.stopPropagation(); });
+            document.addEventListener("click", function () {
+                countryOptions.classList.remove("open");
+            });
+
+            countryOptions.addEventListener("click", function (e) {
+                e.stopPropagation();
+            });
 
             function selectCountry(country) {
                 flagImg.src = `https://flagcdn.com/w20/${country.iso2}.png`;
                 label.textContent = `${country.iso2.toUpperCase()} +${country.dialCode}`;
                 dialHidden.value = `+${country.dialCode}`;
                 phoneInput.placeholder = `+${country.dialCode}`;
-                if (iti) iti.setCountry(country.iso2);
+
+                if (iti) {
+                    iti.setCountry(country.iso2);
+                }
             }
         });
     </script>
     <?php
     return ob_get_clean();
 }
+
+// Register shortcode aliases
 add_shortcode( 'cmg_lead_form', 'cmg_lead_form_shortcode' );
 add_shortcode( 'book_a_demo_form', 'cmg_lead_form_shortcode' );
