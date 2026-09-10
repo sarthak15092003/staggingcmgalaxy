@@ -2017,3 +2017,16 @@ if (!function_exists('cmg_auto_populate_glossary')) {
     }
 }
 add_action('admin_init', 'cmg_auto_populate_glossary');
+
+
+/* Ensure Shortcodes are parsed in Elementor and WordPress content */
+add_filter('the_content', 'do_shortcode', 11);
+add_filter('widget_text', 'do_shortcode');
+if (has_filter('elementor/widget/render_content')) {
+    add_filter('elementor/widget/render_content', function($content, $widget) {
+        return do_shortcode($content);
+    }, 10, 2);
+}
+
+add_shortcode('cmg_glossary_app', 'cmg_glossary_shortcode');
+add_shortcode('cmgalaxy_glossary', 'cmg_glossary_shortcode');
