@@ -1328,3 +1328,22 @@ if (!function_exists('cmg_site_wide_analytics_footer')) {
     }
 }
 add_action('wp_footer', 'cmg_site_wide_analytics_footer', 100);
+
+
+/* ==========================================================================
+   FORCE ELEMENTOR TEMPLATE TYPE TO 'wp-page' FOR ALL PAGES
+   ========================================================================== */
+if (!function_exists('cmg_fix_elementor_page_badges')) {
+    function cmg_fix_elementor_page_badges() {
+        if (!is_admin()) return;
+        global $wpdb;
+        // Update _elementor_template_type to 'wp-page' for all posts that are of type 'page'
+        $wpdb->query("
+            UPDATE {$wpdb->postmeta} pm
+            JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+            SET pm.meta_value = 'wp-page'
+            WHERE p.post_type = 'page' AND pm.meta_key = '_elementor_template_type' AND pm.meta_value != 'wp-page'
+        ");
+    }
+}
+add_action('admin_init', 'cmg_fix_elementor_page_badges');
