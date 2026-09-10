@@ -1058,9 +1058,9 @@ if (!function_exists('cmg_site_wide_analytics_footer')) {
             };
 
             if (typeof window.amplitude.logEvent === 'function') {
-              window.amplitude.logEvent("Website Page Viewed", eventData);
+              window.amplitude.logEvent("Staging - Website Page Viewed", eventData);
             } else if (typeof window.amplitude.track === 'function') {
-              window.amplitude.track("Website Page Viewed", eventData);
+              window.amplitude.track("Staging - Website Page Viewed", eventData);
             }
 
             if (window.amplitude && typeof window.amplitude.flush === 'function') {
@@ -1155,58 +1155,58 @@ if (!function_exists('cmg_site_wide_analytics_footer')) {
           };
 
           const eventNameMap = {
-            "btn-book-demo-omnichannel-hero": "Website Book Demo Clicked",
-            "btn-start-a-free-trial-omnichannel": "Website Start a Free Trial Clicked",
-            "btn-try-cmgalaxy-omnichannel": "Website Try CM Galaxy Clicked",
-            "btn-book-demo-omnichannel": "Website Book Demo Clicked",
-            "btn-book-demo-omnichannel-footer": "Website Book Demo Clicked",
+            "btn-book-demo-omnichannel-hero": "Staging - Website Book Demo Clicked",
+            "btn-start-a-free-trial-omnichannel": "Staging - Website Start a Free Trial Clicked",
+            "btn-try-cmgalaxy-omnichannel": "Staging - Website Try CM Galaxy Clicked",
+            "btn-book-demo-omnichannel": "Staging - Website Book Demo Clicked",
+            "btn-book-demo-omnichannel-footer": "Staging - Website Book Demo Clicked",
 
-            "nav-home": "Nav Bar Home Clicked",
-            "nav-features": "Nav Bar Features Clicked",
-            "nav-omnichannel": "Nav Bar Omnichannel Clicked",
-            "nav-ai-agent": "Nav Bar AI Agent Clicked",
-            "nav-full-funnel": "Nav Bar Full Funnel Attribution Clicked",
-            "nav-integration": "Nav Bar Integration Clicked",
-            "nav-lex": "Nav Bar Lex Clicked",
-            "nav-about-us": "Nav Bar About Us Clicked",
-            "nav-blog": "Nav Bar Blog Clicked",
-            "nav-sign-in": "Nav Bar Sign In Clicked",
-            "nav-sign-up-free": "Nav Bar Sign Up Free Clicked",
+            "nav-home": "Staging - Nav Bar Home Clicked",
+            "nav-features": "Staging - Nav Bar Features Clicked",
+            "nav-omnichannel": "Staging - Nav Bar Omnichannel Clicked",
+            "nav-ai-agent": "Staging - Nav Bar AI Agent Clicked",
+            "nav-full-funnel": "Staging - Nav Bar Full Funnel Attribution Clicked",
+            "nav-integration": "Staging - Nav Bar Integration Clicked",
+            "nav-lex": "Staging - Nav Bar Lex Clicked",
+            "nav-about-us": "Staging - Nav Bar About Us Clicked",
+            "nav-blog": "Staging - Nav Bar Blog Clicked",
+            "nav-sign-in": "Staging - Nav Bar Sign In Clicked",
+            "nav-sign-up-free": "Staging - Nav Bar Sign Up Free Clicked",
 
-            "footer-email-input": "Subscribe Email Entered",
-            "footer-email-submit": "Footer Subscribe Email Clicked",
-            "footer-omnichannel": "Footer Omnichannel Dashboard Clicked",
-            "footer-ai-agent": "Footer Features AI Agent Clicked",
-            "footer-full-funnel": "Footer Features Full Funnel Clicked",
-            "footer-integration": "Footer Features Integration Clicked",
-            "footer-lex": "Footer Features Lex Clicked",
-            "footer-about-us": "Footer Company AboutUs Clicked",
-            "footer-privacy-policy": "Footer Privacy Policy Clicked",
-            "footer-terms": "Footer Terms and Conditions Clicked",
-            "footer-blog": "Footer Company Blog Clicked",
-            "footer-social-linkedin": "Footer Social LinkedIn Clicked",
-            "footer-social-facebook": "Footer Social Facebook Clicked",
-            "footer-social-instagram": "Footer Social Instagram Clicked",
-            "footer-social-youtube": "Footer Social YouTube Clicked",
+            "footer-email-input": "Staging - Subscribe Email Entered",
+            "footer-email-submit": "Staging - Footer Subscribe Email Clicked",
+            "footer-omnichannel": "Staging - Footer Omnichannel Dashboard Clicked",
+            "footer-ai-agent": "Staging - Footer Features AI Agent Clicked",
+            "footer-full-funnel": "Staging - Footer Features Full Funnel Clicked",
+            "footer-integration": "Staging - Footer Features Integration Clicked",
+            "footer-lex": "Staging - Footer Features Lex Clicked",
+            "footer-about-us": "Staging - Footer Company AboutUs Clicked",
+            "footer-privacy-policy": "Staging - Footer Privacy Policy Clicked",
+            "footer-terms": "Staging - Footer Terms and Conditions Clicked",
+            "footer-blog": "Staging - Footer Company Blog Clicked",
+            "footer-social-linkedin": "Staging - Footer Social LinkedIn Clicked",
+            "footer-social-facebook": "Staging - Footer Social Facebook Clicked",
+            "footer-social-instagram": "Staging - Footer Social Instagram Clicked",
+            "footer-social-youtube": "Staging - Footer Social YouTube Clicked",
 
-            "home-start-free-trial": "Home Start Free Trial Clicked",
-            "home-book-demo": "Home Book Demo Clicked",
-            "home-hero-play-video": "Home Page Hero Play Video Clicked",
-            "home-growth-banner-book-demo": "Home Page Growth Banner Book Demo Clicked",
-            "home-growth-banner-try-cmgalaxy": "Home Page Growth Banner Try CMGalaxy Clicked",
-            "proven-results-book-demo": "Proven Results Book Demo Clicked",
-            "proven-results-try-cmgalaxy": "Proven Results Try CMGalaxy Clicked",
-            "home-footer-cta-book-demo": "Home Footer Cta Book Demo Clicked",
+            "home-start-free-trial": "Staging - Home Start Free Trial Clicked",
+            "home-book-demo": "Staging - Home Book Demo Clicked",
+            "home-hero-play-video": "Staging - Home Page Hero Play Video Clicked",
+            "home-growth-banner-book-demo": "Staging - Home Page Growth Banner Book Demo Clicked",
+            "home-growth-banner-try-cmgalaxy": "Staging - Home Page Growth Banner Try CMGalaxy Clicked",
+            "proven-results-book-demo": "Staging - Proven Results Book Demo Clicked",
+            "proven-results-try-cmgalaxy": "Staging - Proven Results Try CMGalaxy Clicked",
+            "home-footer-cta-book-demo": "Staging - Home Footer Cta Book Demo Clicked",
 
-            "aboutus-footer-book-demo": "Aboutus Footer Cta Book Demo Clicked",
-            "aboutus-footer-try-cmgalaxy": "Aboutus Footer Cta Try Cmgalaxy Clicked",
-            "blog-footer-cta-book-demo": "Blog Footer Cta Book Demo Clicked",
-            "blog-detail-banner-try-cmgalaxy": "Blog Detail Cta Banner Try CMGalaxy Clicked",
-            "blog-detail-banner-book-demo": "Blog Detail Cta Banner Book Demo Clicked",
-            "blog-detail-footer-book-demo": "Blog Detail Footer Cta Book Demo Clicked",
+            "aboutus-footer-book-demo": "Staging - Aboutus Footer Cta Book Demo Clicked",
+            "aboutus-footer-try-cmgalaxy": "Staging - Aboutus Footer Cta Try Cmgalaxy Clicked",
+            "blog-footer-cta-book-demo": "Staging - Blog Footer Cta Book Demo Clicked",
+            "blog-detail-banner-try-cmgalaxy": "Staging - Blog Detail Cta Banner Try CMGalaxy Clicked",
+            "blog-detail-banner-book-demo": "Staging - Blog Detail Cta Banner Book Demo Clicked",
+            "blog-detail-footer-book-demo": "Staging - Blog Detail Footer Cta Book Demo Clicked",
 
-            "audit-hero-start-analysis-desktop": "Website Start Analysis Clicked desktop",
-            "audit-hero-start-analysis-mobile": "Website Start Analysis Clicked mobile"
+            "audit-hero-start-analysis-desktop": "Staging - Website Start Analysis Clicked desktop",
+            "audit-hero-start-analysis-mobile": "Staging - Website Start Analysis Clicked mobile"
           };
 
           function logAmplitudeEvent(eventName, buttonId) {
@@ -1319,7 +1319,7 @@ if (!function_exists('cmg_site_wide_analytics_footer')) {
           console.log("Blog Clicked:", blogTitle);
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push({
-            event: "Blog Clicked",
+            event: "Staging - Blog Clicked",
             blog_title: blogTitle
           });
         });
