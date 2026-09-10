@@ -1515,18 +1515,26 @@ if (!function_exists('cmg_glossary_shortcode')) {
           }
           
           .stylish-search__sparkle img {
-            width: 18px;
-            height: 18px;
+            width: 22px !important;
+            height: 22px !important;
           }
           
           /* Input */
-          .stylish-search__input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 18px;
-            background: transparent;
-            color: #0b1f4f;
+          .stylish-search__input,
+          .stylish-search__input:focus,
+          .stylish-search__input:active,
+          .stylish-search__input:hover {
+            flex: 1 !important;
+            border: 0 !important;
+            border-style: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            font-size: 18px !important;
+            background: transparent !important;
+            color: #0b1f4f !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 10px !important;
           }
           
           /* Button */
@@ -1535,8 +1543,8 @@ if (!function_exists('cmg_glossary_shortcode')) {
             right: 6px;
             top: 50%;
             transform: translateY(-50%);
-            width: 43px;
-            height: 43px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
@@ -1730,7 +1738,7 @@ if (!function_exists('cmg_glossary_shortcode')) {
                           </span>
                           <input type="text" id="wd-search-input" class="stylish-search__input" placeholder="Search by term">
                           <button type="submit" id="wd-search-btn" class="stylish-search__submit">
-                              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                              <svg width="24" height="24" viewBox="0 0 20 20" fill="none" style="width: 24px !important; height: 24px !important;">
                                   <path d="M14.707 13.293a1 1 0 0 1 1.32-.083l.094.083 2.5 2.5a1 1 0 0 1-1.32 1.497l-.094-.083-2.5-2.5a1 1 0 0 1 0-1.414z" fill="white"/>
                                   <path d="M9 2a7 7 0 1 1 0 14A7 7 0 0 1 9 2zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 9 4z" fill="white"/>
                               </svg>
