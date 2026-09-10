@@ -294,10 +294,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! function_exists( 'cmg_lead_form_shortcode' ) ) {
 function cmg_lead_form_shortcode( $atts ) {
     $atts = shortcode_atts( array(
-        'api_url'      => 'https://api.cmgalaxy.com/api/v2/event_emailer/cmgalaxy-enquiry/',
-        'redirect_url' => 'https://www.cmgalaxy.com/thank-you',
-        'event_name'   => 'Book A Demo Sendmessage Clicked',
-        'section_name' => 'Book A Demo Form',
+        'api_url'          => 'https://staging-api.cmgalaxy.com/api/v2/event_emailer/cmgalaxy-enquiry/',
+        'fallback_api_url' => 'https://api.cmgalaxy.com/api/v2/event_emailer/cmgalaxy-enquiry/',
+        'redirect_url'     => 'https://www.cmgalaxy.com/thank-you',
+        'event_name'       => 'Book A Demo Sendmessage Clicked',
+        'section_name'     => 'Book A Demo Form',
     ), $atts, 'cmg_lead_form' );
 
     ob_start();
@@ -459,7 +460,8 @@ function cmg_lead_form_shortcode( $atts ) {
 
     <script>
         (function () {
-            const API_URL = "<?php echo esc_url( $atts['api_url'] ); ?>";
+            const PRIMARY_API_URL = "<?php echo esc_url( $atts['api_url'] ); ?>";
+            const FALLBACK_API_URL = "<?php echo esc_url( $atts['fallback_api_url'] ); ?>";
             const REDIRECT_URL = "<?php echo esc_url( $atts['redirect_url'] ); ?>";
             const EVENT_NAME = "<?php echo esc_js( $atts['event_name'] ); ?>";
             const SECTION_NAME = "<?php echo esc_js( $atts['section_name'] ); ?>";
@@ -571,20 +573,49 @@ function cmg_lead_form_shortcode( $atts ) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = "Sending...";
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+                async function sendToApi(url, timeoutMs) {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                    try {
+                        const response = await fetch(url, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload),
+                            signal: controller.signal
+                        });
+                        clearTimeout(timeoutId);
+                        return response;
+                    } catch (err) {
+                        clearTimeout(timeoutId);
+                        throw err;
+                    }
+                }
 
                 try {
-                    const response = await fetch(API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                        signal: controller.signal
-                    });
+                    let response = null;
+                    let primaryFailed = false;
 
-                    clearTimeout(timeoutId);
+                    // Primary Attempt (staging API)
+                    try {
+                        response = await sendToApi(PRIMARY_API_URL, 6000); // 6s timeout for primary
+                        if (!response.ok) primaryFailed = true;
+                    } catch (err) {
+                        console.warn("Primary API failed, trying fallback...", err);
+                        primaryFailed = true;
+                    }
 
-                    if (!response.ok) throw new Error("API failed with status " + response.status);
+                    // Fallback Attempt if primary fails/times out
+                    if (primaryFailed && FALLBACK_API_URL) {
+                        try {
+                            response = await sendToApi(FALLBACK_API_URL, 10000);
+                        } catch (err) {
+                            console.error("Fallback API also failed", err);
+                        }
+                    }
+
+                    if (!response || !response.ok) {
+                        throw new Error("API submission failed");
+                    }
 
                     if (window.amplitude) {
                         amplitude.logEvent(EVENT_NAME, {
@@ -603,13 +634,8 @@ function cmg_lead_form_shortcode( $atts ) {
                     }
 
                 } catch (err) {
-                    clearTimeout(timeoutId);
                     console.error(err);
-                    if (err.name === 'AbortError') {
-                        statusEl.textContent = "❌ Request timed out. Please try again.";
-                    } else {
-                        statusEl.textContent = "❌ Submission failed. Please try again.";
-                    }
+                    statusEl.textContent = "❌ Submission failed. Please try again.";
                     statusEl.className = "form-status error";
                 } finally {
                     submitBtn.disabled = false;
