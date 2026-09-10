@@ -1,0 +1,226 @@
+================================================================================
+                    AMPLITUDE CTA ELEMENT ID REFERENCE LIST
+================================================================================
+
+How to use in WordPress / Elementor:
+1. Open your page or template in Elementor or WordPress Block Editor.
+2. Select the button, link, or element you want to track.
+3. Go to Advanced -> CSS ID (or HTML ID).
+4. Enter the exact ID from the list below (without quotes).
+
+--------------------------------------------------------------------------------
+1. HERO & HEADER SECTIONS
+--------------------------------------------------------------------------------
+ID: btn-book-demo-omnichannel-hero
+Section: Hero Section
+Event Name: Staging - Website Book Demo Clicked
+
+ID: btn-start-a-free-trial-omnichannel
+Section: Hero Section
+Event Name: Staging - Website Start a Free Trial Clicked
+
+ID: home-start-free-trial
+Section: Home Page Hero Section
+Event Name: Staging - Home Start Free Trial Clicked
+
+ID: home-book-demo
+Section: Home Page Hero Section
+Event Name: Staging - Home Book Demo Clicked
+
+ID: home-hero-play-video
+Section: Home Page Hero Section
+Event Name: Staging - Home Page Hero Play Video Clicked
+
+ID: audit-hero-start-analysis-desktop
+Section: Hero Section
+Event Name: Staging - Website Start Analysis Clicked desktop
+
+ID: audit-hero-start-analysis-mobile
+Section: Hero Section
+Event Name: Staging - Website Start Analysis Clicked mobile
+
+
+--------------------------------------------------------------------------------
+2. NAVIGATION BAR
+--------------------------------------------------------------------------------
+ID: nav-home
+Section: Nav Bar
+Event Name: Staging - Nav Bar Home Clicked
+
+ID: nav-features
+Section: Nav Bar
+Event Name: Staging - Nav Bar Features Clicked
+
+ID: nav-omnichannel
+Section: Nav Bar
+Event Name: Staging - Nav Bar Omnichannel Clicked
+
+ID: nav-ai-agent
+Section: Nav Bar
+Event Name: Staging - Nav Bar AI Agent Clicked
+
+ID: nav-full-funnel
+Section: Nav Bar
+Event Name: Staging - Nav Bar Full Funnel Attribution Clicked
+
+ID: nav-integration
+Section: Nav Bar
+Event Name: Staging - Nav Bar Integration Clicked
+
+ID: nav-lex
+Section: Nav Bar
+Event Name: Staging - Nav Bar Lex Clicked
+
+ID: nav-about-us
+Section: Nav Bar
+Event Name: Staging - Nav Bar About Us Clicked
+
+ID: nav-blog
+Section: Nav Bar
+Event Name: Staging - Nav Bar Blog Clicked
+
+ID: nav-sign-in
+Section: Nav Bar
+Event Name: Staging - Nav Bar Sign In Clicked
+
+ID: nav-sign-up-free
+Section: Nav Bar
+Event Name: Staging - Nav Bar Sign Up Free Clicked
+
+
+--------------------------------------------------------------------------------
+3. FEATURE SECTIONS, BANNERS & RESULTS
+--------------------------------------------------------------------------------
+ID: btn-try-cmgalaxy-omnichannel
+Section: Feature List
+Event Name: Staging - Website Try CM Galaxy Clicked
+
+ID: btn-book-demo-omnichannel
+Section: Feature List
+Event Name: Staging - Website Book Demo Clicked
+
+ID: home-growth-banner-book-demo
+Section: Growth Banner Section
+Event Name: Staging - Home Page Growth Banner Book Demo Clicked
+
+ID: home-growth-banner-try-cmgalaxy
+Section: Growth Banner Section
+Event Name: Staging - Home Page Growth Banner Try CMGalaxy Clicked
+
+ID: proven-results-book-demo
+Section: Proven Results Section
+Event Name: Staging - Proven Results Book Demo Clicked
+
+ID: proven-results-try-cmgalaxy
+Section: Proven Results Section
+Event Name: Staging - Proven Results Try CMGalaxy Clicked
+
+ID: blog-detail-banner-try-cmgalaxy
+Section: Blog Detail CTA Banner
+Event Name: Staging - Blog Detail Cta Banner Try CMGalaxy Clicked
+
+ID: blog-detail-banner-book-demo
+Section: Blog Detail CTA Banner
+Event Name: Staging - Blog Detail Cta Banner Book Demo Clicked
+
+
+--------------------------------------------------------------------------------
+4. FOOTER & SOCIAL LINKS
+--------------------------------------------------------------------------------
+ID: footer-email-input
+Section: Footer Section
+Event Name: Staging - Subscribe Email Entered
+
+ID: footer-email-submit
+Section: Footer Section
+Event Name: Staging - Footer Subscribe Email Clicked
+
+ID: footer-omnichannel
+Section: Footer Section
+Event Name: Staging - Footer Omnichannel Dashboard Clicked
+
+ID: footer-ai-agent
+Section: Footer Section
+Event Name: Staging - Footer Features AI Agent Clicked
+
+ID: footer-full-funnel
+Section: Footer Section
+Event Name: Staging - Footer Features Full Funnel Clicked
+
+ID: footer-integration
+Section: Footer Section
+Event Name: Staging - Footer Features Integration Clicked
+
+ID: footer-lex
+Section: Footer Section
+Event Name: Staging - Footer Features Lex Clicked
+
+ID: footer-about-us
+Section: Footer Section
+Event Name: Staging - Footer Company AboutUs Clicked
+
+ID: footer-privacy-policy
+Section: Footer Section
+Event Name: Staging - Footer Privacy Policy Clicked
+
+ID: footer-terms
+Section: Footer Section
+Event Name: Staging - Footer Terms and Conditions Clicked
+
+ID: footer-blog
+Section: Footer Section
+Event Name: Staging - Footer Company Blog Clicked
+
+ID: footer-social-linkedin
+Section: Footer Section
+Event Name: Staging - Footer Social LinkedIn Clicked
+
+ID: footer-social-facebook
+Section: Footer Section
+Event Name: Staging - Footer Social Facebook Clicked
+
+ID: footer-social-instagram
+Section: Footer Section
+Event Name: Staging - Footer Social Instagram Clicked
+
+ID: footer-social-youtube
+Section: Footer Section
+Event Name: Staging - Footer Social YouTube Clicked
+
+ID: btn-book-demo-omnichannel-footer
+Section: Footer Section
+Event Name: Staging - Website Book Demo Clicked
+
+ID: home-footer-cta-book-demo
+Section: Footer Section
+Event Name: Staging - Home Footer Cta Book Demo Clicked
+
+ID: aboutus-footer-book-demo
+Section: About Us Footer Section
+Event Name: Staging - Aboutus Footer Cta Book Demo Clicked
+
+ID: aboutus-footer-try-cmgalaxy
+Section: About Us Footer Section
+Event Name: Staging - Aboutus Footer Cta Try Cmgalaxy Clicked
+
+ID: blog-footer-cta-book-demo
+Section: Blog Footer Section
+Event Name: Staging - Blog Footer Cta Book Demo Clicked
+
+ID: blog-detail-footer-book-demo
+Section: Blog Detail Footer Section
+Event Name: Staging - Blog Detail Footer Cta Book Demo Clicked
+
+
+--------------------------------------------------------------------------------
+5. AUTOMATIC SYSTEM & FORM EVENTS
+--------------------------------------------------------------------------------
+Event Name: Staging - Website Page Viewed
+Triggered: Automatically on page load
+Properties: page_name, utm_source, utm_medium, utm_campaign, utm_content, utm_term, device_category, os_clean
+
+Event Name: Staging - Lead Form Submitted
+Triggered: Automatically on [cmg_lead_form] successful submit
+Properties: first_name, last_name, email_address, phone_number, company_name, ad_spend
+
+================================================================================
