@@ -4008,8 +4008,8 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             .cmg-blog-layout-wrapper {
               width: 100%;
               max-width: 100%;
-              margin: 0;
-              padding: 0;
+              padding: 0 0 0 12px;
+
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
