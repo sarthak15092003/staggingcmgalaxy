@@ -4054,7 +4054,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               left: 50%;
               margin-left: -50vw;
               margin-right: -50vw;
-              padding: 0 24px 0 12px;
+              padding: 0 24px 0 8px;
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
@@ -4071,17 +4071,19 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               box-sizing: border-box;
             }
 
-            /* Desktop left sticky sidebar */
+            /* Desktop left sticky sidebar - reduced width & left aligned */
             .cmg-blog-toc-sidebar {
-              margin-left: 16px;
-              width: 280px;
-              min-width: 260px;
+              margin-left: 0 !important;
+              width: 220px !important;
+              min-width: 190px !important;
+              max-width: 230px !important;
               position: sticky;
               top: 110px;
               max-height: calc(100vh - 140px);
               overflow-y: auto;
               box-sizing: border-box;
               z-index: 20;
+              text-align: left;
               font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
@@ -4101,7 +4103,9 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             .cmg-blog-toc-header {
               display: flex;
               align-items: center;
-              justify-content: space-between;
+              justify-content: flex-start;
+              gap: 8px;
+              text-align: left;
               margin-bottom: 12px;
               padding-bottom: 10px;
               border-bottom: 1px solid #e5e7eb;
@@ -4171,7 +4175,9 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             .cmg-blog-toc-header {
               display: flex;
               align-items: center;
-              justify-content: space-between;
+              justify-content: flex-start;
+              gap: 8px;
+              text-align: left;
               margin-bottom: 12px;
               padding-bottom: 10px;
               border-bottom: 1px solid #e5e7eb;

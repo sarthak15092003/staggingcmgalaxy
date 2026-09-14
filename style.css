@@ -264,3 +264,22 @@ body.single-post a:active,
         margin-right: 0 !important;
     }
 }
+
+/* Desktop Left-aligned & Reduced-width Table of Contents */
+@media (min-width: 1025px) {
+    .cmg-blog-layout-wrapper {
+        padding-left: 8px !important;
+    }
+    .cmg-blog-toc-sidebar {
+        margin-left: 0 !important;
+        width: 220px !important;
+        min-width: 190px !important;
+        max-width: 230px !important;
+        text-align: left !important;
+    }
+    .cmg-blog-toc-header {
+        justify-content: flex-start !important;
+        gap: 8px !important;
+        text-align: left !important;
+    }
+}
