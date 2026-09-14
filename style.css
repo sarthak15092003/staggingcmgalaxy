@@ -283,3 +283,15 @@ body.single-post a:active,
         text-align: left !important;
     }
 }
+
+/* Center Blog Content Container on Desktop (Text remains Left Aligned) */
+@media (min-width: 1025px) {
+    .cmg-blog-content {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: 960px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: left !important;
+    }
+}

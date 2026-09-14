@@ -4062,13 +4062,17 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               gap: 0;
             }
 
-            /* Center blog content: 15px padding each side */
+            /* Center blog content container, text remains left-aligned */
             .cmg-blog-content {
-              flex: 1;
-              min-width: 0;
-              padding-left: 15px;
-              padding-right: 15px;
-              box-sizing: border-box;
+              flex: 1 1 auto !important;
+              min-width: 0 !important;
+              max-width: 960px !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+              padding-left: 20px !important;
+              padding-right: 20px !important;
+              box-sizing: border-box !important;
+              text-align: left !important;
             }
 
             /* Desktop left sticky sidebar - reduced width & left aligned */
