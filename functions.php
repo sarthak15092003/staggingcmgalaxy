@@ -3156,6 +3156,9 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
             @media (max-width: 1024px) {
               .cmg-floating-side-banner {
                 display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
               }
             }
           </style>
@@ -3202,6 +3205,10 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
             var scrollThreshold = 1000; // Pixels scrolled before showing
 
             function handleScroll() {
+              if (window.innerWidth <= 1024) {
+                banner.classList.remove('is-visible');
+                return;
+              }
               if (window.scrollY > scrollThreshold) {
                 banner.classList.add('is-visible');
               } else {
@@ -3980,7 +3987,7 @@ add_shortcode( 'related_articles', 'cmg_render_blog_related_articles' );
 add_shortcode( 'cmg_blog_related', 'cmg_render_blog_related_articles' );
 
 /* ==========================================================================
-   CMG BLOG TABLE OF CONTENTS (Left Sticky Sidebar for H2 Headings)
+   CMG BLOG TABLE OF CONTENTS (Desktop: Left Sticky Sidebar | Mobile: Docy-Style Bottom TOC & Button)
    ========================================================================== */
 
 if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
@@ -4006,6 +4013,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             /* Prevent horizontal scroll from vw trick */
             html, body { overflow-x: clip !important; }
 
+            /* Desktop 3-column flex layout */
             .cmg-blog-layout-wrapper {
               width: 100vw;
               max-width: 100vw;
@@ -4021,7 +4029,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               gap: 0;
             }
 
-            /* Center blog content: 15px padding each side, TOC/sidebar flush to edges */
+            /* Center blog content: 15px padding each side */
             .cmg-blog-content {
               flex: 1;
               min-width: 0;
@@ -4030,6 +4038,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               box-sizing: border-box;
             }
 
+            /* Desktop left sticky sidebar */
             .cmg-blog-toc-sidebar {
               margin-left: 16px;
               width: 280px;
@@ -4083,14 +4092,29 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               color: #2563eb;
             }
 
-            .cmg-toc-mobile-toggle {
+            .cmg-toc-count-pill {
               display: none;
-              background: transparent;
+              background: #e2e8f0;
+              color: #475569;
+              font-size: 11px;
+              font-weight: 600;
+              padding: 2px 8px;
+              border-radius: 999px;
+            }
+
+            .cmg-toc-mobile-toggle-btn {
+              display: none;
+              align-items: center;
+              gap: 5px;
+              background: #e2e8f0;
+              color: #1e293b;
+              font-size: 12px;
+              font-weight: 600;
+              padding: 5px 12px;
+              border-radius: 999px;
               border: none;
               cursor: pointer;
-              color: #64748b;
-              padding: 4px;
-              transition: transform 0.2s ease;
+              transition: all 0.2s ease;
             }
 
             .cmg-blog-toc-list {
@@ -4137,39 +4161,304 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               scroll-margin-top: 110px;
             }
 
+            /* Floating button & bottom sheet hidden on desktop */
+            .cmg-docy-toc-fab {
+              display: none;
+            }
+            .cmg-docy-sheet-overlay, .cmg-docy-sheet {
+              display: none;
+            }
+
+            /* ==========================================================================
+               MOBILE RESPONSIVE BREAKPOINT (<= 1024px)
+               - Only top CTA banner visible
+               - Side CTA banner hidden
+               - TOC moves to bottom with toggle button (Docy style)
+               - Floating Docy-style action button at bottom for instant TOC access
+               ========================================================================== */
             @media (max-width: 1024px) {
+              /* Reset desktop full-width breakout to standard responsive container */
               .cmg-blog-layout-wrapper {
-                flex-direction: column;
-                gap: 24px;
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                left: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding: 0 16px !important;
+                gap: 0 !important;
+                box-sizing: border-box !important;
               }
 
+              /* Main blog content: first in order, full width */
+              .cmg-blog-content {
+                order: 1 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                font-size: 16.5px !important;
+                line-height: 1.7 !important;
+              }
+
+              /* Side banner: strictly hidden on mobile/tablet */
+              .cmg-floating-side-banner {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+              }
+
+              /* TOC sidebar moves to BOTTOM of article */
               .cmg-blog-toc-sidebar {
-                position: static;
-                width: 100%;
-                max-height: none;
-                margin-bottom: 24px;
+                order: 2 !important;
+                position: static !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                margin: 36px 0 24px 0 !important;
+                max-height: none !important;
                 background: #f8fafc;
                 border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                padding: 14px 18px;
+                border-radius: 14px;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+                overflow: hidden !important;
               }
 
               .cmg-blog-toc-inner {
-                padding-right: 0;
+                padding: 14px 18px !important;
               }
 
-              .cmg-toc-mobile-toggle {
-                display: inline-flex;
+              .cmg-blog-toc-header {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+                border-bottom: none !important;
+                cursor: pointer;
+                user-select: none;
+              }
+
+              .cmg-blog-toc-header.is-expanded {
+                margin-bottom: 14px !important;
+                padding-bottom: 12px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+              }
+
+              .cmg-toc-count-pill {
+                display: inline-block !important;
+              }
+
+              .cmg-toc-mobile-toggle-btn {
+                display: inline-flex !important;
+              }
+
+              .cmg-toc-mobile-toggle-btn svg {
+                transition: transform 0.25s ease;
+              }
+
+              .cmg-blog-toc-header.is-expanded .cmg-toc-mobile-toggle-btn svg {
+                transform: rotate(180deg);
               }
 
               .cmg-blog-toc-nav.is-collapsed {
-                display: none;
+                display: none !important;
+              }
+
+              .cmg-blog-toc-link {
+                padding: 10px 14px;
+                font-size: 15px;
+                background: #ffffff;
+                border: 1px solid #edf2f7;
+                border-left: 3px solid #cbd5e1;
+                border-radius: 8px;
+                margin-bottom: 3px;
+              }
+
+              .cmg-blog-toc-link.is-active {
+                border-left-color: #22c55e;
+                background: #f0fdf4;
+                color: #166534;
+              }
+
+              /* Docy-Style Floating Action Button at Bottom */
+              .cmg-docy-toc-fab {
+                display: inline-flex !important;
+                position: fixed;
+                bottom: 22px;
+                right: 18px;
+                z-index: 9999;
+                align-items: center;
+                gap: 8px;
+                background: #09102b;
+                color: #ffffff;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 999px;
+                padding: 10px 18px;
+                font-size: 13.5px;
+                font-weight: 600;
+                box-shadow: 0 8px 24px rgba(9, 16, 43, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
+                cursor: pointer;
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+                font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              }
+
+              .cmg-docy-toc-fab:active {
+                transform: scale(0.96);
+              }
+
+              .cmg-docy-fab-icon {
+                color: #22c55e;
+              }
+
+              .cmg-docy-fab-badge {
+                background: rgba(34, 197, 94, 0.25);
+                color: #22c55e;
+                font-size: 11px;
+                font-weight: 700;
+                padding: 1px 7px;
+                border-radius: 999px;
+              }
+
+              /* Docy-Style Bottom Sheet Drawer & Overlay */
+              .cmg-docy-sheet-overlay {
+                display: block !important;
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.6);
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+                z-index: 99998;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+              }
+
+              .cmg-docy-sheet-overlay.is-active {
+                opacity: 1;
+                pointer-events: auto;
+              }
+
+              .cmg-docy-sheet {
+                display: flex !important;
+                flex-direction: column;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                max-height: 80vh;
+                background: #ffffff;
+                border-radius: 20px 20px 0 0;
+                z-index: 99999;
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+                transform: translateY(100%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                box-sizing: border-box;
+                overflow: hidden;
+              }
+
+              .cmg-docy-sheet.is-active {
+                transform: translateY(0);
+              }
+
+              .cmg-docy-sheet-handle {
+                width: 40px;
+                height: 4.5px;
+                background: #cbd5e1;
+                border-radius: 999px;
+                margin: 10px auto 4px auto;
+                flex-shrink: 0;
+              }
+
+              .cmg-docy-sheet-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 20px 14px 20px;
+                border-bottom: 1px solid #e2e8f0;
+                flex-shrink: 0;
+              }
+
+              .cmg-docy-sheet-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: #0f172a;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              }
+
+              .cmg-docy-sheet-close {
+                background: #f1f5f9;
+                border: none;
+                color: #64748b;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                cursor: pointer;
+                line-height: 1;
+                transition: background 0.2s, color 0.2s;
+              }
+
+              .cmg-docy-sheet-close:hover {
+                background: #e2e8f0;
+                color: #0f172a;
+              }
+
+              .cmg-docy-sheet-body {
+                padding: 14px 18px 32px 18px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                max-height: calc(80vh - 80px);
+                box-sizing: border-box;
+              }
+
+              .cmg-docy-sheet-list {
+                list-style: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+              }
+
+              .cmg-docy-sheet-link {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 11px 14px;
+                font-size: 14.5px;
+                line-height: 1.4;
+                color: #334155;
+                text-decoration: none;
+                border-radius: 10px;
+                background: #f8fafc;
+                border: 1px solid #edf2f7;
+                transition: all 0.2s ease;
+              }
+
+              .cmg-docy-sheet-link:hover, .cmg-docy-sheet-link.is-active {
+                color: #0f172a;
+                background: #eef2ff;
+                border-color: #c7d2fe;
+                font-weight: 600;
               }
             }
           </style>
 
           <div class="cmg-blog-toc-inner">
-            <div class="cmg-blog-toc-header">
+            <div class="cmg-blog-toc-header" id="cmg-blog-toc-header" role="button" tabindex="0" aria-label="Toggle Table of Contents">
               <div class="cmg-blog-toc-title-wrap">
                 <svg class="cmg-toc-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -4180,17 +4469,58 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                   <line x1="3" y1="18" x2="3.01" y2="18"></line>
                 </svg>
                 <span class="cmg-blog-toc-title">Table of Contents</span>
+                <span class="cmg-toc-count-pill" id="cmg-toc-count-pill">0</span>
               </div>
-              <button type="button" class="cmg-toc-mobile-toggle" id="cmg-toc-mobile-toggle" aria-label="Toggle Table of Contents">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <button type="button" class="cmg-toc-mobile-toggle-btn" id="cmg-toc-mobile-toggle" aria-label="Toggle Table of Contents">
+                <span class="cmg-toc-toggle-label" id="cmg-toc-toggle-label">Show</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </button>
             </div>
 
-            <nav class="cmg-blog-toc-nav" id="cmg-blog-toc-nav">
+            <nav class="cmg-blog-toc-nav is-collapsed" id="cmg-blog-toc-nav">
               <ul class="cmg-blog-toc-list" id="cmg-blog-toc-list">
                 <!-- Dynamically generated from article H2 elements -->
               </ul>
             </nav>
+          </div>
+
+          <!-- Docy-Style Mobile Floating Action Button -->
+          <button type="button" class="cmg-docy-toc-fab" id="cmg-docy-toc-fab" aria-label="Open Table of Contents">
+            <svg class="cmg-docy-fab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <span>Table of Contents</span>
+            <span class="cmg-docy-fab-badge" id="cmg-docy-fab-badge">0</span>
+          </button>
+
+          <!-- Docy-Style Mobile Bottom Sheet Drawer -->
+          <div class="cmg-docy-sheet-overlay" id="cmg-docy-sheet-overlay"></div>
+          <div class="cmg-docy-sheet" id="cmg-docy-sheet" role="dialog" aria-modal="true" aria-label="Table of Contents">
+            <div class="cmg-docy-sheet-handle"></div>
+            <div class="cmg-docy-sheet-header">
+              <div class="cmg-docy-sheet-title">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                <span>Table of Contents</span>
+              </div>
+              <button type="button" class="cmg-docy-sheet-close" id="cmg-docy-sheet-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="cmg-docy-sheet-body">
+              <ul class="cmg-docy-sheet-list" id="cmg-docy-sheet-list">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
           </div>
 
           <script>
@@ -4199,8 +4529,17 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               const content = document.querySelector('.cmg-blog-content');
               const tocList = document.getElementById('cmg-blog-toc-list');
               const tocSidebar = document.getElementById('cmg-blog-toc-sidebar');
+              const tocHeader = document.getElementById('cmg-blog-toc-header');
               const toggleBtn = document.getElementById('cmg-toc-mobile-toggle');
+              const toggleLabel = document.getElementById('cmg-toc-toggle-label');
               const tocNav = document.getElementById('cmg-blog-toc-nav');
+              const countPill = document.getElementById('cmg-toc-count-pill');
+              const fab = document.getElementById('cmg-docy-toc-fab');
+              const fabBadge = document.getElementById('cmg-docy-fab-badge');
+              const sheet = document.getElementById('cmg-docy-sheet');
+              const sheetOverlay = document.getElementById('cmg-docy-sheet-overlay');
+              const sheetClose = document.getElementById('cmg-docy-sheet-close');
+              const sheetList = document.getElementById('cmg-docy-sheet-list');
 
               if (!content || !tocList || !tocSidebar) return;
 
@@ -4208,10 +4547,16 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               const headings = content.querySelectorAll('h2');
               if (headings.length === 0) {
                 tocSidebar.style.display = 'none';
+                if (fab) fab.style.display = 'none';
                 return;
               }
 
+              // Update counts
+              if (countPill) countPill.textContent = headings.length;
+              if (fabBadge) fabBadge.textContent = headings.length;
+
               tocList.innerHTML = '';
+              if (sheetList) sheetList.innerHTML = '';
 
               headings.forEach(function(h2, index) {
                 let id = h2.getAttribute('id');
@@ -4220,7 +4565,6 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/(^-|-$)/g, '');
                   id = slug || ('section-' + (index + 1));
-                  // Ensure unique ID
                   if (document.getElementById(id)) {
                     id += '-' + (index + 1);
                   }
@@ -4229,9 +4573,9 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
                 h2.style.scrollMarginTop = '110px';
 
+                // In-page list item
                 const li = document.createElement('li');
                 li.className = 'cmg-blog-toc-item';
-
                 const a = document.createElement('a');
                 a.href = '#' + id;
                 a.className = 'cmg-blog-toc-link';
@@ -4250,18 +4594,111 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
                 li.appendChild(a);
                 tocList.appendChild(li);
+
+                // Bottom sheet list item (Docy style)
+                if (sheetList) {
+                  const sLi = document.createElement('li');
+                  const sA = document.createElement('a');
+                  sA.href = '#' + id;
+                  sA.className = 'cmg-docy-sheet-link';
+                  sA.innerHTML = '<span style="color:#2563eb;font-weight:700;">' + (index + 1) + '.</span> <span>' + h2.textContent.trim() + '</span>';
+
+                  sA.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    closeSheet();
+                    const target = document.getElementById(id);
+                    if (target) {
+                      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      if (window.history && window.history.pushState) {
+                        window.history.pushState(null, '', '#' + id);
+                      }
+                    }
+                  });
+
+                  sLi.appendChild(sA);
+                  sheetList.appendChild(sLi);
+                }
               });
 
-              // Mobile toggle
-              if (toggleBtn && tocNav) {
-                toggleBtn.addEventListener('click', function() {
-                  tocNav.classList.toggle('is-collapsed');
-                  toggleBtn.style.transform = tocNav.classList.contains('is-collapsed') ? 'rotate(180deg)' : 'rotate(0deg)';
+              // Mobile in-page accordion toggle
+              function toggleInPageTOC() {
+                if (window.innerWidth > 1024) return;
+                const isCollapsed = tocNav.classList.toggle('is-collapsed');
+                if (tocHeader) {
+                  tocHeader.classList.toggle('is-expanded', !isCollapsed);
+                }
+                if (toggleLabel) {
+                  toggleLabel.textContent = isCollapsed ? 'Show' : 'Hide';
+                }
+              }
+
+              if (toggleBtn) {
+                toggleBtn.addEventListener('click', function(e) {
+                  e.stopPropagation();
+                  toggleInPageTOC();
                 });
+              }
+
+              if (tocHeader) {
+                tocHeader.addEventListener('click', function(e) {
+                  if (window.innerWidth <= 1024) {
+                    toggleInPageTOC();
+                  }
+                });
+              }
+
+              // Docy-style Bottom Sheet Controls
+              function openSheet() {
+                if (sheet && sheetOverlay) {
+                  sheet.classList.add('is-active');
+                  sheetOverlay.classList.add('is-active');
+                  document.body.style.overflow = 'hidden';
+                }
+              }
+
+              function closeSheet() {
+                if (sheet && sheetOverlay) {
+                  sheet.classList.remove('is-active');
+                  sheetOverlay.classList.remove('is-active');
+                  document.body.style.overflow = '';
+                }
+              }
+
+              if (fab) {
+                fab.addEventListener('click', openSheet);
+              }
+              if (sheetClose) {
+                sheetClose.addEventListener('click', closeSheet);
+              }
+              if (sheetOverlay) {
+                sheetOverlay.addEventListener('click', closeSheet);
+              }
+
+              document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeSheet();
+              });
+
+              // If screen resized to desktop, ensure nav is visible
+              window.addEventListener('resize', function() {
+                if (window.innerWidth > 1024) {
+                  if (tocNav) tocNav.classList.remove('is-collapsed');
+                  closeSheet();
+                } else {
+                  if (tocHeader && !tocHeader.classList.contains('is-expanded') && tocNav) {
+                    tocNav.classList.add('is-collapsed');
+                  }
+                }
+              });
+
+              // Initial check for desktop vs mobile
+              if (window.innerWidth > 1024 && tocNav) {
+                tocNav.classList.remove('is-collapsed');
               }
 
               // Active Scrollspy using IntersectionObserver
               const links = tocList.querySelectorAll('.cmg-blog-toc-link');
+              const sheetLinks = sheetList ? sheetList.querySelectorAll('.cmg-docy-sheet-link') : [];
+
               if (window.IntersectionObserver) {
                 const observer = new IntersectionObserver(function(entries) {
                   entries.forEach(function(entry) {
@@ -4272,6 +4709,13 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                           link.classList.add('is-active');
                         } else {
                           link.classList.remove('is-active');
+                        }
+                      });
+                      sheetLinks.forEach(function(sLink) {
+                        if (sLink.getAttribute('href') === '#' + id) {
+                          sLink.classList.add('is-active');
+                        } else {
+                          sLink.classList.remove('is-active');
                         }
                       });
                     }
