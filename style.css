@@ -268,7 +268,7 @@ body.single-post a:active,
 /* Desktop Left-aligned & Reduced-width Table of Contents */
 @media (min-width: 1025px) {
     .cmg-blog-layout-wrapper {
-        padding-left: 8px !important;
+        padding-left: 24px !important;
     }
     .cmg-blog-toc-sidebar {
         margin-left: 0 !important;

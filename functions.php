@@ -4054,7 +4054,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               left: 50%;
               margin-left: -50vw;
               margin-right: -50vw;
-              padding: 0 24px 0 8px;
+              padding: 0 24px 0 24px;
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
