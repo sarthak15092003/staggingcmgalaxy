@@ -165,9 +165,64 @@ if ( ! function_exists( 'hello_elementor_scripts_styles' ) ) {
 			[ 'hello-elementor' ],
 			filemtime( HELLO_THEME_STYLE_PATH . 'main.css' )
 		);
+
+		wp_enqueue_style(
+			'cmg-google-font-onest',
+			'https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&display=swap',
+			[],
+			null
+		);
 	}
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_scripts_styles' );
+
+/* Enqueue Google Font Onest & define --primary-font */
+add_action( 'wp_head', function() {
+    ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style id="cmg-primary-font-onest">
+      :root {
+        --primary-font: 'Onest', sans-serif;
+        --e-global-typography-primary-font-family: 'Onest', sans-serif !important;
+        --e-global-typography-secondary-font-family: 'Onest', sans-serif !important;
+        --e-global-typography-text-font-family: 'Onest', sans-serif !important;
+        --e-global-typography-accent-font-family: 'Onest', sans-serif !important;
+      }
+      body.single-post,
+      body.single-post .site-main,
+      body.single-post .cmg-blog-single-article,
+      body.single-post .cmg-blog-header-wrapper,
+      body.single-post .cmg-blog-content,
+      body.single-post .cmg-blog-content p,
+      body.single-post .cmg-blog-content h1,
+      body.single-post .cmg-blog-content h2,
+      body.single-post .cmg-blog-content h3,
+      body.single-post .cmg-blog-content h4,
+      body.single-post .cmg-blog-content h5,
+      body.single-post .cmg-blog-content h6,
+      body.single-post .cmg-blog-content li,
+      body.single-post .cmg-blog-content span,
+      body.single-post .cmg-blog-content a,
+      body.single-post .cmg-blog-content blockquote,
+      body.single-post .cmg-blog-content table,
+      body.single-post .cmg-blog-content th,
+      body.single-post .cmg-blog-content td,
+      .cmg-blog-toc-sidebar,
+      .cmg-floating-side-banner,
+      .cmg-audit-banner-wrapper,
+      .cmg-docy-toc-fab,
+      .cmg-docy-sheet,
+      .cmg-author-bio-container,
+      .cmg-growth-banner-container,
+      .cmg-related-articles-section {
+        font-family: var(--primary-font, 'Onest', sans-serif) !important;
+      }
+    </style>
+    <?php
+}, 1 );
+
 
 if ( ! function_exists( 'hello_elementor_register_elementor_locations' ) ) {
 	/**
@@ -2347,7 +2402,7 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
           }
 
           .cmg-blog-header-wrapper {
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
               max-width: 1100px;
               margin: 0 auto;
               padding: 24px 20px 20px 20px;
@@ -2870,7 +2925,7 @@ if ( ! function_exists( 'cmg_render_blog_top_banner' ) ) {
               margin: 0;
               line-height: 1.3;
               letter-spacing: -0.3px;
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
             .cmg-audit-highlight {
@@ -2883,7 +2938,7 @@ if ( ! function_exists( 'cmg_render_blog_top_banner' ) ) {
               font-size: 14.5px;
               margin: 0;
               line-height: 1.4;
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
             .cmg-audit-lex {
@@ -2917,7 +2972,7 @@ if ( ! function_exists( 'cmg_render_blog_top_banner' ) ) {
               white-space: nowrap;
               transition: all 0.2s ease;
               box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
             .cmg-audit-btn:hover {
@@ -3011,7 +3066,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               box-sizing: border-box;
               text-align: center;
               z-index: 20;
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
               opacity: 0;
               pointer-events: none;
               transform: translateY(20px);
@@ -3285,7 +3340,7 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
               padding: 0 20px;
               box-sizing: border-box;
               text-align: center;
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
             .cmg-author-bio-line {
@@ -3452,7 +3507,7 @@ if ( ! function_exists( 'cmg_render_blog_bottom_growth_banner' ) ) {
               margin: 50px auto 70px auto;
               padding: 0 20px;
               box-sizing: border-box;
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
             .cmg-bottom-growth-card {
@@ -3810,7 +3865,7 @@ if ( ! function_exists( 'cmg_render_blog_related_articles' ) ) {
               margin: 70px auto 40px auto;
               padding: 0 20px;
               box-sizing: border-box;
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
             .cmg-related-header {
@@ -4049,7 +4104,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               overflow-y: auto;
               box-sizing: border-box;
               z-index: 20;
-              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: var(--primary-font, 'Onest', sans-serif);
             }
 
             /* Custom slim scrollbar for TOC */
@@ -4306,7 +4361,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 backdrop-filter: blur(8px);
                 -webkit-backdrop-filter: blur(8px);
                 transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-                font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                font-family: var(--primary-font, 'Onest', sans-serif);
               }
 
               .cmg-docy-toc-fab:active {
@@ -4359,7 +4414,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
                 transform: translateY(100%);
                 transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-                font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                font-family: var(--primary-font, 'Onest', sans-serif);
                 box-sizing: border-box;
                 overflow: hidden;
               }
