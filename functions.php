@@ -4004,7 +4004,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             }
 
             /* Prevent horizontal scroll from vw trick */
-            html, body { overflow-x: hidden !important; }
+            html, body { overflow-x: clip !important; }
 
             .cmg-blog-layout-wrapper {
               width: 100vw;
