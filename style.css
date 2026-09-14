@@ -97,3 +97,46 @@ body.single-post .cmg-blog-content th {
     font-size: 16px !important;
     line-height: 1.75 !important;
 }
+
+/* ==========================================================================
+   REMOVE RED ON CLICK / TAP / FOCUS (DESKTOP & MOBILE)
+   ========================================================================== */
+*, *::before, *::after {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+a:active,
+a:focus,
+a:focus-visible,
+button:active,
+button:focus,
+button:focus-visible {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+body.single-post a:active,
+body.single-post a:focus {
+    color: #2563eb !important;
+    outline: none !important;
+}
+
+.cmg-blog-toc-sidebar *,
+.cmg-blog-toc-header,
+.cmg-toc-mobile-toggle-btn,
+.cmg-blog-toc-link,
+.cmg-docy-toc-fab,
+.cmg-docy-sheet,
+.cmg-docy-sheet-link {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+}
+
+.cmg-blog-toc-link:active,
+.cmg-blog-toc-link:focus,
+.cmg-blog-toc-link:focus-visible {
+    color: #161c52 !important;
+    background: rgba(22, 28, 82, 0.06) !important;
+    border-left-color: #22c55e !important;
+    outline: none !important;
+}

@@ -219,6 +219,39 @@ add_action( 'wp_head', function() {
       .cmg-related-articles-section {
         font-family: var(--primary-font, 'Onest', sans-serif) !important;
       }
+      /* Remove red tap / active highlight on click */
+      *, *::before, *::after {
+        -webkit-tap-highlight-color: transparent !important;
+      }
+      a:active,
+      a:focus,
+      a:focus-visible,
+      button:active,
+      button:focus,
+      button:focus-visible {
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+      }
+      body.single-post a:active,
+      body.single-post a:focus {
+        color: #2563eb !important;
+      }
+      .cmg-blog-toc-sidebar *,
+      .cmg-blog-toc-header,
+      .cmg-toc-mobile-toggle-btn,
+      .cmg-blog-toc-link,
+      .cmg-docy-toc-fab,
+      .cmg-docy-sheet,
+      .cmg-docy-sheet-link {
+        -webkit-tap-highlight-color: transparent !important;
+        outline: none !important;
+      }
+      .cmg-blog-toc-link:active,
+      .cmg-blog-toc-link:focus {
+        color: #161c52 !important;
+        background: rgba(22, 28, 82, 0.06) !important;
+        border-left-color: #22c55e !important;
+      }
       body.single-post .cmg-blog-content,
       body.single-post .cmg-blog-content p,
       body.single-post .cmg-blog-content li,
@@ -4247,24 +4280,35 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               padding: 7px 12px;
               font-size: 14px;
               line-height: 1.45;
-              color: #475569;
+              color: #475569 !important;
               text-decoration: none;
               border-left: 2.5px solid #e2e8f0;
               border-radius: 0 6px 6px 0;
               transition: all 0.2s ease;
+              -webkit-tap-highlight-color: transparent !important;
+              outline: none !important;
             }
 
             .cmg-blog-toc-link:hover {
-              color: #0f172a;
-              background: #f1f5f9;
-              border-left-color: #94a3b8;
+              color: #0f172a !important;
+              background: #f1f5f9 !important;
+              border-left-color: #94a3b8 !important;
+            }
+
+            .cmg-blog-toc-link:active,
+            .cmg-blog-toc-link:focus,
+            .cmg-blog-toc-link:focus-visible {
+              color: #161c52 !important;
+              background: rgba(22, 28, 82, 0.06) !important;
+              border-left-color: #22c55e !important;
+              outline: none !important;
             }
 
             .cmg-blog-toc-link.is-active {
-              color: #161c52;
+              color: #161c52 !important;
               font-weight: 600;
-              background: rgba(22, 28, 82, 0.05);
-              border-left-color: #22c55e;
+              background: rgba(22, 28, 82, 0.05) !important;
+              border-left-color: #22c55e !important;
             }
 
             .cmg-blog-content h2 {
@@ -4558,11 +4602,17 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 transition: all 0.2s ease;
               }
 
-              .cmg-docy-sheet-link:hover, .cmg-docy-sheet-link.is-active {
-                color: #0f172a;
-                background: #eef2ff;
-                border-color: #c7d2fe;
+              .cmg-docy-sheet-link {
+                -webkit-tap-highlight-color: transparent !important;
+                outline: none !important;
+              }
+              .cmg-docy-sheet-link:hover, .cmg-docy-sheet-link.is-active,
+              .cmg-docy-sheet-link:active, .cmg-docy-sheet-link:focus {
+                color: #0f172a !important;
+                background: #eef2ff !important;
+                border-color: #c7d2fe !important;
                 font-weight: 600;
+                outline: none !important;
               }
             }
           </style>
