@@ -4623,7 +4623,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
           </style>
 
           <div class="cmg-blog-toc-inner">
-            <div class="cmg-blog-toc-header is-collapsed" id="cmg-blog-toc-header" role="button" tabindex="0" aria-label="Toggle Table of Contents">
+            <div class="cmg-blog-toc-header" id="cmg-blog-toc-header">
               <div class="cmg-blog-toc-title-wrap">
                 <svg class="cmg-toc-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -4636,10 +4636,6 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 <span class="cmg-blog-toc-title">Table of Contents</span>
                 <span class="cmg-toc-count-pill" id="cmg-toc-count-pill">0</span>
               </div>
-              <button type="button" class="cmg-toc-mobile-toggle-btn" id="cmg-toc-mobile-toggle" aria-label="Toggle Table of Contents">
-                <span class="cmg-toc-toggle-label" id="cmg-toc-toggle-label">Show</span>
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </button>
             </div>
 
             <nav class="cmg-blog-toc-nav is-collapsed" id="cmg-blog-toc-nav">
@@ -4703,8 +4699,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               const tocList = document.getElementById('cmg-blog-toc-list');
               const tocSidebar = document.getElementById('cmg-blog-toc-sidebar');
               const tocHeader = document.getElementById('cmg-blog-toc-header');
-              const toggleBtn = document.getElementById('cmg-toc-mobile-toggle');
-              const toggleLabel = document.getElementById('cmg-toc-toggle-label');
+// Top toggle button removed
               const tocNav = document.getElementById('cmg-blog-toc-nav');
               const countPill = document.getElementById('cmg-toc-count-pill');
               const fab = document.getElementById('cmg-docy-toc-fab');
@@ -4802,7 +4797,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               // Hide "Show more" button if 2 or fewer headings
               if (headings.length <= 2) {
                 if (showMoreWrap) showMoreWrap.style.display = 'none';
-                if (toggleBtn) toggleBtn.style.display = 'none';
+                
                 if (tocNav) tocNav.classList.remove('is-collapsed');
               }
 
@@ -4819,13 +4814,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                   tocHeader.classList.toggle('is-expanded', !isCollapsed);
                   tocHeader.classList.toggle('is-collapsed', isCollapsed);
                 }
-                if (toggleLabel) {
-                  toggleLabel.textContent = isCollapsed ? 'Show' : 'Hide';
-                }
-                const toggleIcon = toggleBtn ? toggleBtn.querySelector('svg') : null;
-                if (toggleIcon) {
-                  toggleIcon.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
-                }
+
               }
 
               if (showMoreBtn) {
@@ -4836,13 +4825,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 });
               }
 
-              if (toggleBtn) {
-                toggleBtn.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  toggleInPageTOC();
-                });
-              }
+// Only bottom show more button handles toggle
 
               // Title header remains completely untouched and standard
 
@@ -4892,13 +4875,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 tocHeader.classList.add('is-collapsed');
                 tocHeader.classList.remove('is-expanded');
               }
-              if (toggleLabel) {
-                toggleLabel.textContent = 'Show';
-              }
-              const toggleIcon = toggleBtn ? toggleBtn.querySelector('svg') : null;
-              if (toggleIcon) {
-                toggleIcon.style.transform = 'rotate(0deg)';
-              }
+
 
               // Active Scrollspy using IntersectionObserver
               const links = tocList.querySelectorAll('.cmg-blog-toc-link');
