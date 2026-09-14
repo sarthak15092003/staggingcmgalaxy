@@ -4283,7 +4283,7 @@ if ( ! function_exists( 'cmg_render_blog_related_articles' ) ) {
             }
 
             .cmg-related-title {
-              font-size: 21px;
+              font-size: 18px;
               font-weight: 700;
               color: #0f172a;
               line-height: 1.36;

@@ -327,3 +327,8 @@ body.single-post a:active,
     fill: #4b5563 !important;
     color: #4b5563 !important;
 }
+
+/* Related Articles Card Title Font Size */
+.cmg-related-title {
+    font-size: 18px !important;
+}
