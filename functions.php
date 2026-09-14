@@ -2147,6 +2147,14 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
             display: none !important;
           }
 
+          /* Remove second / duplicate featured image in post body */
+          .cmg-blog-content .cmg-blog-featured-image-wrap,
+          .cmg-blog-content > .wp-block-post-featured-image,
+          .cmg-blog-content > figure:first-child.wp-block-image,
+          .cmg-blog-content > p:first-child img[class*="wp-image-"] {
+            display: none !important;
+          }
+
           .cmg-blog-header-wrapper {
               font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
               max-width: 1100px;
@@ -2562,15 +2570,61 @@ if ( ! function_exists( 'cmg_auto_inject_blog_header' ) ) {
     function cmg_auto_inject_blog_header( $content ) {
         if ( is_singular( 'post' ) && in_the_loop() && is_main_query() && ! is_admin() ) {
             if ( empty( $GLOBALS['cmg_blog_header_already_rendered'] ) ) {
-                $featured_img = '';
-                if ( has_post_thumbnail() ) {
-                    $featured_img = '<div class="cmg-blog-featured-image-wrap" style="max-width: 1100px; margin: 30px auto 10px auto; padding: 0 20px; box-sizing: border-box;">' . get_the_post_thumbnail( get_the_ID(), 'full', array( 'style' => 'width: 100%; height: auto; border-radius: 16px; display: block; object-fit: cover;' ) ) . '</div>';
-                }
                 $header = cmg_render_blog_header();
-                return $featured_img . $header . $content;
+                return $header . $content;
             }
         }
         return $content;
     }
 }
 add_filter( 'the_content', 'cmg_auto_inject_blog_header', 10 );
+
+/* Remove duplicate 2nd featured image from post body content */
+if ( ! function_exists( 'cmg_remove_duplicate_content_featured_image' ) ) {
+    function cmg_remove_duplicate_content_featured_image( $content ) {
+        if ( is_singular( 'post' ) && in_the_loop() && is_main_query() && ! is_admin() ) {
+            $post_id = get_the_ID();
+            $thumb_id = get_post_thumbnail_id( $post_id );
+            $thumb_url = get_the_post_thumbnail_url( $post_id, 'full' );
+
+            // 1. Remove duplicate cmg-blog-featured-image-wrap if present inside content
+            $content = preg_replace(
+                '#<div class="cmg-blog-featured-image-wrap"[^>]*>.*?</div>#is',
+                '',
+                $content
+            );
+
+            // 2. If content starts with an image matching the featured image or attachment ID
+            if ( $thumb_id ) {
+                $content = preg_replace(
+                    '#<(figure|p|div)[^>]*>\s*<img[^>]*wp-image-' . $thumb_id . '[^>]*>\s*(?:<figcaption[^>]*>.*?</figcaption>\s*)?</\1>#is',
+                    '',
+                    $content,
+                    1
+                );
+            }
+
+            if ( $thumb_url ) {
+                $filename = pathinfo( parse_url( $thumb_url, PHP_URL_PATH ), PATHINFO_FILENAME );
+                if ( ! empty( $filename ) && strlen( $filename ) > 3 ) {
+                    $escaped_fn = preg_quote( $filename, '#' );
+                    $content = preg_replace(
+                        '#<(figure|p|div)[^>]*>\s*<img[^>]*' . $escaped_fn . '[^>]*>\s*(?:<figcaption[^>]*>.*?</figcaption>\s*)?</\1>#is',
+                        '',
+                        $content,
+                        1
+                    );
+                }
+            }
+
+            // 3. If the very first element in content is a standalone image tag or figure
+            $content = preg_replace(
+                '#^\s*<(figure|p|div)[^>]*class="[^"]*(?:wp-block-image|attachment-post-thumbnail|featured-image)[^"]*"[^>]*>\s*<img[^>]*>\s*(?:<figcaption[^>]*>.*?</figcaption>\s*)?</\1>#is',
+                '',
+                $content
+            );
+        }
+        return $content;
+    }
+}
+add_filter( 'the_content', 'cmg_remove_duplicate_content_featured_image', 20 );
