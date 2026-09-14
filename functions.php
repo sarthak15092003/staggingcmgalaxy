@@ -3648,3 +3648,35 @@ if ( ! function_exists( 'cmg_render_blog_bottom_growth_banner' ) ) {
 add_shortcode( 'cmg_bottom_banner', 'cmg_render_blog_bottom_growth_banner' );
 add_shortcode( 'cmg_growth_banner', 'cmg_render_blog_bottom_growth_banner' );
 add_shortcode( 'bottom_banner', 'cmg_render_blog_bottom_growth_banner' );
+
+/* ==========================================================================
+   DISABLE COMMENTS / "LEAVE A REPLY" ON SINGLE BLOG POSTS
+   ========================================================================== */
+add_filter( 'comments_open', function( $open, $post_id = null ) {
+    if ( is_singular( 'post' ) || ( $post_id && get_post_type( $post_id ) === 'post' ) ) {
+        return false;
+    }
+    return $open;
+}, 50, 2 );
+
+add_filter( 'pings_open', function( $open, $post_id = null ) {
+    if ( is_singular( 'post' ) || ( $post_id && get_post_type( $post_id ) === 'post' ) ) {
+        return false;
+    }
+    return $open;
+}, 50, 2 );
+
+add_action( 'wp_head', function() {
+    if ( is_singular( 'post' ) ) {
+        echo '<style id="cmg-hide-comments">
+            body.single-post #comments,
+            body.single-post #respond,
+            body.single-post .comment-respond,
+            body.single-post .comments-area,
+            body.single-post .comments-wrapper,
+            body.single-post .entry-comments {
+                display: none !important;
+            }
+        </style>';
+    }
+}, 50 );

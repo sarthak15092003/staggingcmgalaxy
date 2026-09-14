@@ -49,7 +49,7 @@ while ( have_posts() ) :
 			}
 			?>
 
-			<?php comments_template(); ?>
+			
 		</article>
 	<?php else : ?>
 		<?php if ( apply_filters( 'hello_elementor_page_title', true ) ) : ?>
