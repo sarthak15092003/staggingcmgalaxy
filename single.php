@@ -36,16 +36,24 @@ while ( have_posts() ) :
 			}
 			?>
 
-			<div class="page-content cmg-blog-content" style="max-width: 1100px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; font-size: 18px; line-height: 1.75; color: #374151;">
-				<?php the_content(); ?>
+			<div class="cmg-blog-layout-wrapper">
+				<?php
+				if ( function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
+					echo cmg_render_blog_toc_sidebar();
+				}
+				?>
 
-				<?php wp_link_pages(); ?>
+				<div class="page-content cmg-blog-content" style="flex: 1 1 0%; min-width: 0; max-width: 860px; font-size: 18px; line-height: 1.75; color: #374151; box-sizing: border-box;">
+					<?php the_content(); ?>
 
-				<?php if ( has_tag() ) : ?>
-				<div class="post-tags" style="margin-top: 30px;">
-					<?php the_tags( '<span class="tag-links">' . esc_html__( 'Tagged ', 'hello-elementor' ), ', ', '</span>' ); ?>
+					<?php wp_link_pages(); ?>
+
+					<?php if ( has_tag() ) : ?>
+					<div class="post-tags" style="margin-top: 30px;">
+						<?php the_tags( '<span class="tag-links">' . esc_html__( 'Tagged ', 'hello-elementor' ), ', ', '</span>' ); ?>
+					</div>
+					<?php endif; ?>
 				</div>
-				<?php endif; ?>
 			</div>
 
 			<?php

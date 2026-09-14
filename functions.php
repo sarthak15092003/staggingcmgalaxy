@@ -3975,3 +3975,302 @@ if ( ! function_exists( 'cmg_render_blog_related_articles' ) ) {
 add_shortcode( 'cmg_related_articles', 'cmg_render_blog_related_articles' );
 add_shortcode( 'related_articles', 'cmg_render_blog_related_articles' );
 add_shortcode( 'cmg_blog_related', 'cmg_render_blog_related_articles' );
+
+/* ==========================================================================
+   CMG BLOG TABLE OF CONTENTS (Left Sticky Sidebar for H2 Headings)
+   ========================================================================== */
+
+if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
+    function cmg_render_blog_toc_sidebar() {
+        if ( ! is_singular( 'post' ) ) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <aside class="cmg-blog-toc-sidebar" id="cmg-blog-toc-sidebar" aria-label="Table of contents">
+          <style>
+            .cmg-blog-layout-wrapper {
+              max-width: 1200px;
+              margin: 0 auto;
+              padding: 0 20px;
+              box-sizing: border-box;
+              display: flex;
+              align-items: flex-start;
+              justify-content: space-between;
+              gap: 48px;
+              position: relative;
+            }
+
+            .cmg-blog-toc-sidebar {
+              width: 260px;
+              min-width: 240px;
+              flex-shrink: 0;
+              position: sticky;
+              top: 110px;
+              max-height: calc(100vh - 140px);
+              overflow-y: auto;
+              box-sizing: border-box;
+              z-index: 20;
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+
+            /* Custom slim scrollbar for TOC */
+            .cmg-blog-toc-sidebar::-webkit-scrollbar {
+              width: 4px;
+            }
+            .cmg-blog-toc-sidebar::-webkit-scrollbar-thumb {
+              background: #cbd5e1;
+              border-radius: 4px;
+            }
+
+            .cmg-blog-toc-inner {
+              padding-right: 8px;
+            }
+
+            .cmg-blog-toc-header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 14px;
+              padding-bottom: 10px;
+              border-bottom: 1px solid #e5e7eb;
+            }
+
+            .cmg-blog-toc-title-wrap {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+
+            .cmg-blog-toc-title {
+              font-size: 13px;
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 0.8px;
+              color: #64748b;
+            }
+
+            .cmg-toc-icon {
+              color: #2563eb;
+            }
+
+            .cmg-toc-mobile-toggle {
+              display: none;
+              background: transparent;
+              border: none;
+              cursor: pointer;
+              color: #64748b;
+              padding: 4px;
+              transition: transform 0.2s ease;
+            }
+
+            .cmg-blog-toc-list {
+              list-style: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+            }
+
+            .cmg-blog-toc-item {
+              list-style: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+
+            .cmg-blog-toc-link {
+              display: block;
+              padding: 7px 12px;
+              font-size: 14px;
+              line-height: 1.45;
+              color: #475569;
+              text-decoration: none;
+              border-left: 2.5px solid #e2e8f0;
+              border-radius: 0 6px 6px 0;
+              transition: all 0.2s ease;
+            }
+
+            .cmg-blog-toc-link:hover {
+              color: #0f172a;
+              background: #f1f5f9;
+              border-left-color: #94a3b8;
+            }
+
+            .cmg-blog-toc-link.is-active {
+              color: #161c52;
+              font-weight: 600;
+              background: rgba(22, 28, 82, 0.05);
+              border-left-color: #22c55e;
+            }
+
+            .cmg-blog-content h2 {
+              scroll-margin-top: 110px;
+            }
+
+            @media (max-width: 1024px) {
+              .cmg-blog-layout-wrapper {
+                flex-direction: column;
+                gap: 24px;
+              }
+
+              .cmg-blog-toc-sidebar {
+                position: static;
+                width: 100%;
+                max-height: none;
+                margin-bottom: 24px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 14px 18px;
+              }
+
+              .cmg-blog-toc-inner {
+                padding-right: 0;
+              }
+
+              .cmg-toc-mobile-toggle {
+                display: inline-flex;
+              }
+
+              .cmg-blog-toc-nav.is-collapsed {
+                display: none;
+              }
+            }
+          </style>
+
+          <div class="cmg-blog-toc-inner">
+            <div class="cmg-blog-toc-header">
+              <div class="cmg-blog-toc-title-wrap">
+                <svg class="cmg-toc-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                <span class="cmg-blog-toc-title">Table of Contents</span>
+              </div>
+              <button type="button" class="cmg-toc-mobile-toggle" id="cmg-toc-mobile-toggle" aria-label="Toggle Table of Contents">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+            </div>
+
+            <nav class="cmg-blog-toc-nav" id="cmg-blog-toc-nav">
+              <ul class="cmg-blog-toc-list" id="cmg-blog-toc-list">
+                <!-- Dynamically generated from article H2 elements -->
+              </ul>
+            </nav>
+          </div>
+
+          <script>
+          (function() {
+            function initTOC() {
+              const content = document.querySelector('.cmg-blog-content');
+              const tocList = document.getElementById('cmg-blog-toc-list');
+              const tocSidebar = document.getElementById('cmg-blog-toc-sidebar');
+              const toggleBtn = document.getElementById('cmg-toc-mobile-toggle');
+              const tocNav = document.getElementById('cmg-blog-toc-nav');
+
+              if (!content || !tocList || !tocSidebar) return;
+
+              // Extract all H2 headings inside .cmg-blog-content
+              const headings = content.querySelectorAll('h2');
+              if (headings.length === 0) {
+                tocSidebar.style.display = 'none';
+                return;
+              }
+
+              tocList.innerHTML = '';
+
+              headings.forEach(function(h2, index) {
+                let id = h2.getAttribute('id');
+                if (!id) {
+                  const slug = h2.textContent.toLowerCase().trim()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+                  id = slug || ('section-' + (index + 1));
+                  // Ensure unique ID
+                  if (document.getElementById(id)) {
+                    id += '-' + (index + 1);
+                  }
+                  h2.setAttribute('id', id);
+                }
+
+                h2.style.scrollMarginTop = '110px';
+
+                const li = document.createElement('li');
+                li.className = 'cmg-blog-toc-item';
+
+                const a = document.createElement('a');
+                a.href = '#' + id;
+                a.className = 'cmg-blog-toc-link';
+                a.textContent = h2.textContent.trim();
+
+                a.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  const target = document.getElementById(id);
+                  if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (window.history && window.history.pushState) {
+                      window.history.pushState(null, '', '#' + id);
+                    }
+                  }
+                });
+
+                li.appendChild(a);
+                tocList.appendChild(li);
+              });
+
+              // Mobile toggle
+              if (toggleBtn && tocNav) {
+                toggleBtn.addEventListener('click', function() {
+                  tocNav.classList.toggle('is-collapsed');
+                  toggleBtn.style.transform = tocNav.classList.contains('is-collapsed') ? 'rotate(180deg)' : 'rotate(0deg)';
+                });
+              }
+
+              // Active Scrollspy using IntersectionObserver
+              const links = tocList.querySelectorAll('.cmg-blog-toc-link');
+              if (window.IntersectionObserver) {
+                const observer = new IntersectionObserver(function(entries) {
+                  entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                      const id = entry.target.getAttribute('id');
+                      links.forEach(function(link) {
+                        if (link.getAttribute('href') === '#' + id) {
+                          link.classList.add('is-active');
+                        } else {
+                          link.classList.remove('is-active');
+                        }
+                      });
+                    }
+                  });
+                }, {
+                  rootMargin: '-100px 0px -60% 0px',
+                  threshold: 0
+                });
+
+                headings.forEach(function(h2) {
+                  observer.observe(h2);
+                });
+              }
+            }
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', initTOC);
+            } else {
+              initTOC();
+            }
+          })();
+          </script>
+        </aside>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+add_shortcode( 'cmg_blog_toc', 'cmg_render_blog_toc_sidebar' );
+add_shortcode( 'blog_toc', 'cmg_render_blog_toc_sidebar' );
