@@ -248,12 +248,12 @@ body.single-post a:active,
 
 /* Table of Contents Styling: Right Green Line on Active, No Inactive Line, Compact Gap */
 .cmg-blog-toc-list {
-    gap: 2px !important;
+    gap: 1px !important;
 }
 .cmg-blog-toc-link {
     font-size: 12px !important;
-    padding: 5px 10px !important;
-    line-height: 1.4 !important;
+    padding: 3px 8px !important;
+    line-height: 1.35 !important;
     border: none !important;
     border-left: none !important;
     border-right: 2.5px solid transparent !important;
