@@ -4205,13 +4205,20 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             /* Reduced height blur item */
             .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(3) {
               display: block !important;
-              max-height: 22px !important;
+              max-height: 12px !important;
               overflow: hidden !important;
               filter: blur(2px) !important;
-              opacity: 0.45 !important;
+              opacity: 0.4 !important;
               pointer-events: none !important;
               user-select: none !important;
               margin-bottom: 0 !important;
+              padding-bottom: 0 !important;
+            }
+
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(3) .cmg-blog-toc-link {
+              padding: 1px 12px !important;
+              line-height: 1 !important;
+              border-bottom: none !important;
             }
 
             .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(n+4) {
@@ -4221,6 +4228,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             /* When expanded: show all items sharp & interactive */
             .cmg-blog-toc-nav:not(.is-collapsed) .cmg-blog-toc-item {
               display: block !important;
+              max-height: none !important;
               filter: none !important;
               opacity: 1 !important;
               pointer-events: auto !important;
@@ -4228,10 +4236,12 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               transition: filter 0.25s ease, opacity 0.25s ease;
             }
 
-            /* Show more in text form at bottom - centered */
+            /* Show more in text form at bottom - tight snug spacing */
             .cmg-toc-show-more-wrap {
-              margin-top: 6px !important;
-              padding-top: 2px !important;
+              margin-top: 2px !important;
+              padding-top: 0 !important;
+              margin-bottom: 0 !important;
+              padding-bottom: 0 !important;
               display: flex !important;
               justify-content: center !important;
               align-items: center !important;
@@ -4245,9 +4255,10 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               border: none !important;
               box-shadow: none !important;
               outline: none !important;
-              padding: 4px 10px !important;
+              padding: 2px 8px !important;
               color: #2563eb !important;
               font-size: 13px !important;
+              line-height: 1.2 !important;
               font-weight: 600 !important;
               cursor: pointer !important;
               display: inline-flex !important;

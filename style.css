@@ -215,7 +215,10 @@ body.single-post a:active,
     align-items: center !important;
     width: 100% !important;
     text-align: center !important;
-    margin-top: 6px !important;
+    margin-top: 2px !important;
+    padding-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .cmg-toc-show-more-btn,
