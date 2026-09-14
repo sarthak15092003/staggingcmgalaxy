@@ -2093,6 +2093,168 @@ add_filter('hello_elementor_page_title', function($title) {
    CMG BLOG SINGLE POST HEADER (Author, Date, Title, Reviews, Share)
    ========================================================================== */
 
+/* ==========================================================================
+   CMG AUTHOR DATA RESOLVER (Fully Dynamic from Edit Post / Custom Fields / WP Author)
+   ========================================================================== */
+if ( ! function_exists( 'cmg_get_post_author_data' ) ) {
+    function cmg_get_post_author_data( $post_id = 0, $atts = array() ) {
+        if ( ! $post_id ) {
+            global $post;
+            $post_id = ( $post && isset( $post->ID ) ) ? $post->ID : get_the_ID();
+        }
+
+        $author_id = $post_id ? get_post_field( 'post_author', $post_id ) : 0;
+
+        // 1. Author Name
+        $author_name = ! empty( $atts['author'] ) ? sanitize_text_field( $atts['author'] ) : ( ! empty( $atts['name'] ) ? sanitize_text_field( $atts['name'] ) : '' );
+        
+        // Check post meta keys from Edit Post
+        if ( empty( $author_name ) && $post_id ) {
+            $name_keys = array( 'author_name', 'author', 'cmg_author_name', 'post_author_name', 'author-name' );
+            foreach ( $name_keys as $key ) {
+                $val = get_post_meta( $post_id, $key, true );
+                if ( ! empty( $val ) && is_string( $val ) ) {
+                    $author_name = sanitize_text_field( $val );
+                    break;
+                }
+            }
+        }
+
+        // Fallback to WP author profile
+        if ( empty( $author_name ) && $author_id ) {
+            $author_name = get_the_author_meta( 'display_name', $author_id );
+            if ( empty( $author_name ) ) {
+                $first = get_the_author_meta( 'first_name', $author_id );
+                $last  = get_the_author_meta( 'last_name', $author_id );
+                $author_name = trim( $first . ' ' . $last );
+            }
+            if ( empty( $author_name ) ) {
+                $author_name = get_the_author_meta( 'nickname', $author_id );
+            }
+        }
+        if ( empty( $author_name ) ) {
+            $author_name = 'Author';
+        }
+
+        $is_versha = ( stripos( $author_name, 'versha' ) !== false );
+
+        // 2. Author Avatar / Image (Custom field from Edit Post -> User Meta -> WordPress avatar)
+        $avatar_url = ! empty( $atts['avatar'] ) ? esc_url( $atts['avatar'] ) : ( ! empty( $atts['image'] ) ? esc_url( $atts['image'] ) : '' );
+
+        // Check post meta keys from Edit Post (can be image URL or media library attachment ID)
+        if ( empty( $avatar_url ) && $post_id ) {
+            $img_keys = array(
+                'author_image', 'author_avatar', 'author_photo', 'author_picture',
+                'author_img', 'author_pic', 'cmg_author_image', 'cmg_author_avatar',
+                'author-image', 'author-avatar', 'user_image', 'user_avatar', 'image', 'avatar'
+            );
+            foreach ( $img_keys as $key ) {
+                $val = get_post_meta( $post_id, $key, true );
+                if ( ! empty( $val ) ) {
+                    if ( is_numeric( $val ) ) {
+                        $avatar_url = wp_get_attachment_image_url( (int) $val, 'full' );
+                    } elseif ( is_string( $val ) ) {
+                        $avatar_url = esc_url( $val );
+                    }
+                    if ( ! empty( $avatar_url ) ) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Check user meta from WP user profile (profile_picture, simple_local_avatar, etc.)
+        if ( empty( $avatar_url ) && $author_id ) {
+            $user_img_keys = array( 'profile_picture', 'simple_local_avatar', 'user_avatar', 'author_image' );
+            foreach ( $user_img_keys as $ukey ) {
+                $uval = get_user_meta( $author_id, $ukey, true );
+                if ( ! empty( $uval ) ) {
+                    if ( is_numeric( $uval ) ) {
+                        $avatar_url = wp_get_attachment_image_url( (int) $uval, 'full' );
+                    } elseif ( is_array( $uval ) && ! empty( $uval['full'] ) ) {
+                        $avatar_url = esc_url( $uval['full'] );
+                    } elseif ( is_string( $uval ) ) {
+                        $avatar_url = esc_url( $uval );
+                    }
+                    if ( ! empty( $avatar_url ) ) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Check WordPress get_avatar_url
+        if ( empty( $avatar_url ) && $author_id ) {
+            $wp_avatar = get_avatar_url( $author_id, array( 'size' => 160 ) );
+            if ( ! empty( $wp_avatar ) ) {
+                $avatar_url = $wp_avatar;
+            }
+        }
+
+        // Known avatar fallback only if author is specifically Versha Rawat
+        if ( empty( $avatar_url ) && $is_versha ) {
+            $avatar_url = 'https://cdn.prod.website-files.com/67b5e5b07dee6e1ed91f0f5a/68c7f03ced5fa62ff8419528_vesha.jpeg';
+        }
+
+        // 3. Author Bio
+        $author_bio = ! empty( $atts['bio'] ) ? wp_kses_post( $atts['bio'] ) : '';
+        if ( empty( $author_bio ) && $post_id ) {
+            $bio_keys = array( 'author_bio', 'author_description', 'author_desc', 'cmg_author_bio', 'cmg_author_description' );
+            foreach ( $bio_keys as $bkey ) {
+                $bval = get_post_meta( $post_id, $bkey, true );
+                if ( ! empty( $bval ) && is_string( $bval ) ) {
+                    $author_bio = wp_kses_post( $bval );
+                    break;
+                }
+            }
+        }
+        if ( empty( $author_bio ) && $author_id ) {
+            $wp_bio = get_the_author_meta( 'description', $author_id );
+            if ( ! empty( $wp_bio ) ) {
+                $author_bio = wp_kses_post( $wp_bio );
+            }
+        }
+        if ( empty( $author_bio ) && $is_versha ) {
+            $author_bio = 'Marketing technology content specialist with 4+ years of experience creating research-driven content for the EdTech and B2B SaaS space. Passionate about simplifying complex MarTech concepts through strategic storytelling, audience-focused writing, and data-backed insights.';
+        }
+
+        // 4. Author LinkedIn / URL
+        $linkedin_url = ! empty( $atts['linkedin'] ) ? esc_url( $atts['linkedin'] ) : '';
+        if ( empty( $linkedin_url ) && $post_id ) {
+            $li_keys = array( 'author_linkedin', 'linkedin', 'author_url', 'cmg_author_linkedin' );
+            foreach ( $li_keys as $lkey ) {
+                $lval = get_post_meta( $post_id, $lkey, true );
+                if ( ! empty( $lval ) && is_string( $lval ) ) {
+                    $linkedin_url = esc_url( $lval );
+                    break;
+                }
+            }
+        }
+        if ( empty( $linkedin_url ) && $author_id ) {
+            $li_meta = get_user_meta( $author_id, 'linkedin', true );
+            if ( ! empty( $li_meta ) ) {
+                $linkedin_url = esc_url( $li_meta );
+            } else {
+                $u_url = get_the_author_meta( 'user_url', $author_id );
+                if ( ! empty( $u_url ) ) {
+                    $linkedin_url = esc_url( $u_url );
+                }
+            }
+        }
+        if ( empty( $linkedin_url ) && $is_versha ) {
+            $linkedin_url = 'https://www.linkedin.com/in/versha-rawat/?originalSubdomain=in';
+        }
+
+        return array(
+            'id'       => $author_id,
+            'name'     => $author_name,
+            'avatar'   => $avatar_url,
+            'bio'      => $author_bio,
+            'linkedin' => $linkedin_url,
+        );
+    }
+}
+
 if ( ! function_exists( 'cmg_render_blog_header' ) ) {
     function cmg_render_blog_header( $atts = array() ) {
         global $post;
@@ -2103,40 +2265,15 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
         // Custom attributes or fallback to current post data
         $title = ! empty( $atts['title'] ) ? esc_html( $atts['title'] ) : ( $post_id ? get_the_title( $post_id ) : 'The Shift from Vanity Metrics to Value Metrics in Digital Marketing' );
 
-        $author_id = $post ? $post->post_author : 0;
-        $meta_author = $post_id ? get_post_meta( $post_id, 'author_name', true ) : '';
-        if ( empty( $meta_author ) && $post_id ) {
-            $meta_author = get_post_meta( $post_id, 'author', true );
-        }
-        if ( ! empty( $atts['author'] ) ) {
-            $author_name = esc_html( $atts['author'] );
-        } elseif ( ! empty( $meta_author ) ) {
-            $author_name = esc_html( $meta_author );
-        } elseif ( $author_id ) {
-            $author_name = esc_html( get_the_author_meta( 'display_name', $author_id ) );
-        } else {
-            $author_name = 'Author';
-        }
+        // Fully dynamic author data from Edit Post / User Profile
+        $author_data = cmg_get_post_author_data( $post_id, $atts );
+        $author_id   = $author_data['id'];
+        $author_name = $author_data['name'];
         $author_role = ! empty( $atts['role'] ) ? esc_html( $atts['role'] ) : 'Author';
+        $avatar_url  = $author_data['avatar'];
 
         // Date format: "30 Jul 26"
         $date = ! empty( $atts['date'] ) ? esc_html( $atts['date'] ) : ( $post_id ? get_the_date( 'd M y', $post_id ) : date( 'd M y' ) );
-
-        // Author Avatar
-        $avatar_url = '';
-        if ( $author_id ) {
-            $avatar_url = get_avatar_url( $author_id, array( 'size' => 120 ) );
-        }
-        if ( empty( $avatar_url ) || strpos( $avatar_url, 'gravatar.com' ) !== false ) {
-            // Default placeholder or user avatar if gravatar is default
-            $custom_avatar = get_user_meta( $author_id, 'profile_picture', true );
-            if ( ! empty( $custom_avatar ) ) {
-                $avatar_url = $custom_avatar;
-            }
-        }
-        if ( empty( $avatar_url ) ) {
-            $avatar_url = 'https://secure.gravatar.com/avatar/?s=120&d=mp&r=g';
-        }
 
         // Permalinks & Sharing URLs
         $permalink = $post_id ? get_permalink( $post_id ) : ( isset( $_SERVER['HTTP_HOST'] ) ? ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) : '' );
@@ -3119,104 +3256,13 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
 
         global $post;
         $post_id   = ( $post && isset( $post->ID ) ) ? $post->ID : get_the_ID();
-        $author_id = ( $post && isset( $post->post_author ) ) ? $post->post_author : ( $post_id ? get_post_field( 'post_author', $post_id ) : 0 );
 
-        // 1. Author Name (from shortcode atts -> Edit Post custom fields -> WordPress author profile)
-        $author_name = ! empty( $atts['name'] ) ? sanitize_text_field( $atts['name'] ) : '';
-        if ( empty( $author_name ) && $post_id ) {
-            $meta_name = get_post_meta( $post_id, 'author_name', true );
-            if ( empty( $meta_name ) ) $meta_name = get_post_meta( $post_id, 'author', true );
-            if ( empty( $meta_name ) ) $meta_name = get_post_meta( $post_id, 'cmg_author_name', true );
-            if ( ! empty( $meta_name ) ) {
-                $author_name = sanitize_text_field( $meta_name );
-            }
-        }
-        if ( empty( $author_name ) && $author_id ) {
-            $author_name = get_the_author_meta( 'display_name', $author_id );
-            if ( empty( $author_name ) ) {
-                $first = get_the_author_meta( 'first_name', $author_id );
-                $last  = get_the_author_meta( 'last_name', $author_id );
-                $author_name = trim( $first . ' ' . $last );
-            }
-            if ( empty( $author_name ) ) {
-                $author_name = get_the_author_meta( 'nickname', $author_id );
-            }
-        }
-        $author_name = esc_html( $author_name );
-
-        $is_versha = ( stripos( $author_name, 'versha' ) !== false );
-
-        // 2. Author Avatar (from shortcode atts -> Edit Post custom fields -> WP user profile / avatar)
-        $avatar_url = ! empty( $atts['avatar'] ) ? esc_url( $atts['avatar'] ) : '';
-        if ( empty( $avatar_url ) && $post_id ) {
-            $meta_avatar = get_post_meta( $post_id, 'author_avatar', true );
-            if ( empty( $meta_avatar ) ) $meta_avatar = get_post_meta( $post_id, 'author_image', true );
-            if ( empty( $meta_avatar ) ) $meta_avatar = get_post_meta( $post_id, 'author_photo', true );
-            if ( empty( $meta_avatar ) ) $meta_avatar = get_post_meta( $post_id, 'cmg_author_avatar', true );
-            if ( ! empty( $meta_avatar ) ) {
-                $avatar_url = is_numeric( $meta_avatar ) ? wp_get_attachment_image_url( $meta_avatar, 'full' ) : esc_url( $meta_avatar );
-            }
-        }
-        if ( empty( $avatar_url ) && $author_id ) {
-            $custom_avatar = get_user_meta( $author_id, 'profile_picture', true );
-            if ( ! empty( $custom_avatar ) ) {
-                $avatar_url = is_numeric( $custom_avatar ) ? wp_get_attachment_image_url( $custom_avatar, 'full' ) : esc_url( $custom_avatar );
-            } else {
-                $wp_avatar = get_avatar_url( $author_id, array( 'size' => 160 ) );
-                if ( ! empty( $wp_avatar ) ) {
-                    $avatar_url = $wp_avatar;
-                }
-            }
-        }
-        if ( empty( $avatar_url ) && $is_versha ) {
-            $avatar_url = 'https://cdn.prod.website-files.com/67b5e5b07dee6e1ed91f0f5a/68c7f03ced5fa62ff8419528_vesha.jpeg';
-        }
-
-        // 3. Author Bio Description (from shortcode atts -> Edit Post custom fields -> WP user description)
-        $author_bio = ! empty( $atts['bio'] ) ? wp_kses_post( $atts['bio'] ) : '';
-        if ( empty( $author_bio ) && $post_id ) {
-            $meta_bio = get_post_meta( $post_id, 'author_bio', true );
-            if ( empty( $meta_bio ) ) $meta_bio = get_post_meta( $post_id, 'author_description', true );
-            if ( empty( $meta_bio ) ) $meta_bio = get_post_meta( $post_id, 'author_desc', true );
-            if ( empty( $meta_bio ) ) $meta_bio = get_post_meta( $post_id, 'cmg_author_bio', true );
-            if ( ! empty( $meta_bio ) ) {
-                $author_bio = wp_kses_post( $meta_bio );
-            }
-        }
-        if ( empty( $author_bio ) && $author_id ) {
-            $wp_desc = get_the_author_meta( 'description', $author_id );
-            if ( ! empty( $wp_desc ) ) {
-                $author_bio = wp_kses_post( $wp_desc );
-            }
-        }
-        if ( empty( $author_bio ) && $is_versha ) {
-            $author_bio = 'Marketing technology content specialist with 4+ years of experience creating research-driven content for the EdTech and B2B SaaS space. Passionate about simplifying complex MarTech concepts through strategic storytelling, audience-focused writing, and data-backed insights.';
-        }
-
-        // 4. LinkedIn / Profile URL (from shortcode atts -> Edit Post custom fields -> WP user meta / user_url)
-        $linkedin_url = ! empty( $atts['linkedin'] ) ? esc_url( $atts['linkedin'] ) : '';
-        if ( empty( $linkedin_url ) && $post_id ) {
-            $meta_li = get_post_meta( $post_id, 'author_linkedin', true );
-            if ( empty( $meta_li ) ) $meta_li = get_post_meta( $post_id, 'linkedin', true );
-            if ( empty( $meta_li ) ) $meta_li = get_post_meta( $post_id, 'author_url', true );
-            if ( ! empty( $meta_li ) ) {
-                $linkedin_url = esc_url( $meta_li );
-            }
-        }
-        if ( empty( $linkedin_url ) && $author_id ) {
-            $li_meta = get_user_meta( $author_id, 'linkedin', true );
-            if ( ! empty( $li_meta ) ) {
-                $linkedin_url = esc_url( $li_meta );
-            } else {
-                $u_url = get_the_author_meta( 'user_url', $author_id );
-                if ( ! empty( $u_url ) ) {
-                    $linkedin_url = esc_url( $u_url );
-                }
-            }
-        }
-        if ( empty( $linkedin_url ) && $is_versha ) {
-            $linkedin_url = 'https://www.linkedin.com/in/versha-rawat/?originalSubdomain=in';
-        }
+        // Fully dynamic author data from Edit Post / Custom Fields / User Profile
+        $author_data  = cmg_get_post_author_data( $post_id, $atts );
+        $author_name  = $author_data['name'];
+        $avatar_url   = $author_data['avatar'];
+        $author_bio   = $author_data['bio'];
+        $linkedin_url = $author_data['linkedin'];
 
         ob_start();
         ?>
