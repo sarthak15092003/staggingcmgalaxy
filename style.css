@@ -16,7 +16,6 @@
 */
 /* CI/CD Test Update */
 
-/* Blog Content List & Bullet Point Alignment */
 .cmg-blog-content ul,
 .cmg-blog-content ol,
 .page-content.cmg-blog-content ul,
@@ -28,7 +27,7 @@ article.cmg-blog-single-article ol,
     padding-left: 0 !important;
     margin-left: 0 !important;
     margin-top: 16px !important;
-    margin-bottom: 24px !important;
+    margin-bottom: 0px !important;
     list-style-position: inside !important;
     box-sizing: border-box !important;
 }
@@ -246,9 +245,28 @@ body.single-post a:active,
     text-decoration: underline !important;
 }
 
-/* Table of Contents Styling: Right Green Line on Active, No Inactive Line, Compact Gap */
-.cmg-blog-toc-list {
-    gap: 1px !important;
+/* Table of Contents Styling: Right Green Line on Active, No Inactive Line, 0 Gap and 0 Margin */
+.cmg-blog-toc-list,
+ul.cmg-blog-toc-list,
+article.cmg-blog-single-article ul.cmg-blog-toc-list,
+.single-post ul.cmg-blog-toc-list {
+    margin: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    padding-left: 0 !important;
+    list-style: none !important;
+    gap: 0 !important;
+}
+.cmg-blog-toc-item,
+li.cmg-blog-toc-item,
+article.cmg-blog-single-article ul.cmg-blog-toc-list li,
+.single-post ul.cmg-blog-toc-list li {
+    margin: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
 }
 .cmg-blog-toc-link {
     font-size: 12px !important;
