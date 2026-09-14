@@ -3003,10 +3003,11 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               min-width: 220px;
               flex-shrink: 0;
               align-self: flex-start;
+              margin-right: 8px;
               background: #09102b;
               border-radius: 16px;
               padding: 22px 18px 20px 18px;
-              box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08);
+              box-shadow: none;
               box-sizing: border-box;
               text-align: center;
               z-index: 20;
