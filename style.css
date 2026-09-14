@@ -25,11 +25,11 @@ article.cmg-blog-single-article ul,
 article.cmg-blog-single-article ol,
 .single-post .page-content ul,
 .single-post .page-content ol {
-    padding-left: 32px !important;
+    padding-left: 0 !important;
     margin-left: 0 !important;
     margin-top: 16px !important;
     margin-bottom: 24px !important;
-    list-style-position: outside !important;
+    list-style-position: inside !important;
     box-sizing: border-box !important;
 }
 
@@ -208,14 +208,14 @@ body.single-post a:active,
     text-decoration-color: #1d4ed8 !important;
 }
 
-/* TOC Show More Text Button - Centered */
+/* TOC Show More Text Button - Left Aligned */
 .cmg-toc-show-more-wrap {
     display: flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     align-items: center !important;
     width: 100% !important;
-    text-align: center !important;
-    margin-top: 2px !important;
+    text-align: left !important;
+    margin-top: 6px !important;
     padding-top: 0 !important;
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
@@ -230,11 +230,12 @@ body.single-post a:active,
     box-shadow: none !important;
     outline: none !important;
     color: #2563eb !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     display: inline-flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     align-items: center !important;
-    text-align: center !important;
+    text-align: left !important;
+    padding: 3px 6px !important;
 }
 
 .cmg-toc-show-more-btn:hover {

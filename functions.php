@@ -2445,11 +2445,11 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
           article.cmg-blog-single-article ol,
           .single-post .page-content ul,
           .single-post .page-content ol {
-            padding-left: 32px !important;
+            padding-left: 0 !important;
             margin-left: 0 !important;
             margin-top: 16px !important;
             margin-bottom: 24px !important;
-            list-style-position: outside !important;
+            list-style-position: inside !important;
             box-sizing: border-box !important;
           }
 
@@ -4217,17 +4217,17 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               transition: filter 0.25s ease, opacity 0.25s ease;
             }
 
-            /* Show more in text form at bottom - centered */
+            /* Show more in text form at bottom - left aligned */
             .cmg-toc-show-more-wrap {
               margin-top: 6px !important;
               padding-top: 0 !important;
               margin-bottom: 0 !important;
               padding-bottom: 0 !important;
               display: flex !important;
-              justify-content: center !important;
+              justify-content: flex-start !important;
               align-items: center !important;
               width: 100% !important;
-              text-align: center !important;
+              text-align: left !important;
             }
 
             .cmg-toc-show-more-btn {
@@ -4236,16 +4236,16 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               border: none !important;
               box-shadow: none !important;
               outline: none !important;
-              padding: 2px 8px !important;
+              padding: 3px 6px !important;
               color: #2563eb !important;
               font-size: 13px !important;
               line-height: 1.2 !important;
               font-weight: 600 !important;
               cursor: pointer !important;
               display: inline-flex !important;
-              justify-content: center !important;
+              justify-content: flex-start !important;
               align-items: center !important;
-              margin: 0 auto !important;
+              margin: 0 !important;
               gap: 5px !important;
               text-decoration: none !important;
               font-family: inherit !important;
