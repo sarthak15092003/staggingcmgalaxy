@@ -2229,7 +2229,7 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
             /* Post Title */
             .cmg-blog-post-title {
               font-size: 42px;
-              font-weight: 700;
+              font-weight: 600;
               color: rgb(22, 28, 82);
               line-height: 1.24;
               letter-spacing: -0.5px;
