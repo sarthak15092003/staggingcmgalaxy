@@ -3084,3 +3084,450 @@ add_action( 'wp_footer', function() {
 add_shortcode( 'cmg_side_banner', 'cmg_render_floating_side_banner' );
 add_shortcode( 'cmg_floating_banner', 'cmg_render_floating_side_banner' );
 add_shortcode( 'side_banner', 'cmg_render_floating_side_banner' );
+
+/* ==========================================================================
+   CMG BLOG AUTHOR BIO BOX ("Versha Rawat")
+   ========================================================================== */
+
+if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
+    function cmg_render_blog_author_bio( $atts = array() ) {
+        if ( ! is_singular( 'post' ) && empty( $atts['force'] ) ) {
+            return '';
+        }
+
+        global $post;
+        $GLOBALS['cmg_blog_author_bio_already_rendered'] = true;
+
+        $author_id = ( $post && isset( $post->post_author ) ) ? $post->post_author : 0;
+
+        // Author Name
+        $author_name = ! empty( $atts['name'] ) ? esc_html( $atts['name'] ) : ( $author_id ? get_the_author_meta( 'display_name', $author_id ) : 'Versha Rawat' );
+        if ( empty( $author_name ) || strtolower( $author_name ) === 'admin' ) {
+            $author_name = 'Versha Rawat';
+        }
+
+        // Author Avatar
+        $avatar_url = ! empty( $atts['avatar'] ) ? esc_url( $atts['avatar'] ) : '';
+        if ( empty( $avatar_url ) && $author_id ) {
+            $custom_avatar = get_user_meta( $author_id, 'profile_picture', true );
+            if ( ! empty( $custom_avatar ) ) {
+                $avatar_url = $custom_avatar;
+            } else {
+                $wp_avatar = get_avatar_url( $author_id, array( 'size' => 160 ) );
+                if ( ! empty( $wp_avatar ) && strpos( $wp_avatar, 'gravatar.com' ) === false ) {
+                    $avatar_url = $wp_avatar;
+                }
+            }
+        }
+        if ( empty( $avatar_url ) ) {
+            $avatar_url = 'https://cdn.prod.website-files.com/67b5e5b07dee6e1ed91f0f5a/68c7f03ced5fa62ff8419528_vesha.jpeg';
+        }
+
+        // Author Bio Description
+        $author_bio = ! empty( $atts['bio'] ) ? esc_html( $atts['bio'] ) : ( $author_id ? get_the_author_meta( 'description', $author_id ) : '' );
+        if ( empty( $author_bio ) ) {
+            $author_bio = 'Marketing technology content specialist with 4+ years of experience creating research-driven content for the EdTech and B2B SaaS space. Passionate about simplifying complex MarTech concepts through strategic storytelling, audience-focused writing, and data-backed insights.';
+        }
+
+        // LinkedIn Profile URL
+        $linkedin_url = ! empty( $atts['linkedin'] ) ? esc_url( $atts['linkedin'] ) : '';
+        if ( empty( $linkedin_url ) && $author_id ) {
+            $li_meta = get_user_meta( $author_id, 'linkedin', true );
+            if ( ! empty( $li_meta ) ) {
+                $linkedin_url = $li_meta;
+            } else {
+                $u_url = get_the_author_meta( 'user_url', $author_id );
+                if ( ! empty( $u_url ) && strpos( $u_url, 'linkedin.com' ) !== false ) {
+                    $linkedin_url = $u_url;
+                }
+            }
+        }
+        if ( empty( $linkedin_url ) ) {
+            $linkedin_url = 'https://www.linkedin.com/in/versha-rawat/?originalSubdomain=in';
+        }
+
+        ob_start();
+        ?>
+        <div class="cmg-author-bio-container">
+          <style>
+            .cmg-author-bio-container {
+              position: relative;
+              max-width: 1100px;
+              margin: 60px auto 40px auto;
+              padding: 0 20px;
+              box-sizing: border-box;
+              text-align: center;
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+
+            .cmg-author-bio-line {
+              position: absolute;
+              top: 45px;
+              left: 20px;
+              right: 20px;
+              height: 1px;
+              background: #e5e7eb;
+              z-index: 1;
+            }
+
+            .cmg-author-avatar-badge {
+              position: relative;
+              display: inline-block;
+              background: #ffffff;
+              padding: 0 16px;
+              z-index: 2;
+              border-radius: 50%;
+            }
+
+            .cmg-author-avatar-img {
+              width: 72px;
+              height: 72px;
+              border-radius: 50%;
+              object-fit: cover;
+              display: block;
+              margin: 0 auto;
+              box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+              border: 3px solid #ffffff;
+            }
+
+            .cmg-author-bio-name {
+              font-size: 20px;
+              font-weight: 700;
+              color: #111827;
+              margin: 16px 0 10px 0;
+              line-height: 1.3;
+              letter-spacing: -0.2px;
+            }
+
+            .cmg-author-bio-text {
+              font-size: 15px;
+              line-height: 1.65;
+              color: #4b5563;
+              max-width: 820px;
+              margin: 0 auto 16px auto;
+              font-weight: 400;
+            }
+
+            .cmg-author-social-wrap {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 12px;
+              margin-top: 6px;
+            }
+
+            .cmg-author-li-link {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              background: #f1f5f9;
+              color: #0a66c2;
+              text-decoration: none;
+              transition: all 0.2s ease;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .cmg-author-li-link:hover {
+              background: #0a66c2;
+              color: #ffffff;
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
+            }
+
+            .cmg-author-li-link svg {
+              width: 15px;
+              height: 15px;
+              fill: currentColor;
+              transition: fill 0.2s ease;
+            }
+
+            @media (max-width: 640px) {
+              .cmg-author-bio-container {
+                margin: 45px auto 30px auto;
+              }
+
+              .cmg-author-bio-text {
+                font-size: 14px;
+                line-height: 1.6;
+              }
+            }
+          </style>
+
+          <div class="cmg-author-bio-line"></div>
+
+          <div class="cmg-author-avatar-badge">
+            <img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $author_name ); ?>" class="cmg-author-avatar-img" loading="lazy" />
+          </div>
+
+          <h3 class="cmg-author-bio-name"><?php echo esc_html( $author_name ); ?></h3>
+
+          <p class="cmg-author-bio-text"><?php echo esc_html( $author_bio ); ?></p>
+
+          <div class="cmg-author-social-wrap">
+            <a href="<?php echo esc_url( $linkedin_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-author-li-link" aria-label="<?php echo esc_attr( $author_name ); ?> LinkedIn">
+              <svg viewBox="0 0 24 24">
+                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+add_shortcode( 'cmg_author_bio', 'cmg_render_blog_author_bio' );
+add_shortcode( 'cmg_user_banner', 'cmg_render_blog_author_bio' );
+add_shortcode( 'author_bio', 'cmg_render_blog_author_bio' );
+
+/* ==========================================================================
+   CMG BLOG BOTTOM GROWTH BANNER ("See How We Helped Businesses Like Yours Grow 3x Faster.")
+   ========================================================================== */
+
+if ( ! function_exists( 'cmg_render_blog_bottom_growth_banner' ) ) {
+    function cmg_render_blog_bottom_growth_banner( $atts = array() ) {
+        if ( ! is_singular( 'post' ) && empty( $atts['force'] ) ) {
+            return '';
+        }
+
+        $GLOBALS['cmg_blog_bottom_banner_already_rendered'] = true;
+
+        $try_url  = ! empty( $atts['try_url'] ) ? esc_url( $atts['try_url'] ) : 'https://app.cmgalaxy.com';
+        $demo_url = ! empty( $atts['demo_url'] ) ? esc_url( $atts['demo_url'] ) : 'https://www.cmgalaxy.com/demo';
+
+        ob_start();
+        ?>
+        <div class="cmg-bottom-growth-banner-wrap">
+          <style>
+            .cmg-bottom-growth-banner-wrap {
+              max-width: 1100px;
+              margin: 50px auto 70px auto;
+              padding: 0 20px;
+              box-sizing: border-box;
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+
+            .cmg-bottom-growth-card {
+              background: #0c1538;
+              background: linear-gradient(135deg, #0e173e 0%, #0a112c 100%);
+              border-radius: 24px;
+              padding: 48px 56px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 36px;
+              box-shadow: 0 20px 50px rgba(10, 16, 45, 0.25);
+              position: relative;
+              overflow: hidden;
+              box-sizing: border-box;
+            }
+
+            /* Subtle decorative background glow */
+            .cmg-bottom-growth-card::before {
+              content: "";
+              position: absolute;
+              top: -60px;
+              right: 15%;
+              width: 260px;
+              height: 260px;
+              background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(56, 189, 248, 0) 70%);
+              border-radius: 50%;
+              pointer-events: none;
+            }
+
+            .cmg-bottom-growth-text {
+              flex: 1 1 auto;
+              z-index: 2;
+            }
+
+            .cmg-bottom-growth-heading {
+              font-size: 38px;
+              line-height: 1.22;
+              font-weight: 700;
+              color: #ffffff;
+              margin: 0 0 14px 0;
+              letter-spacing: -0.5px;
+            }
+
+            .cmg-bottom-growth-highlight {
+              color: #22c55e;
+            }
+
+            .cmg-bottom-growth-subtext {
+              font-size: 16px;
+              line-height: 1.55;
+              color: #cbd5e1;
+              margin: 0;
+              max-width: 520px;
+              font-weight: 400;
+            }
+
+            .cmg-bottom-growth-actions {
+              display: flex;
+              align-items: center;
+              gap: 16px;
+              flex-shrink: 0;
+              z-index: 2;
+            }
+
+            .cmg-growth-btn-try {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              background: #ffffff;
+              color: #0c1538;
+              font-size: 15px;
+              font-weight: 600;
+              padding: 14px 30px;
+              border-radius: 9999px;
+              text-decoration: none;
+              white-space: nowrap;
+              transition: all 0.2s ease;
+              box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            }
+
+            .cmg-growth-btn-try:hover {
+              background: #f8fafc;
+              color: #0c1538;
+              transform: translateY(-2px);
+              box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+            }
+
+            .cmg-growth-btn-demo {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              background: #22c55e;
+              color: #ffffff;
+              font-size: 15px;
+              font-weight: 600;
+              padding: 14px 30px;
+              border-radius: 9999px;
+              text-decoration: none;
+              white-space: nowrap;
+              transition: all 0.2s ease;
+              box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+            }
+
+            .cmg-growth-btn-demo:hover {
+              background: #16a34a;
+              color: #ffffff;
+              transform: translateY(-2px);
+              box-shadow: 0 8px 22px rgba(34, 197, 94, 0.45);
+            }
+
+            @media (max-width: 960px) {
+              .cmg-bottom-growth-card {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 38px 32px;
+                gap: 28px;
+              }
+
+              .cmg-bottom-growth-heading {
+                font-size: 30px;
+              }
+
+              .cmg-bottom-growth-subtext {
+                font-size: 15px;
+              }
+
+              .cmg-bottom-growth-actions {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                gap: 12px;
+                flex-wrap: wrap;
+              }
+
+              .cmg-growth-btn-try,
+              .cmg-growth-btn-demo {
+                flex: 1 1 auto;
+                text-align: center;
+                justify-content: center;
+                min-width: 140px;
+                padding: 13px 20px;
+              }
+            }
+
+            @media (max-width: 580px) {
+              .cmg-bottom-growth-banner-wrap {
+                margin: 40px auto 50px auto;
+                padding: 0 16px;
+              }
+
+              .cmg-bottom-growth-card {
+                padding: 28px 22px;
+                border-radius: 18px;
+                gap: 22px;
+              }
+
+              .cmg-bottom-growth-heading {
+                font-size: 24px;
+                line-height: 1.25;
+              }
+
+              .cmg-bottom-growth-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+              }
+
+              .cmg-growth-btn-try,
+              .cmg-growth-btn-demo {
+                width: 100%;
+                box-sizing: border-box;
+              }
+            }
+          </style>
+
+          <div class="cmg-bottom-growth-card">
+            <div class="cmg-bottom-growth-text">
+              <h2 class="cmg-bottom-growth-heading">
+                See How We Helped<br>
+                Businesses Like Yours<br>
+                <span class="cmg-bottom-growth-highlight">Grow 3x</span> Faster.
+              </h2>
+              <p class="cmg-bottom-growth-subtext">
+                Let’s build a performance-driven ad strategy that works for your business.
+              </p>
+            </div>
+            <div class="cmg-bottom-growth-actions">
+              <a href="<?php echo $try_url; ?>" id="blog-detail-banner-try-cmgalaxy" class="cmg-growth-btn-try">
+                Try CMGalaxy
+              </a>
+              <a href="<?php echo $demo_url; ?>" id="blog-detail-footer-book-demo" class="cmg-growth-btn-demo">
+                Book a demo
+              </a>
+            </div>
+          </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+add_shortcode( 'cmg_bottom_banner', 'cmg_render_blog_bottom_growth_banner' );
+add_shortcode( 'cmg_growth_banner', 'cmg_render_blog_bottom_growth_banner' );
+add_shortcode( 'bottom_banner', 'cmg_render_blog_bottom_growth_banner' );
+
+/* Automatic injection of author bio & bottom growth banner at the end of single blog posts */
+if ( ! function_exists( 'cmg_auto_inject_blog_footer_components' ) ) {
+    function cmg_auto_inject_blog_footer_components( $content ) {
+        if ( is_singular( 'post' ) && in_the_loop() && is_main_query() && ! is_admin() ) {
+            $extra = '';
+            if ( empty( $GLOBALS['cmg_blog_author_bio_already_rendered'] ) ) {
+                $extra .= cmg_render_blog_author_bio();
+            }
+            if ( empty( $GLOBALS['cmg_blog_bottom_banner_already_rendered'] ) ) {
+                $extra .= cmg_render_blog_bottom_growth_banner();
+            }
+            return $content . $extra;
+        }
+        return $content;
+    }
+}
+add_filter( 'the_content', 'cmg_auto_inject_blog_footer_components', 99 );

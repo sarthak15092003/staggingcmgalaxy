@@ -40,6 +40,15 @@ while ( have_posts() ) :
 				<?php endif; ?>
 			</div>
 
+			<?php
+			if ( function_exists( 'cmg_render_blog_author_bio' ) ) {
+				echo cmg_render_blog_author_bio();
+			}
+			if ( function_exists( 'cmg_render_blog_bottom_growth_banner' ) ) {
+				echo cmg_render_blog_bottom_growth_banner();
+			}
+			?>
+
 			<?php comments_template(); ?>
 		</article>
 	<?php else : ?>
