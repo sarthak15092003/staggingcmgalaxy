@@ -2087,3 +2087,465 @@ add_filter('hello_elementor_page_title', function($title) {
     }
     return $title;
 });
+
+
+/* ==========================================================================
+   CMG BLOG SINGLE POST HEADER (Author, Date, Title, Reviews, Share)
+   ========================================================================== */
+
+if ( ! function_exists( 'cmg_render_blog_header' ) ) {
+    function cmg_render_blog_header( $atts = array() ) {
+        global $post;
+
+        $post_id = ( $post && isset( $post->ID ) ) ? $post->ID : 0;
+
+        // Custom attributes or fallback to current post data
+        $title = ! empty( $atts['title'] ) ? esc_html( $atts['title'] ) : ( $post_id ? get_the_title( $post_id ) : 'The Shift from Vanity Metrics to Value Metrics in Digital Marketing' );
+
+        $author_id = $post ? $post->post_author : 0;
+        $author_name = ! empty( $atts['author'] ) ? esc_html( $atts['author'] ) : ( $author_id ? get_the_author_meta( 'display_name', $author_id ) : 'Versha Rawat' );
+        $author_role = ! empty( $atts['role'] ) ? esc_html( $atts['role'] ) : 'Author';
+
+        // Date format: "30 Jul 26"
+        $date = ! empty( $atts['date'] ) ? esc_html( $atts['date'] ) : ( $post_id ? get_the_date( 'd M y', $post_id ) : date( 'd M y' ) );
+
+        // Author Avatar
+        $avatar_url = '';
+        if ( $author_id ) {
+            $avatar_url = get_avatar_url( $author_id, array( 'size' => 120 ) );
+        }
+        if ( empty( $avatar_url ) || strpos( $avatar_url, 'gravatar.com' ) !== false ) {
+            // Default placeholder or user avatar if gravatar is default
+            $custom_avatar = get_user_meta( $author_id, 'profile_picture', true );
+            if ( ! empty( $custom_avatar ) ) {
+                $avatar_url = $custom_avatar;
+            }
+        }
+        if ( empty( $avatar_url ) ) {
+            $avatar_url = 'https://secure.gravatar.com/avatar/?s=120&d=mp&r=g';
+        }
+
+        // Permalinks & Sharing URLs
+        $permalink = $post_id ? get_permalink( $post_id ) : ( isset( $_SERVER['HTTP_HOST'] ) ? ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) : '' );
+        $encoded_url = rawurlencode( $permalink );
+        $encoded_title = rawurlencode( html_entity_decode( $title, ENT_QUOTES, 'UTF-8' ) );
+
+        $fb_url = 'https://www.facebook.com/sharer/sharer.php?u=' . $encoded_url;
+        $li_url = 'https://www.linkedin.com/sharing/share-offsite/?url=' . $encoded_url;
+        $wa_url = 'https://api.whatsapp.com/send?text=' . $encoded_title . '%20' . $encoded_url;
+        $x_url  = 'https://twitter.com/intent/tweet?url=' . $encoded_url . '&text=' . $encoded_title;
+
+        ob_start();
+        ?>
+        <div class="cmg-blog-header-wrapper" data-post-id="<?php echo esc_attr( $post_id ); ?>">
+          <style>
+            .cmg-blog-header-wrapper {
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              max-width: 1100px;
+              margin: 0 auto;
+              padding: 24px 20px 20px 20px;
+              box-sizing: border-box;
+              color: #111827;
+            }
+
+            /* Author & Date Row */
+            .cmg-blog-author-date-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 24px;
+            }
+
+            .cmg-blog-author-meta {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+            }
+
+            .cmg-blog-author-avatar {
+              width: 44px;
+              height: 44px;
+              border-radius: 50%;
+              overflow: hidden;
+              background: #eef2ff;
+              flex-shrink: 0;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            }
+
+            .cmg-blog-author-avatar img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              border-radius: 50%;
+              display: block;
+            }
+
+            .cmg-blog-author-info {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
+
+            .cmg-blog-author-name {
+              font-size: 15px;
+              font-weight: 700;
+              color: rgb(22, 28, 82);
+              margin: 0;
+              line-height: 1.25;
+            }
+
+            .cmg-blog-author-role {
+              font-size: 13px;
+              font-weight: 400;
+              color: #6b7280;
+              margin: 2px 0 0 0;
+              line-height: 1.2;
+            }
+
+            .cmg-blog-post-date {
+              font-size: 14px;
+              font-weight: 500;
+              color: #6b7280;
+              text-align: right;
+              white-space: nowrap;
+            }
+
+            /* Post Title */
+            .cmg-blog-post-title {
+              font-size: 42px;
+              font-weight: 700;
+              color: rgb(22, 28, 82);
+              line-height: 1.24;
+              letter-spacing: -0.5px;
+              margin: 0 0 32px 0;
+              word-wrap: break-word;
+            }
+
+            @media (max-width: 768px) {
+              .cmg-blog-post-title {
+                font-size: 28px;
+                line-height: 1.3;
+                margin-bottom: 24px;
+              }
+            }
+
+            /* Reviews & Share Row */
+            .cmg-blog-meta-action-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
+              padding-top: 4px;
+              padding-bottom: 24px;
+              margin-bottom: 32px;
+              border-bottom: 1px solid #f0f2f5;
+            }
+
+            @media (max-width: 640px) {
+              .cmg-blog-meta-action-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+              }
+            }
+
+            /* Reviews Column */
+            .cmg-blog-reviews-col {
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            }
+
+            .cmg-blog-reviews-label {
+              font-size: 11px;
+              font-weight: 700;
+              color: #374151;
+              letter-spacing: 0.8px;
+              text-transform: uppercase;
+              margin: 0;
+            }
+
+            .cmg-blog-rating-wrap {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            }
+
+            .cmg-stars-list {
+              display: inline-flex;
+              align-items: center;
+              gap: 3px;
+              cursor: pointer;
+            }
+
+            .cmg-star {
+              width: 18px;
+              height: 18px;
+              fill: none;
+              stroke: #9ca3af;
+              stroke-width: 1.6;
+              transition: all 0.15s ease;
+            }
+
+            .cmg-star.active,
+            .cmg-star.hovered {
+              fill: #f59e0b;
+              stroke: #f59e0b;
+            }
+
+            .cmg-rating-score {
+              font-size: 14px;
+              font-weight: 600;
+              color: #1f2937;
+              margin-left: 6px;
+            }
+
+            .cmg-rating-text {
+              font-size: 14px;
+              font-weight: 500;
+              color: #3a7dff;
+              text-decoration: none;
+              cursor: pointer;
+              margin-left: 2px;
+            }
+
+            .cmg-rating-text:hover {
+              text-decoration: underline;
+            }
+
+            /* Share Column */
+            .cmg-blog-share-col {
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              align-items: flex-end;
+            }
+
+            @media (max-width: 640px) {
+              .cmg-blog-share-col {
+                align-items: flex-start;
+              }
+            }
+
+            .cmg-blog-share-label {
+              font-size: 13px;
+              font-weight: 500;
+              color: #4b5563;
+              margin: 0;
+              line-height: 1.2;
+            }
+
+            .cmg-blog-share-buttons {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+
+            .cmg-share-btn {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              background: #f3f4f6;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #4b5563;
+              text-decoration: none;
+              transition: all 0.2s ease;
+              border: none;
+              outline: none;
+              cursor: pointer;
+            }
+
+            .cmg-share-btn svg {
+              width: 14px;
+              height: 14px;
+              fill: currentColor;
+              display: block;
+            }
+
+            .cmg-share-btn:hover {
+              transform: translateY(-2px);
+            }
+
+            .cmg-share-btn.fb:hover {
+              background: #1877f2;
+              color: #ffffff;
+            }
+
+            .cmg-share-btn.li:hover {
+              background: #0a66c2;
+              color: #ffffff;
+            }
+
+            .cmg-share-btn.wa:hover {
+              background: #25d366;
+              color: #ffffff;
+            }
+
+            .cmg-share-btn.x:hover {
+              background: #000000;
+              color: #ffffff;
+            }
+          </style>
+
+          <!-- Top Row: Author & Date -->
+          <div class="cmg-blog-author-date-row">
+            <div class="cmg-blog-author-meta">
+              <div class="cmg-blog-author-avatar">
+                <img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $author_name ); ?>">
+              </div>
+              <div class="cmg-blog-author-info">
+                <span class="cmg-blog-author-name"><?php echo $author_name; ?></span>
+                <span class="cmg-blog-author-role"><?php echo $author_role; ?></span>
+              </div>
+            </div>
+            <div class="cmg-blog-post-date">
+              <?php echo $date; ?>
+            </div>
+          </div>
+
+          <!-- Middle: Post Title -->
+          <h1 class="cmg-blog-post-title"><?php echo $title; ?></h1>
+
+          <!-- Bottom Row: Reviews & Share -->
+          <div class="cmg-blog-meta-action-row">
+            <!-- Reviews Column -->
+            <div class="cmg-blog-reviews-col">
+              <span class="cmg-blog-reviews-label">REVIEWS</span>
+              <div class="cmg-blog-rating-wrap">
+                <div class="cmg-stars-list" data-post-id="<?php echo esc_attr( $post_id ); ?>" title="Rate this article">
+                  <svg class="cmg-star" data-index="1" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="3" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="4" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="5" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                </div>
+                <span class="cmg-rating-score">0.0 (0)</span>
+                <span class="cmg-rating-text">Rating</span>
+              </div>
+            </div>
+
+            <!-- Social Share Column -->
+            <div class="cmg-blog-share-col">
+              <span class="cmg-blog-share-label">Share the post</span>
+              <div class="cmg-blog-share-buttons">
+                <!-- Facebook -->
+                <a href="<?php echo esc_url( $fb_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn fb" aria-label="Share on Facebook" title="Share on Facebook">
+                  <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <!-- LinkedIn -->
+                <a href="<?php echo esc_url( $li_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn li" aria-label="Share on LinkedIn" title="Share on LinkedIn">
+                  <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                </a>
+                <!-- WhatsApp -->
+                <a href="<?php echo esc_url( $wa_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn wa" aria-label="Share on WhatsApp" title="Share on WhatsApp">
+                  <svg viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.079-1.844-.424-1.547-.643-2.537-2.222-2.613-2.325-.078-.102-.633-.841-.633-1.602 0-.761.397-1.135.539-1.29.141-.155.308-.194.411-.195.102 0 .205.002.296.006.096.005.225-.036.35.267.13.313.443 1.082.482 1.162.039.08.065.174.013.279-.052.103-.078.167-.154.257-.078.09-.163.2-.234.269-.078.077-.16.16-.069.316.091.156.404.667.868 1.08 1.08 1.08 1.62.909 2.016 1.109.117.058.188.05.258-.031.07-.082.3-.35.38-.47.08-.12.16-.1.27-.06.11.04.698.329.818.389.12.06.2.09.23.14.03.05.03.29-.114.695z"/></svg>
+                </a>
+                <!-- X (Twitter) -->
+                <a href="<?php echo esc_url( $x_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn x" aria-label="Share on X" title="Share on X">
+                  <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        (function() {
+          function initCmgRatings() {
+            var wraps = document.querySelectorAll(".cmg-blog-header-wrapper");
+            wraps.forEach(function(wrap) {
+              var postId = wrap.getAttribute("data-post-id") || "global";
+              var starContainer = wrap.querySelector(".cmg-stars-list");
+              if (!starContainer || starContainer.dataset.initialized) return;
+              starContainer.dataset.initialized = "true";
+
+              var stars = starContainer.querySelectorAll(".cmg-star");
+              var scoreEl = wrap.querySelector(".cmg-rating-score");
+              var textEl = wrap.querySelector(".cmg-rating-text");
+
+              var storageKey = "cmg_post_rating_" + postId;
+              var countKey = "cmg_post_rating_count_" + postId;
+              var saved = localStorage.getItem(storageKey);
+              var count = localStorage.getItem(countKey) || (saved ? "1" : "0");
+
+              function updateDisplay(val) {
+                stars.forEach(function(s) {
+                  var idx = parseInt(s.getAttribute("data-index"), 10);
+                  if (idx <= val) {
+                    s.classList.add("active");
+                  } else {
+                    s.classList.remove("active");
+                  }
+                });
+                if (scoreEl) {
+                  scoreEl.textContent = (val > 0 ? parseFloat(val).toFixed(1) : "0.0") + " (" + (val > 0 ? count : "0") + ")";
+                }
+              }
+
+              if (saved) {
+                updateDisplay(parseFloat(saved));
+              }
+
+              stars.forEach(function(star) {
+                star.addEventListener("mouseenter", function() {
+                  var hoverIdx = parseInt(this.getAttribute("data-index"), 10);
+                  stars.forEach(function(s) {
+                    if (parseInt(s.getAttribute("data-index"), 10) <= hoverIdx) {
+                      s.classList.add("hovered");
+                    } else {
+                      s.classList.remove("hovered");
+                    }
+                  });
+                });
+
+                star.addEventListener("click", function() {
+                  var chosen = parseInt(this.getAttribute("data-index"), 10);
+                  count = "1";
+                  localStorage.setItem(storageKey, chosen);
+                  localStorage.setItem(countKey, count);
+                  updateDisplay(chosen);
+                  if (textEl) {
+                    textEl.textContent = "Thank you!";
+                    setTimeout(function() { textEl.textContent = "Rating"; }, 3000);
+                  }
+                });
+              });
+
+              starContainer.addEventListener("mouseleave", function() {
+                stars.forEach(function(s) { s.classList.remove("hovered"); });
+              });
+            });
+          }
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initCmgRatings);
+          } else {
+            initCmgRatings();
+          }
+        })();
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+/* Register Shortcodes for Elementor / Gutenberg / Widgets */
+if ( ! function_exists( 'cmg_blog_header_shortcode' ) ) {
+    function cmg_blog_header_shortcode( $atts ) {
+        return cmg_render_blog_header( (array) $atts );
+    }
+}
+add_shortcode( 'cmg_blog_header', 'cmg_blog_header_shortcode' );
+add_shortcode( 'blog_header', 'cmg_blog_header_shortcode' );
+add_shortcode( 'cmg_post_header', 'cmg_blog_header_shortcode' );
+add_shortcode( 'blog_meta', 'cmg_blog_header_shortcode' );
+
+/* Hide Hello Elementor duplicate default title on single posts when our custom header is rendered */
+add_filter( 'hello_elementor_page_title', function( $title ) {
+    if ( is_singular( 'post' ) ) {
+        return false;
+    }
+    return $title;
+}, 20 );
+
