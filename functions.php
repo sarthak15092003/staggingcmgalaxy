@@ -284,7 +284,8 @@ add_action( 'wp_head', function() {
       .cmg-blog-toc-link:focus {
         color: #161c52 !important;
         background: rgba(22, 28, 82, 0.06) !important;
-        border-left-color: #22c55e !important;
+        border-left: none !important;
+        border-right: 2.5px solid #22c55e !important;
       }
       body.single-post .cmg-blog-content,
       body.single-post .cmg-blog-content p,
@@ -4381,7 +4382,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               padding: 0 !important;
               display: flex;
               flex-direction: column;
-              gap: 4px;
+              gap: 2px;
             }
 
             .cmg-blog-toc-item {
@@ -4392,13 +4393,15 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
             .cmg-blog-toc-link {
               display: block;
-              padding: 7px 12px;
+              padding: 5px 10px;
               font-size: 12px;
-              line-height: 1.45;
+              line-height: 1.4;
               color: #475569 !important;
               text-decoration: none;
-              border-left: 2.5px solid #e2e8f0;
-              border-radius: 0 6px 6px 0;
+              border: none !important;
+              border-left: none !important;
+              border-right: 2.5px solid transparent !important;
+              border-radius: 4px 0 0 4px;
               transition: all 0.2s ease;
               -webkit-tap-highlight-color: transparent !important;
               outline: none !important;
@@ -4407,7 +4410,8 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             .cmg-blog-toc-link:hover {
               color: #0f172a !important;
               background: #f1f5f9 !important;
-              border-left-color: #94a3b8 !important;
+              border-left: none !important;
+              border-right-color: transparent !important;
             }
 
             .cmg-blog-toc-link:active,
@@ -4415,7 +4419,8 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             .cmg-blog-toc-link:focus-visible {
               color: #161c52 !important;
               background: rgba(22, 28, 82, 0.06) !important;
-              border-left-color: #22c55e !important;
+              border-left: none !important;
+              border-right: 2.5px solid #22c55e !important;
               outline: none !important;
             }
 
@@ -4423,7 +4428,8 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               color: #161c52 !important;
               font-weight: 600;
               background: rgba(22, 28, 82, 0.05) !important;
-              border-left-color: #22c55e !important;
+              border-left: none !important;
+              border-right: 2.5px solid #22c55e !important;
             }
 
             .cmg-blog-content h2 {

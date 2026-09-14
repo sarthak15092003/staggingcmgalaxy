@@ -137,7 +137,8 @@ body.single-post a:focus {
 .cmg-blog-toc-link:focus-visible {
     color: #161c52 !important;
     background: rgba(22, 28, 82, 0.06) !important;
-    border-left-color: #22c55e !important;
+    border-left: none !important;
+    border-right: 2.5px solid #22c55e !important;
     outline: none !important;
 }
 
@@ -245,9 +246,32 @@ body.single-post a:active,
     text-decoration: underline !important;
 }
 
-/* Table of Contents Font Size 12px */
+/* Table of Contents Styling: Right Green Line on Active, No Inactive Line, Compact Gap */
+.cmg-blog-toc-list {
+    gap: 2px !important;
+}
 .cmg-blog-toc-link {
     font-size: 12px !important;
+    padding: 5px 10px !important;
+    line-height: 1.4 !important;
+    border: none !important;
+    border-left: none !important;
+    border-right: 2.5px solid transparent !important;
+    border-radius: 4px 0 0 4px !important;
+}
+.cmg-blog-toc-link:hover {
+    background: #f8fafc !important;
+    border-left: none !important;
+    border-right: 2.5px solid transparent !important;
+}
+.cmg-blog-toc-link.is-active,
+.cmg-blog-toc-link:active,
+.cmg-blog-toc-link:focus,
+.cmg-blog-toc-link:focus-visible {
+    border-left: none !important;
+    border-right: 2.5px solid #22c55e !important;
+    background: rgba(22, 28, 82, 0.05) !important;
+    color: #161c52 !important;
 }
 .cmg-toc-show-more-btn {
     font-size: 12px !important;
