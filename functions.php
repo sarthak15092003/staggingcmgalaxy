@@ -2797,23 +2797,19 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
         <script>
         (function() {
           function initCmgRatings() {
-            var wraps = document.querySelectorAll(".cmg-blog-header-wrapper");
-            wraps.forEach(function(wrap) {
-              var postId = wrap.getAttribute("data-post-id") || "global";
-              var starContainer = wrap.querySelector(".cmg-stars-list");
-              if (!starContainer || starContainer.dataset.initialized) return;
-              starContainer.dataset.initialized = "true";
+            var wraps = document.querySelectorAll(".cmg-blog-header-wrapper, .cmg-blog-bottom-review-share-wrap");
+            if (!wraps.length) return;
 
-              var stars = starContainer.querySelectorAll(".cmg-star");
-              var scoreEl = wrap.querySelector(".cmg-rating-score");
-              var textEl = wrap.querySelector(".cmg-rating-text");
+            var postId = wraps[0].getAttribute("data-post-id") || "global";
+            var storageKey = "cmg_post_rating_" + postId;
+            var countKey = "cmg_post_rating_count_" + postId;
+            var saved = localStorage.getItem(storageKey);
+            var count = localStorage.getItem(countKey) || (saved ? "1" : "0");
 
-              var storageKey = "cmg_post_rating_" + postId;
-              var countKey = "cmg_post_rating_count_" + postId;
-              var saved = localStorage.getItem(storageKey);
-              var count = localStorage.getItem(countKey) || (saved ? "1" : "0");
-
-              function updateDisplay(val) {
+            function syncAllDisplays(val) {
+              wraps.forEach(function(wrap) {
+                var stars = wrap.querySelectorAll(".cmg-star");
+                var scoreEl = wrap.querySelector(".cmg-rating-score");
                 stars.forEach(function(s) {
                   var idx = parseInt(s.getAttribute("data-index"), 10);
                   if (idx <= val) {
@@ -2825,11 +2821,19 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
                 if (scoreEl) {
                   scoreEl.textContent = (val > 0 ? parseFloat(val).toFixed(1) : "0.0") + " (" + (val > 0 ? count : "0") + ")";
                 }
-              }
+              });
+            }
 
-              if (saved) {
-                updateDisplay(parseFloat(saved));
-              }
+            if (saved) {
+              syncAllDisplays(parseFloat(saved));
+            }
+
+            wraps.forEach(function(wrap) {
+              var starContainer = wrap.querySelector(".cmg-stars-list");
+              if (!starContainer || starContainer.dataset.initialized) return;
+              starContainer.dataset.initialized = "true";
+
+              var stars = starContainer.querySelectorAll(".cmg-star");
 
               stars.forEach(function(star) {
                 star.addEventListener("mouseenter", function() {
@@ -2848,11 +2852,14 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
                   count = "1";
                   localStorage.setItem(storageKey, chosen);
                   localStorage.setItem(countKey, count);
-                  updateDisplay(chosen);
-                  if (textEl) {
-                    textEl.textContent = "Thank you!";
-                    setTimeout(function() { textEl.textContent = "Rating"; }, 3000);
-                  }
+                  syncAllDisplays(chosen);
+                  wraps.forEach(function(w) {
+                    var tEl = w.querySelector(".cmg-rating-text");
+                    if (tEl) {
+                      tEl.textContent = "Thank you!";
+                      setTimeout(function() { tEl.textContent = "Rating"; }, 3000);
+                    }
+                  });
                 });
               });
 
@@ -2884,6 +2891,96 @@ add_shortcode( 'cmg_blog_header', 'cmg_blog_header_shortcode' );
 add_shortcode( 'blog_header', 'cmg_blog_header_shortcode' );
 add_shortcode( 'cmg_post_header', 'cmg_blog_header_shortcode' );
 add_shortcode( 'blog_meta', 'cmg_blog_header_shortcode' );
+
+/* ==========================================================================
+   CMG BLOG BOTTOM REVIEW & SHARE SECTION (After Content End)
+   ========================================================================== */
+if ( ! function_exists( 'cmg_render_blog_bottom_review_share' ) ) {
+    function cmg_render_blog_bottom_review_share() {
+        if ( ! is_singular( 'post' ) ) {
+            return '';
+        }
+
+        $post_id   = get_the_ID();
+        $permalink = get_permalink( $post_id );
+        $title     = get_the_title( $post_id );
+
+        // Social Share URLs
+        $fb_url = 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode( $permalink );
+        $li_url = 'https://www.linkedin.com/sharing/share-offsite/?url=' . rawurlencode( $permalink );
+        $wa_url = 'https://api.whatsapp.com/send?text=' . rawurlencode( $title . ' ' . $permalink );
+        $x_url  = 'https://twitter.com/intent/tweet?url=' . rawurlencode( $permalink ) . '&text=' . rawurlencode( $title );
+
+        ob_start();
+        ?>
+        <div class="cmg-blog-bottom-review-share-wrap" data-post-id="<?php echo esc_attr( $post_id ); ?>">
+          <style>
+            .cmg-blog-bottom-review-share-wrap {
+              margin-top: 40px;
+              margin-bottom: 24px;
+              padding: 24px 0;
+              border-top: 1px solid #e5e7eb;
+              border-bottom: 1px solid #e5e7eb;
+              font-family: var(--primary-font, 'Onest', sans-serif);
+              box-sizing: border-box;
+              clear: both;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-blog-meta-action-row {
+              margin-bottom: 0 !important;
+              padding-bottom: 0 !important;
+              border-bottom: none !important;
+            }
+          </style>
+
+          <div class="cmg-blog-meta-action-row">
+            <!-- Reviews Column -->
+            <div class="cmg-blog-reviews-col">
+              <span class="cmg-blog-reviews-label">REVIEWS</span>
+              <div class="cmg-blog-rating-wrap">
+                <div class="cmg-stars-list" data-post-id="<?php echo esc_attr( $post_id ); ?>" title="Rate this article">
+                  <svg class="cmg-star" data-index="1" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="3" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="4" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <svg class="cmg-star" data-index="5" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                </div>
+                <span class="cmg-rating-score">0.0 (0)</span>
+                <span class="cmg-rating-text">Rating</span>
+              </div>
+            </div>
+
+            <!-- Social Share Column -->
+            <div class="cmg-blog-share-col">
+              <span class="cmg-blog-share-label">Share the post</span>
+              <div class="cmg-blog-share-buttons">
+                <!-- Facebook -->
+                <a href="<?php echo esc_url( $fb_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn fb" aria-label="Share on Facebook" title="Share on Facebook">
+                  <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <!-- LinkedIn -->
+                <a href="<?php echo esc_url( $li_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn li" aria-label="Share on LinkedIn" title="Share on LinkedIn">
+                  <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                </a>
+                <!-- WhatsApp -->
+                <a href="<?php echo esc_url( $wa_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn wa" aria-label="Share on WhatsApp" title="Share on WhatsApp">
+                  <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                </a>
+                <!-- X (Twitter) -->
+                <a href="<?php echo esc_url( $x_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-share-btn x" aria-label="Share on X" title="Share on X">
+                  <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+add_shortcode( 'cmg_bottom_review_share', 'cmg_render_blog_bottom_review_share' );
+add_shortcode( 'cmg_review_share', 'cmg_render_blog_bottom_review_share' );
+
 
 /* Hide Hello Elementor duplicate default title on single posts when our custom header is rendered */
 add_filter( 'hello_elementor_page_title', function( $title ) {

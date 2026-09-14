@@ -53,6 +53,12 @@ while ( have_posts() ) :
 						<?php the_tags( '<span class="tag-links">' . esc_html__( 'Tagged ', 'hello-elementor' ), ', ', '</span>' ); ?>
 					</div>
 					<?php endif; ?>
+
+					<?php
+					if ( function_exists( 'cmg_render_blog_bottom_review_share' ) ) {
+						echo cmg_render_blog_bottom_review_share();
+					}
+					?>
 				</div>
 
 				<?php
