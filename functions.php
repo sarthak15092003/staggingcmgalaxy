@@ -4192,7 +4192,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               transition: all 0.3s ease;
             }
 
-            /* When collapsed: show 2 titles clearly, compact blur for rest */
+            /* When collapsed: show first 2 titles clearly, hide rest (no blur) */
             .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(1),
             .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(2) {
               display: block !important;
@@ -4202,26 +4202,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               pointer-events: auto !important;
             }
 
-            /* Reduced height blur item */
-            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(3) {
-              display: block !important;
-              max-height: 12px !important;
-              overflow: hidden !important;
-              filter: blur(2px) !important;
-              opacity: 0.4 !important;
-              pointer-events: none !important;
-              user-select: none !important;
-              margin-bottom: 0 !important;
-              padding-bottom: 0 !important;
-            }
-
-            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(3) .cmg-blog-toc-link {
-              padding: 1px 12px !important;
-              line-height: 1 !important;
-              border-bottom: none !important;
-            }
-
-            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(n+4) {
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(n+3) {
               display: none !important;
             }
 
@@ -4236,9 +4217,9 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               transition: filter 0.25s ease, opacity 0.25s ease;
             }
 
-            /* Show more in text form at bottom - tight snug spacing */
+            /* Show more in text form at bottom - centered */
             .cmg-toc-show-more-wrap {
-              margin-top: 2px !important;
+              margin-top: 6px !important;
               padding-top: 0 !important;
               margin-bottom: 0 !important;
               padding-bottom: 0 !important;
