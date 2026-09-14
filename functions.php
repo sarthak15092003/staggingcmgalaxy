@@ -3003,7 +3003,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               min-width: 220px;
               flex-shrink: 0;
               align-self: flex-start;
-              margin-right: 8px;
+              margin-right: 0;
               background: #09102b;
               border-radius: 16px;
               padding: 22px 18px 20px 18px;
@@ -3999,9 +3999,6 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             .site-main, .hentry, article.post, .entry-content {
               max-width: 100% !important;
               width: 100% !important;
-            }
-            /* Only remove horizontal padding from the direct widget wrapper */
-            .elementor-widget-container {
               padding-left: 0 !important;
               padding-right: 0 !important;
             }
