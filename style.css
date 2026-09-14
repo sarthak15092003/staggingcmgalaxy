@@ -208,7 +208,16 @@ body.single-post a:active,
     text-decoration-color: #1d4ed8 !important;
 }
 
-/* TOC Show More Text Button */
+/* TOC Show More Text Button - Centered */
+.cmg-toc-show-more-wrap {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 6px !important;
+}
+
 .cmg-toc-show-more-btn,
 .cmg-toc-show-more-btn:focus,
 .cmg-toc-show-more-btn:active {
@@ -218,6 +227,11 @@ body.single-post a:active,
     box-shadow: none !important;
     outline: none !important;
     color: #2563eb !important;
+    margin: 0 auto !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
 }
 
 .cmg-toc-show-more-btn:hover {

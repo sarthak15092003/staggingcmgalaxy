@@ -4192,32 +4192,29 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               transition: all 0.3s ease;
             }
 
-            /* When collapsed: show 2 titles clearly, rest blurred */
+            /* When collapsed: show 2 titles clearly, compact blur for rest */
             .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(1),
             .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(2) {
               display: block !important;
               filter: none !important;
               opacity: 1 !important;
+              max-height: none !important;
               pointer-events: auto !important;
             }
 
+            /* Reduced height blur item */
             .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(3) {
               display: block !important;
-              filter: blur(2.5px) !important;
-              opacity: 0.55 !important;
+              max-height: 22px !important;
+              overflow: hidden !important;
+              filter: blur(2px) !important;
+              opacity: 0.45 !important;
               pointer-events: none !important;
               user-select: none !important;
+              margin-bottom: 0 !important;
             }
 
-            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(4) {
-              display: block !important;
-              filter: blur(4px) !important;
-              opacity: 0.25 !important;
-              pointer-events: none !important;
-              user-select: none !important;
-            }
-
-            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(n+5) {
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(n+4) {
               display: none !important;
             }
 
@@ -4231,12 +4228,15 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               transition: filter 0.25s ease, opacity 0.25s ease;
             }
 
-            /* Show more in text form at bottom */
+            /* Show more in text form at bottom - centered */
             .cmg-toc-show-more-wrap {
-              margin-top: 8px;
-              padding-top: 4px;
-              display: flex;
-              align-items: center;
+              margin-top: 6px !important;
+              padding-top: 2px !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: center !important;
+              width: 100% !important;
+              text-align: center !important;
             }
 
             .cmg-toc-show-more-btn {
@@ -4245,14 +4245,16 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               border: none !important;
               box-shadow: none !important;
               outline: none !important;
-              padding: 4px 6px !important;
+              padding: 4px 10px !important;
               color: #2563eb !important;
-              font-size: 13.5px !important;
+              font-size: 13px !important;
               font-weight: 600 !important;
               cursor: pointer !important;
               display: inline-flex !important;
+              justify-content: center !important;
               align-items: center !important;
-              gap: 6px !important;
+              margin: 0 auto !important;
+              gap: 5px !important;
               text-decoration: none !important;
               font-family: inherit !important;
               border-radius: 4px !important;
