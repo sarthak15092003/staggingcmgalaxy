@@ -3064,14 +3064,14 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
             .cmg-floating-side-banner {
               position: sticky;
               top: 110px;
-              width: 240px;
-              min-width: 220px;
+              width: 190px;
+              min-width: 175px;
               flex-shrink: 0;
               align-self: flex-start;
               margin-right: 0;
               background: #09102b;
               border-radius: 16px;
-              padding: 22px 18px 20px 18px;
+              padding: 20px 14px 18px 14px;
               box-shadow: none;
               box-sizing: border-box;
               text-align: center;
@@ -3111,8 +3111,8 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
             /* Audit Dial Gauge */
             .cmg-side-dial-wrap {
               position: relative;
-              width: 90px;
-              height: 90px;
+              width: 76px;
+              height: 76px;
               margin: 0 auto 12px auto;
             }
 
@@ -3176,9 +3176,9 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
             /* Title */
             .cmg-side-title {
               color: #ffffff;
-              font-size: 18px;
+              font-size: 16px;
               font-weight: 700;
-              line-height: 1.3;
+              line-height: 1.35;
               margin: 0 0 10px 0;
               letter-spacing: -0.3px;
             }
@@ -3199,9 +3199,9 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               gap: 6px;
               background: #22c55e;
               color: #ffffff !important;
-              font-size: 12.5px;
+              font-size: 11.5px;
               font-weight: 600;
-              padding: 9px 18px;
+              padding: 8px 14px;
               border-radius: 999px;
               text-decoration: none !important;
               width: 100%;
@@ -3249,7 +3249,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
           </div>
 
           <!-- Heading -->
-          <h4 class="cmg-side-title">Rank Better in ChatGPT, Claude &amp; Perplexity</h4>
+          <h4 class="cmg-side-title">Rank Better<br>in ChatGPT,<br>Claude &amp;<br>Perplexity</h4>
 
           <!-- Subtext -->
           <p class="cmg-side-desc">Free 100-point GEO Audit. Instant AI-powered insights for SEO, performance &amp; visibility.</p>
