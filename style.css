@@ -133,11 +133,14 @@ body.single-post a:focus {
 
 .cmg-blog-toc-link:active,
 .cmg-blog-toc-link:focus,
-.cmg-blog-toc-link:focus-visible {
-    color: #161c52 !important;
-    background: rgba(22, 28, 82, 0.06) !important;
+.cmg-blog-toc-link:focus-visible,
+.cmg-blog-toc-link.is-active {
+    color: #000000 !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+    border: none !important;
     border-left: none !important;
-    border-right: 2.5px solid #22c55e !important;
+    border-right: none !important;
     outline: none !important;
 }
 
@@ -275,22 +278,26 @@ article.cmg-blog-single-article ul.cmg-blog-toc-list li,
     line-height: 1.35 !important;
     border: none !important;
     border-left: none !important;
-    border-right: 2.5px solid transparent !important;
-    border-radius: 4px 0 0 4px !important;
+    border-right: none !important;
+    background: transparent !important;
 }
 .cmg-blog-toc-link:hover {
-    background: #f8fafc !important;
+    color: #000000 !important;
+    background: transparent !important;
+    border: none !important;
     border-left: none !important;
-    border-right: 2.5px solid transparent !important;
+    border-right: none !important;
 }
 .cmg-blog-toc-link.is-active,
 .cmg-blog-toc-link:active,
 .cmg-blog-toc-link:focus,
 .cmg-blog-toc-link:focus-visible {
+    border: none !important;
     border-left: none !important;
-    border-right: 2.5px solid #22c55e !important;
-    background: rgba(22, 28, 82, 0.05) !important;
-    color: #161c52 !important;
+    border-right: none !important;
+    background: transparent !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
 }
 .cmg-toc-show-more-btn {
     font-size: 12px !important;

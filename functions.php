@@ -291,11 +291,14 @@ add_action( 'wp_head', function() {
         outline: none !important;
       }
       .cmg-blog-toc-link:active,
-      .cmg-blog-toc-link:focus {
-        color: #161c52 !important;
-        background: rgba(22, 28, 82, 0.06) !important;
+      .cmg-blog-toc-link:focus,
+      .cmg-blog-toc-link.is-active {
+        color: #000000 !important;
+        font-weight: 700 !important;
+        background: transparent !important;
+        border: none !important;
         border-left: none !important;
-        border-right: 2.5px solid #22c55e !important;
+        border-right: none !important;
       }
       body.single-post .cmg-blog-content,
       body.single-post .cmg-blog-content p,
@@ -4730,36 +4733,32 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               text-decoration: none;
               border: none !important;
               border-left: none !important;
-              border-right: 2.5px solid transparent !important;
-              border-radius: 4px 0 0 4px;
+              border-right: none !important;
+              background: transparent !important;
               transition: all 0.2s ease;
               -webkit-tap-highlight-color: transparent !important;
               outline: none !important;
             }
 
             .cmg-blog-toc-link:hover {
-              color: #0f172a !important;
-              background: #f1f5f9 !important;
+              color: #000000 !important;
+              background: transparent !important;
+              border: none !important;
               border-left: none !important;
-              border-right-color: transparent !important;
+              border-right: none !important;
             }
 
             .cmg-blog-toc-link:active,
             .cmg-blog-toc-link:focus,
-            .cmg-blog-toc-link:focus-visible {
-              color: #161c52 !important;
-              background: rgba(22, 28, 82, 0.06) !important;
-              border-left: none !important;
-              border-right: 2.5px solid #22c55e !important;
-              outline: none !important;
-            }
-
+            .cmg-blog-toc-link:focus-visible,
             .cmg-blog-toc-link.is-active {
-              color: #161c52 !important;
-              font-weight: 600;
-              background: rgba(22, 28, 82, 0.05) !important;
+              color: #000000 !important;
+              font-weight: 700 !important;
+              background: transparent !important;
+              border: none !important;
               border-left: none !important;
-              border-right: 2.5px solid #22c55e !important;
+              border-right: none !important;
+              outline: none !important;
             }
 
             .cmg-blog-content h2 {
@@ -4875,9 +4874,11 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               }
 
               .cmg-blog-toc-link.is-active {
-                border-left-color: #22c55e;
-                background: #f0fdf4;
-                color: #166534;
+                border-left: none !important;
+                border-right: none !important;
+                background: transparent !important;
+                color: #000000 !important;
+                font-weight: 700 !important;
               }
 
               /* Docy-Style Floating Action Button at Bottom */
