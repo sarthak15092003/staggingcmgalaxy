@@ -244,3 +244,11 @@ body.single-post a:active,
     background-color: transparent !important;
     text-decoration: underline !important;
 }
+
+/* Table of Contents Font Size 12px */
+.cmg-blog-toc-link {
+    font-size: 12px !important;
+}
+.cmg-toc-show-more-btn {
+    font-size: 12px !important;
+}

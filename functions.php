@@ -4238,7 +4238,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               outline: none !important;
               padding: 3px 6px !important;
               color: #2563eb !important;
-              font-size: 13px !important;
+              font-size: 12px !important;
               line-height: 1.2 !important;
               font-weight: 600 !important;
               cursor: pointer !important;
@@ -4287,7 +4287,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             .cmg-blog-toc-link {
               display: block;
               padding: 7px 12px;
-              font-size: 14px;
+              font-size: 12px;
               line-height: 1.45;
               color: #475569 !important;
               text-decoration: none;
