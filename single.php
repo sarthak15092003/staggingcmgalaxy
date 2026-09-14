@@ -19,6 +19,11 @@ while ( have_posts() ) :
 
 	<?php if ( is_singular( 'post' ) ) : ?>
 		<article id="post-<?php the_ID(); ?>" <?php post_class( 'cmg-blog-single-article' ); ?>>
+			<?php
+			if ( function_exists( 'cmg_render_blog_top_banner' ) ) {
+				echo cmg_render_blog_top_banner();
+			}
+			?>
 			<?php if ( has_post_thumbnail() ) : ?>
 				<div class="cmg-blog-featured-image-wrap" style="max-width: 1100px; margin: 30px auto 10px auto; padding: 0 20px; box-sizing: border-box;">
 					<?php the_post_thumbnail( 'full', array( 'style' => 'width: 100%; height: auto; border-radius: 16px; display: block; object-fit: cover;' ) ); ?>

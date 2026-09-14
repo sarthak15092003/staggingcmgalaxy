@@ -2633,3 +2633,157 @@ if ( ! function_exists( 'cmg_remove_duplicate_content_featured_image' ) ) {
     }
 }
 add_filter( 'the_content', 'cmg_remove_duplicate_content_featured_image', 20 );
+
+/* ==========================================================================
+   CMG BLOG TOP AUDIT BANNER ("Find What's Hurting Your Website. Instantly!")
+   ========================================================================== */
+
+if ( ! function_exists( 'cmg_render_blog_top_banner' ) ) {
+    function cmg_render_blog_top_banner( $atts = array() ) {
+        $audit_url = ! empty( $atts['url'] ) ? esc_url( $atts['url'] ) : esc_url( home_url( '/lex/' ) );
+        $btn_text  = ! empty( $atts['btn_text'] ) ? esc_html( $atts['btn_text'] ) : 'Get My Free AI Audit &rarr;';
+
+        ob_start();
+        ?>
+        <div class="cmg-audit-banner-wrapper">
+          <style>
+            .cmg-audit-banner-wrapper {
+              max-width: 1100px;
+              margin: 30px auto 20px auto;
+              padding: 0 20px;
+              box-sizing: border-box;
+            }
+
+            .cmg-audit-banner-inner {
+              background: #0b112c;
+              border-radius: 16px;
+              padding: 26px 36px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 24px;
+              box-shadow: 0 10px 30px rgba(11, 17, 44, 0.12);
+              border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .cmg-audit-banner-text {
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            }
+
+            .cmg-audit-banner-heading {
+              color: #ffffff;
+              font-size: 25px;
+              font-weight: 700;
+              margin: 0;
+              line-height: 1.3;
+              letter-spacing: -0.3px;
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+
+            .cmg-audit-highlight {
+              color: #22c55e;
+              font-weight: 700;
+            }
+
+            .cmg-audit-banner-subtext {
+              color: #94a3b8;
+              font-size: 14.5px;
+              margin: 0;
+              line-height: 1.4;
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+
+            .cmg-audit-lex {
+              color: #ffffff;
+              font-weight: 600;
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+            }
+
+            .cmg-audit-sparkle {
+              vertical-align: middle;
+            }
+
+            .cmg-audit-banner-action {
+              flex-shrink: 0;
+            }
+
+            .cmg-audit-btn {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              gap: 6px;
+              background: #22c55e;
+              color: #ffffff !important;
+              font-size: 15px;
+              font-weight: 600;
+              padding: 13px 26px;
+              border-radius: 999px;
+              text-decoration: none !important;
+              white-space: nowrap;
+              transition: all 0.2s ease;
+              box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+
+            .cmg-audit-btn:hover {
+              background: #16a34a;
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
+              color: #ffffff !important;
+            }
+
+            @media (max-width: 860px) {
+              .cmg-audit-banner-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 22px 24px;
+                gap: 18px;
+              }
+
+              .cmg-audit-banner-heading {
+                font-size: 21px;
+              }
+
+              .cmg-audit-banner-subtext {
+                font-size: 13.5px;
+              }
+
+              .cmg-audit-banner-action {
+                width: 100%;
+              }
+
+              .cmg-audit-btn {
+                width: 100%;
+                box-sizing: border-box;
+              }
+            }
+          </style>
+
+          <div class="cmg-audit-banner-inner">
+            <div class="cmg-audit-banner-text">
+              <h2 class="cmg-audit-banner-heading">
+                Find What's Hurting Your Website. <span class="cmg-audit-highlight">Instantly!</span>
+              </h2>
+              <p class="cmg-audit-banner-subtext">
+                Get a comprehensive report with actionable recommendations: powered by <span class="cmg-audit-lex"><svg class="cmg-audit-sparkle" viewBox="0 0 24 24" width="13" height="13" fill="#38bdf8"><path d="M12 0l2.5 9.5L24 12l-9.5 2.5L12 24l-2.5-9.5L0 12l9.5-2.5z"/></svg> Lex</span>
+              </p>
+            </div>
+            <div class="cmg-audit-banner-action">
+              <a href="<?php echo $audit_url; ?>" id="blog-detail-banner-try-cmgalaxy" class="cmg-audit-btn">
+                <?php echo $btn_text; ?>
+              </a>
+            </div>
+          </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+add_shortcode( 'cmg_blog_top_banner', 'cmg_render_blog_top_banner' );
+add_shortcode( 'blog_top_banner', 'cmg_render_blog_top_banner' );
+add_shortcode( 'audit_banner', 'cmg_render_blog_top_banner' );
