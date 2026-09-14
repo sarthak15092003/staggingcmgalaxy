@@ -307,3 +307,23 @@ body.single-post a:active,
         margin: 0 !important;
     }
 }
+
+/* Review and Share Bottom Section - Match Top Style Icons */
+.cmg-blog-bottom-review-share-wrap .cmg-share-btn,
+.cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn,
+.cmg-blog-content a.cmg-share-btn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #f3f4f6 !important;
+    color: #4b5563 !important;
+    text-decoration: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.cmg-blog-bottom-review-share-wrap .cmg-share-btn svg,
+.cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn svg,
+.cmg-blog-content a.cmg-share-btn svg {
+    fill: #4b5563 !important;
+    color: #4b5563 !important;
+}

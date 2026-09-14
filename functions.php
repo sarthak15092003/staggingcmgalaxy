@@ -2932,6 +2932,90 @@ if ( ! function_exists( 'cmg_render_blog_bottom_review_share' ) ) {
               padding-bottom: 0 !important;
               border-bottom: none !important;
             }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-blog-share-buttons {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn {
+              width: 32px !important;
+              height: 32px !important;
+              border-radius: 50% !important;
+              background: #f3f4f6 !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              color: #4b5563 !important;
+              text-decoration: none !important;
+              transition: all 0.2s ease !important;
+              border: none !important;
+              outline: none !important;
+              cursor: pointer !important;
+              box-shadow: none !important;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn svg,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn svg {
+              width: 15px !important;
+              height: 15px !important;
+              fill: #4b5563 !important;
+              color: #4b5563 !important;
+              display: block !important;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.wa svg,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.wa svg {
+              width: 16px !important;
+              height: 16px !important;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn:hover,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn:hover {
+              transform: translateY(-2px) !important;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.fb:hover,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.fb:hover {
+              background: #1877f2 !important;
+              color: #ffffff !important;
+            }
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.fb:hover svg,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.fb:hover svg {
+              fill: #ffffff !important;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.li:hover,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.li:hover {
+              background: #0a66c2 !important;
+              color: #ffffff !important;
+            }
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.li:hover svg,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.li:hover svg {
+              fill: #ffffff !important;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.wa:hover,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.wa:hover {
+              background: #25d366 !important;
+              color: #ffffff !important;
+            }
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.wa:hover svg,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.wa:hover svg {
+              fill: #ffffff !important;
+            }
+
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.x:hover,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.x:hover {
+              background: #000000 !important;
+              color: #ffffff !important;
+            }
+            .cmg-blog-bottom-review-share-wrap .cmg-share-btn.x:hover svg,
+            .cmg-blog-content .cmg-blog-bottom-review-share-wrap a.cmg-share-btn.x:hover svg {
+              fill: #ffffff !important;
+            }
           </style>
 
           <div class="cmg-blog-meta-action-row">
