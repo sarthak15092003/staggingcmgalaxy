@@ -3990,17 +3990,29 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
         ?>
         <aside class="cmg-blog-toc-sidebar" id="cmg-blog-toc-sidebar" aria-label="Table of contents">
           <style>
+            /* Break out of Elementor container to go full viewport width */
             .cmg-blog-layout-wrapper {
-              width: 100%;
-              max-width: 100%;
-              margin: 0;
-              padding: 0 28px 0 24px;
+              width: 100vw;
+              max-width: 100vw;
+              position: relative;
+              left: 50%;
+              margin-left: -50vw;
+              margin-right: -50vw;
+              padding: 0;
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
               justify-content: flex-start;
-              gap: 40px;
-              position: relative;
+              gap: 0;
+            }
+
+            /* Center blog content: 15px padding each side, TOC/sidebar flush to edges */
+            .cmg-blog-content {
+              flex: 1;
+              min-width: 0;
+              padding-left: 15px;
+              padding-right: 15px;
+              box-sizing: border-box;
             }
 
             .cmg-blog-toc-sidebar {
