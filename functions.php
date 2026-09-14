@@ -3198,7 +3198,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
             if (!banner || banner.dataset.initialized) return;
             banner.dataset.initialized = 'true';
 
-            var scrollThreshold = 400; // Pixels scrolled before showing
+            var scrollThreshold = 1000; // Pixels scrolled before showing
 
             function handleScroll() {
               if (window.scrollY > scrollThreshold) {
