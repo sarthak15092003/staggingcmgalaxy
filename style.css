@@ -262,9 +262,10 @@ article.cmg-blog-single-article ul.cmg-blog-toc-list,
 li.cmg-blog-toc-item,
 article.cmg-blog-single-article ul.cmg-blog-toc-list li,
 .single-post ul.cmg-blog-toc-list li {
+    list-style: none !important;
     margin: 0 !important;
     margin-top: 0 !important;
-    margin-bottom: 0 !important;
+    margin-bottom: 6px !important;
     padding: 0 !important;
     list-style: none !important;
 }

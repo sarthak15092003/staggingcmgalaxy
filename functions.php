@@ -4716,7 +4716,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               list-style: none !important;
               margin: 0 !important;
               margin-top: 0 !important;
-              margin-bottom: 0 !important;
+              margin-bottom: 6px !important;
               padding: 0 !important;
               list-style: none !important;
             }
