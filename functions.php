@@ -4003,17 +4003,22 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               padding-right: 0 !important;
             }
 
-            .cmg-blog-layout-wrapper {
-              width: 100%;
-              max-width: 100%;
-              padding: 0 0 0 12px;
+            /* Prevent horizontal scroll from vw trick */
+            html, body { overflow-x: hidden !important; }
 
+            .cmg-blog-layout-wrapper {
+              width: 100vw;
+              max-width: 100vw;
+              position: relative;
+              left: 50%;
+              margin-left: -50vw;
+              margin-right: -50vw;
+              padding: 0 0 0 12px;
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
               justify-content: flex-start;
               gap: 0;
-              overflow: visible;
             }
 
             /* Center blog content: 15px padding each side, TOC/sidebar flush to edges */
