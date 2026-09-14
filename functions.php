@@ -3011,19 +3011,19 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               text-align: center;
               z-index: 20;
               font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-              opacity: 1;
-              pointer-events: auto;
-              transform: none;
-              transition: none;
+              opacity: 0;
+              pointer-events: none;
+              transform: translateY(20px);
+              transition: opacity 0.4s ease, transform 0.4s ease;
+              visibility: hidden;
             }
 
             .cmg-floating-side-banner.is-visible {
               opacity: 1;
               pointer-events: auto;
-              transform: none;
+              transform: translateY(0);
+              visibility: visible;
             }
-
-            /* Dismiss button */
             .cmg-side-banner-close {
               position: absolute;
               top: 8px;
@@ -3992,10 +3992,15 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
         ?>
         <aside class="cmg-blog-toc-sidebar" id="cmg-blog-toc-sidebar" aria-label="Table of contents">
           <style>
-            /* Override Elementor parent container - go full width */
+            /* Override Elementor parent container + WP content area - full width */
             .elementor-section, .e-con, .e-con-inner, .elementor-section-wrap,
-            .elementor-container, .elementor-widget-container {
+            .elementor-container, .elementor-widget-container,
+            .site-main, .hentry, article.post, .entry-content {
               max-width: 100% !important;
+              width: 100% !important;
+            }
+            /* Only remove horizontal padding from the direct widget wrapper */
+            .elementor-widget-container {
               padding-left: 0 !important;
               padding-right: 0 !important;
             }
