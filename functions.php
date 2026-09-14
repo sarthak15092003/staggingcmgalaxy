@@ -3136,7 +3136,8 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               min-width: 160px;
               flex-shrink: 0;
               align-self: flex-start;
-              margin-right: 0;
+              margin-left: auto !important;
+              margin-right: 0 !important;
               background: transparent;
               border-radius: 12px;
               padding: 0;
@@ -4053,11 +4054,11 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               left: 50%;
               margin-left: -50vw;
               margin-right: -50vw;
-              padding: 0 0 0 12px;
+              padding: 0 24px 0 12px;
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
-              justify-content: flex-start;
+              justify-content: space-between;
               gap: 0;
             }
 
