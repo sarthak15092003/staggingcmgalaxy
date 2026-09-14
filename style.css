@@ -140,3 +140,70 @@ body.single-post a:focus {
     border-left-color: #22c55e !important;
     outline: none !important;
 }
+
+/* ==========================================================================
+   GLOBAL FIX: REMOVE RED (#c36) FROM ALL BUTTONS & LINKS PROJECT-WIDE
+   ========================================================================== */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+    border: none !important;
+    outline: none !important;
+}
+
+button:focus,
+button:hover,
+button:active,
+[type="button"]:focus,
+[type="button"]:hover,
+[type="button"]:active,
+[type="submit"]:focus,
+[type="submit"]:hover,
+[type="submit"]:active {
+    background-color: transparent;
+    color: inherit;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* TOC Toggle Button: guaranteed clean neutral look */
+.cmg-toc-mobile-toggle-btn,
+.cmg-toc-mobile-toggle-btn:focus,
+.cmg-toc-mobile-toggle-btn:active,
+.cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn,
+.cmg-blog-toc-header:focus .cmg-toc-mobile-toggle-btn {
+    background: #f1f5f9 !important;
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.cmg-toc-mobile-toggle-btn:hover,
+.cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn:hover {
+    background: #e2e8f0 !important;
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+/* Content Links: clean blue brand links instead of #c36 red */
+body.single-post a,
+body.single-post a:visited,
+.cmg-blog-content a,
+.cmg-blog-content a:visited {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+    text-decoration-color: rgba(37, 99, 235, 0.4) !important;
+}
+
+body.single-post a:hover,
+body.single-post a:focus,
+body.single-post a:active,
+.cmg-blog-content a:hover,
+.cmg-blog-content a:focus,
+.cmg-blog-content a:active {
+    color: #1d4ed8 !important;
+    text-decoration-color: #1d4ed8 !important;
+}

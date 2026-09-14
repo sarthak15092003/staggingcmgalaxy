@@ -219,6 +219,45 @@ add_action( 'wp_head', function() {
       .cmg-related-articles-section {
         font-family: var(--primary-font, 'Onest', sans-serif) !important;
       }
+      
+      /* Eradicate red #c36 on all buttons and links */
+      [type="button"], [type="submit"], button {
+        border-color: transparent !important;
+      }
+      [type="button"]:focus, [type="button"]:hover, [type="button"]:active,
+      [type="submit"]:focus, [type="submit"]:hover, [type="submit"]:active,
+      button:focus, button:hover, button:active {
+        background-color: transparent;
+        color: inherit;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+      .cmg-toc-mobile-toggle-btn,
+      .cmg-toc-mobile-toggle-btn:focus,
+      .cmg-toc-mobile-toggle-btn:active,
+      .cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn,
+      .cmg-blog-toc-header:focus .cmg-toc-mobile-toggle-btn {
+        background: #f1f5f9 !important;
+        background-color: #f1f5f9 !important;
+        color: #475569 !important;
+        border: 1px solid #e2e8f0 !important;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+      .cmg-toc-mobile-toggle-btn:hover {
+        background: #e2e8f0 !important;
+        background-color: #e2e8f0 !important;
+        color: #0f172a !important;
+      }
+      .cmg-blog-content a, .cmg-blog-content a:visited {
+        color: #2563eb !important;
+        text-decoration: underline !important;
+        text-decoration-color: rgba(37, 99, 235, 0.4) !important;
+      }
+      .cmg-blog-content a:hover, .cmg-blog-content a:focus, .cmg-blog-content a:active {
+        color: #1d4ed8 !important;
+        text-decoration-color: #1d4ed8 !important;
+      }
       /* Remove red tap / active highlight on click */
       *, *::before, *::after {
         -webkit-tap-highlight-color: transparent !important;
@@ -4101,23 +4140,32 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             }
 
             .cmg-toc-mobile-toggle-btn {
-              display: inline-flex;
+              display: inline-flex !important;
               align-items: center;
               gap: 5px;
-              background: #f1f5f9;
-              color: #475569;
+              background: #f1f5f9 !important;
+              background-color: #f1f5f9 !important;
+              color: #475569 !important;
               font-size: 11.5px;
               font-weight: 600;
               padding: 4px 10px;
               border-radius: 999px;
-              border: 1px solid #e2e8f0;
+              border: 1px solid #e2e8f0 !important;
               cursor: pointer;
               transition: all 0.2s ease;
+              outline: none !important;
+              box-shadow: none !important;
             }
 
-            .cmg-toc-mobile-toggle-btn:hover {
-              background: #e2e8f0;
-              color: #0f172a;
+            .cmg-toc-mobile-toggle-btn:hover,
+            .cmg-toc-mobile-toggle-btn:focus,
+            .cmg-toc-mobile-toggle-btn:active,
+            .cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn {
+              background: #e2e8f0 !important;
+              background-color: #e2e8f0 !important;
+              color: #0f172a !important;
+              outline: none !important;
+              box-shadow: none !important;
             }
 
             .cmg-toc-mobile-toggle-btn svg {
