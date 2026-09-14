@@ -4032,8 +4032,8 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
             .cmg-blog-toc-sidebar {
               margin-left: 16px;
-              width: 240px;
-              min-width: 220px;
+              width: 280px;
+              min-width: 260px;
               position: sticky;
               top: 110px;
               max-height: calc(100vh - 140px);
