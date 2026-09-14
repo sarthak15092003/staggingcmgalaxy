@@ -2155,6 +2155,48 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
             display: none !important;
           }
 
+          /* Bring bullet points, numbers & special list characters inside container */
+          .cmg-blog-content ul,
+          .cmg-blog-content ol,
+          .page-content.cmg-blog-content ul,
+          .page-content.cmg-blog-content ol,
+          article.cmg-blog-single-article ul,
+          article.cmg-blog-single-article ol,
+          .single-post .page-content ul,
+          .single-post .page-content ol {
+            padding-left: 32px !important;
+            margin-left: 0 !important;
+            margin-top: 16px !important;
+            margin-bottom: 24px !important;
+            list-style-position: outside !important;
+            box-sizing: border-box !important;
+          }
+
+          .cmg-blog-content ul li,
+          .cmg-blog-content ol li,
+          .page-content.cmg-blog-content ul li,
+          .page-content.cmg-blog-content ol li,
+          article.cmg-blog-single-article ul li,
+          article.cmg-blog-single-article ol li,
+          .single-post .page-content ul li,
+          .single-post .page-content ol li {
+            margin-bottom: 10px !important;
+            line-height: 1.75 !important;
+            padding-left: 4px !important;
+          }
+
+          /* Blockquotes and special characters inside container */
+          .cmg-blog-content blockquote,
+          article.cmg-blog-single-article blockquote,
+          .single-post .page-content blockquote {
+            padding: 16px 24px !important;
+            margin: 24px 0 !important;
+            border-left: 4px solid #3a7dff !important;
+            background: #f8fafc !important;
+            border-radius: 0 8px 8px 0 !important;
+            box-sizing: border-box !important;
+          }
+
           .cmg-blog-header-wrapper {
               font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
               max-width: 1100px;

@@ -15,3 +15,33 @@
 	Tags: accessibility-ready, flexible-header, custom-colors, custom-menu, custom-logo, featured-images, rtl-language-support, threaded-comments, translation-ready,
 */
 /* CI/CD Test Update */
+
+/* Blog Content List & Bullet Point Alignment */
+.cmg-blog-content ul,
+.cmg-blog-content ol,
+.page-content.cmg-blog-content ul,
+.page-content.cmg-blog-content ol,
+article.cmg-blog-single-article ul,
+article.cmg-blog-single-article ol,
+.single-post .page-content ul,
+.single-post .page-content ol {
+    padding-left: 32px !important;
+    margin-left: 0 !important;
+    margin-top: 16px !important;
+    margin-bottom: 24px !important;
+    list-style-position: outside !important;
+    box-sizing: border-box !important;
+}
+
+.cmg-blog-content ul li,
+.cmg-blog-content ol li,
+.page-content.cmg-blog-content ul li,
+.page-content.cmg-blog-content ol li,
+article.cmg-blog-single-article ul li,
+article.cmg-blog-single-article ol li,
+.single-post .page-content ul li,
+.single-post .page-content ol li {
+    margin-bottom: 10px !important;
+    line-height: 1.75 !important;
+    padding-left: 4px !important;
+}
