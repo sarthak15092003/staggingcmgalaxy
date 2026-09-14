@@ -2388,6 +2388,234 @@ if ( ! function_exists( 'cmg_get_post_author_data' ) ) {
     }
 }
 
+
+if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
+    function cmg_render_blog_ratings_script() {
+        static $cmg_ratings_script_rendered = false;
+        if ( $cmg_ratings_script_rendered ) {
+            return '';
+        }
+        $cmg_ratings_script_rendered = true;
+        ob_start();
+        ?>
+        <script>
+        (function() {
+          function initCmgRatings() {
+            var wraps = document.querySelectorAll(".cmg-blog-header-wrapper, .cmg-blog-bottom-review-share-wrap");
+            if (!wraps.length) return;
+
+            var postId = wraps[0].getAttribute("data-post-id") || "global";
+            var blogSlug = wraps[0].getAttribute("data-blog-slug") || "";
+
+            // Base URL matching book a demo form
+            var apiBaseUrl = "https://staging-api.cmgalaxy.com";
+            var apiFallbackUrl = "https://api.cmgalaxy.com";
+
+            // Extract blog title / slug from URL or wrapper
+            function getBlogTitleFromUrl(url) {
+              url = url || window.location.href;
+              try {
+                var marker = "/blog/";
+                var index = url.indexOf(marker);
+                if (index !== -1) {
+                  var after = url.substring(index + marker.length);
+                  var clean = after.split(/[?#]/)[0].replace(/^\/+|\/+$/g, "");
+                  var firstSegment = clean.split("/")[0];
+                  if (firstSegment) return decodeURIComponent(firstSegment);
+                }
+                var wrap = document.querySelector("[data-blog-slug]");
+                if (wrap && wrap.getAttribute("data-blog-slug")) {
+                  return wrap.getAttribute("data-blog-slug");
+                }
+                var pathParts = window.location.pathname.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean);
+                if (pathParts.length) {
+                  return decodeURIComponent(pathParts[pathParts.length - 1]);
+                }
+              } catch (e) {
+                return null;
+              }
+              return null;
+            }
+
+            var blogTitleFromUrl = getBlogTitleFromUrl() || blogSlug;
+
+            // Generate or get cross-device UUID
+            function getCrossDeviceId() {
+              var id = localStorage.getItem("cross_device_id");
+              if (!id) {
+                if (typeof crypto !== "undefined" && crypto.randomUUID) {
+                  id = crypto.randomUUID();
+                } else {
+                  id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c === "x" ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                  });
+                }
+                localStorage.setItem("cross_device_id", id);
+              }
+              return id;
+            }
+
+            var crossDeviceId = getCrossDeviceId();
+            var totalReviews = 0;
+            var totalRating = 0;
+
+            function syncAllDisplays(userRating, avgRating, totalCount) {
+              wraps.forEach(function(wrap) {
+                var stars = wrap.querySelectorAll(".cmg-star");
+                var scoreEl = wrap.querySelector(".cmg-rating-score");
+                stars.forEach(function(s) {
+                  var idx = parseInt(s.getAttribute("data-index") || s.getAttribute("data-value"), 10);
+                  if (idx <= userRating) {
+                    s.classList.add("active");
+                    s.classList.add("filled");
+                  } else {
+                    s.classList.remove("active");
+                    s.classList.remove("filled");
+                  }
+                });
+                if (scoreEl) {
+                  var displayAvg = (avgRating !== undefined && avgRating !== null && avgRating > 0) ? parseFloat(avgRating).toFixed(1) : "0.0";
+                  var displayCount = (totalCount !== undefined && totalCount !== null) ? totalCount : "0";
+                  scoreEl.textContent = displayAvg + " (" + displayCount + ")";
+                }
+              });
+            }
+
+            // Fetch reviews from API
+            function fetchReviews(cId, bTitle) {
+              if (!cId || !bTitle) return;
+              fetch(apiBaseUrl + "/api/v2/commonapis/fetch_rating/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  cross_device_id: cId,
+                  blog_title: bTitle
+                })
+              })
+              .then(function(res) {
+                if (!res.ok && res.status >= 500) {
+                  return fetch(apiFallbackUrl + "/api/v2/commonapis/fetch_rating/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      cross_device_id: cId,
+                      blog_title: bTitle
+                    })
+                  }).then(function(r) { return r.json(); });
+                }
+                return res.json();
+              })
+              .then(function(data) {
+                if (data && data.success && data.data) {
+                  var d = data.data;
+                  var uRating = d.rating || 0;
+                  totalRating = uRating;
+                  totalReviews = d.total_rating || 0;
+                  var avgRating = typeof d.avg_rating === "number" ? d.avg_rating : parseFloat(d.avg_rating || 0);
+                  syncAllDisplays(uRating, avgRating, totalReviews);
+                }
+              })
+              .catch(function(err) {
+                console.error("fetchReviews error:", err);
+              });
+            }
+
+            // Initial API Fetch
+            fetchReviews(crossDeviceId, blogTitleFromUrl);
+
+            wraps.forEach(function(wrap) {
+              var starContainer = wrap.querySelector(".cmg-stars-list");
+              if (!starContainer || starContainer.dataset.initialized) return;
+              starContainer.dataset.initialized = "true";
+
+              var stars = starContainer.querySelectorAll(".cmg-star");
+
+              stars.forEach(function(star) {
+                star.addEventListener("mouseenter", function() {
+                  var hoverIdx = parseInt(this.getAttribute("data-index") || this.getAttribute("data-value"), 10);
+                  stars.forEach(function(s) {
+                    var sIdx = parseInt(s.getAttribute("data-index") || s.getAttribute("data-value"), 10);
+                    if (sIdx <= hoverIdx) {
+                      s.classList.add("hovered");
+                    } else {
+                      s.classList.remove("hovered");
+                    }
+                  });
+                });
+
+                star.addEventListener("click", function() {
+                  var rating = parseInt(this.getAttribute("data-index") || this.getAttribute("data-value"), 10);
+                  if (!rating) return;
+
+                  // Optimistic instant visual update
+                  if (totalReviews === 0) {
+                    totalReviews = 1;
+                    totalRating = rating;
+                  }
+                  var avgRating = (totalRating / totalReviews).toFixed(1);
+                  syncAllDisplays(rating, avgRating, totalReviews);
+
+                  wraps.forEach(function(w) {
+                    var tEl = w.querySelector(".cmg-rating-text");
+                    if (tEl) {
+                      tEl.textContent = "Thank you!";
+                      setTimeout(function() { tEl.textContent = "Rating"; }, 3000);
+                    }
+                  });
+
+                  // Send rating to backend API
+                  fetch(apiBaseUrl + "/api/v2/commonapis/save_rating/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      cross_device_id: crossDeviceId,
+                      rating: rating,
+                      blog_title: blogTitleFromUrl
+                    })
+                  })
+                  .then(function(res) {
+                    if (!res.ok && res.status >= 500) {
+                      return fetch(apiFallbackUrl + "/api/v2/commonapis/save_rating/", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          cross_device_id: crossDeviceId,
+                          rating: rating,
+                          blog_title: blogTitleFromUrl
+                        })
+                      }).then(function(r) { return r.json(); });
+                    }
+                    return res.json();
+                  })
+                  .then(function(data) {
+                    console.log("Rating saved successfully:", data);
+                    fetchReviews(crossDeviceId, blogTitleFromUrl);
+                  })
+                  .catch(function(err) {
+                    console.error("Save rating error:", err);
+                  });
+                });
+              });
+
+              starContainer.addEventListener("mouseleave", function() {
+                stars.forEach(function(s) { s.classList.remove("hovered"); });
+              });
+            });
+          }
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initCmgRatings);
+          } else {
+            initCmgRatings();
+          }
+        })();
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+}
+
 if ( ! function_exists( 'cmg_render_blog_header' ) ) {
     function cmg_render_blog_header( $atts = array() ) {
         global $post;
@@ -2420,7 +2648,8 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
 
         ob_start();
         ?>
-        <div class="cmg-blog-header-wrapper" data-post-id="<?php echo esc_attr( $post_id ); ?>">
+        <?php $post_slug = $post_id ? get_post_field( 'post_name', $post_id ) : ''; ?>
+        <div class="cmg-blog-header-wrapper" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-blog-slug="<?php echo esc_attr( $post_slug ); ?>">
           <style>
             body.single-post .page-header,
           body.single-post .entry-header,
@@ -2795,88 +3024,7 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
           </div>
         </div>
 
-        <script>
-        (function() {
-          function initCmgRatings() {
-            var wraps = document.querySelectorAll(".cmg-blog-header-wrapper, .cmg-blog-bottom-review-share-wrap");
-            if (!wraps.length) return;
-
-            var postId = wraps[0].getAttribute("data-post-id") || "global";
-            var storageKey = "cmg_post_rating_" + postId;
-            var countKey = "cmg_post_rating_count_" + postId;
-            var saved = localStorage.getItem(storageKey);
-            var count = localStorage.getItem(countKey) || (saved ? "1" : "0");
-
-            function syncAllDisplays(val) {
-              wraps.forEach(function(wrap) {
-                var stars = wrap.querySelectorAll(".cmg-star");
-                var scoreEl = wrap.querySelector(".cmg-rating-score");
-                stars.forEach(function(s) {
-                  var idx = parseInt(s.getAttribute("data-index"), 10);
-                  if (idx <= val) {
-                    s.classList.add("active");
-                  } else {
-                    s.classList.remove("active");
-                  }
-                });
-                if (scoreEl) {
-                  scoreEl.textContent = (val > 0 ? parseFloat(val).toFixed(1) : "0.0") + " (" + (val > 0 ? count : "0") + ")";
-                }
-              });
-            }
-
-            if (saved) {
-              syncAllDisplays(parseFloat(saved));
-            }
-
-            wraps.forEach(function(wrap) {
-              var starContainer = wrap.querySelector(".cmg-stars-list");
-              if (!starContainer || starContainer.dataset.initialized) return;
-              starContainer.dataset.initialized = "true";
-
-              var stars = starContainer.querySelectorAll(".cmg-star");
-
-              stars.forEach(function(star) {
-                star.addEventListener("mouseenter", function() {
-                  var hoverIdx = parseInt(this.getAttribute("data-index"), 10);
-                  stars.forEach(function(s) {
-                    if (parseInt(s.getAttribute("data-index"), 10) <= hoverIdx) {
-                      s.classList.add("hovered");
-                    } else {
-                      s.classList.remove("hovered");
-                    }
-                  });
-                });
-
-                star.addEventListener("click", function() {
-                  var chosen = parseInt(this.getAttribute("data-index"), 10);
-                  count = "1";
-                  localStorage.setItem(storageKey, chosen);
-                  localStorage.setItem(countKey, count);
-                  syncAllDisplays(chosen);
-                  wraps.forEach(function(w) {
-                    var tEl = w.querySelector(".cmg-rating-text");
-                    if (tEl) {
-                      tEl.textContent = "Thank you!";
-                      setTimeout(function() { tEl.textContent = "Rating"; }, 3000);
-                    }
-                  });
-                });
-              });
-
-              starContainer.addEventListener("mouseleave", function() {
-                stars.forEach(function(s) { s.classList.remove("hovered"); });
-              });
-            });
-          }
-
-          if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", initCmgRatings);
-          } else {
-            initCmgRatings();
-          }
-        })();
-        </script>
+        <?php echo cmg_render_blog_ratings_script(); ?>
         <?php
         return ob_get_clean();
     }
@@ -2914,7 +3062,8 @@ if ( ! function_exists( 'cmg_render_blog_bottom_review_share' ) ) {
 
         ob_start();
         ?>
-        <div class="cmg-blog-bottom-review-share-wrap" data-post-id="<?php echo esc_attr( $post_id ); ?>">
+        <?php $post_slug = $post_id ? get_post_field( 'post_name', $post_id ) : ''; ?>
+        <div class="cmg-blog-bottom-review-share-wrap" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-blog-slug="<?php echo esc_attr( $post_slug ); ?>">
           <style>
             .cmg-blog-bottom-review-share-wrap {
               margin-top: 40px;
@@ -3059,6 +3208,7 @@ if ( ! function_exists( 'cmg_render_blog_bottom_review_share' ) ) {
             </div>
           </div>
         </div>
+        <?php echo cmg_render_blog_ratings_script(); ?>
         <?php
         return ob_get_clean();
     }
