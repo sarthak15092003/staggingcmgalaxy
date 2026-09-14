@@ -35,7 +35,7 @@ while ( have_posts() ) :
 				}
 				?>
 
-				<div class="page-content cmg-blog-content" style="flex: 1 1 0%; min-width: 0; max-width: 860px; font-size: 18px; line-height: 1.75; color: #374151; box-sizing: border-box;">
+				<div class="page-content cmg-blog-content" style="flex: 1 1 0%; min-width: 0; max-width: 840px; font-size: 18px; line-height: 1.75; color: #374151; box-sizing: border-box;">
 					<?php the_content(); ?>
 
 					<?php wp_link_pages(); ?>

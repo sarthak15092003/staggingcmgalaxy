@@ -3991,20 +3991,28 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
         <aside class="cmg-blog-toc-sidebar" id="cmg-blog-toc-sidebar" aria-label="Table of contents">
           <style>
             .cmg-blog-layout-wrapper {
-              max-width: 1200px;
+              max-width: 1440px;
               margin: 0 auto;
-              padding: 0 20px;
+              padding: 0 32px;
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
-              justify-content: space-between;
-              gap: 48px;
+              justify-content: flex-start;
+              gap: 52px;
               position: relative;
             }
 
+            @media (min-width: 1560px) {
+              .cmg-blog-layout-wrapper {
+                max-width: 1520px;
+                padding: 0 40px;
+                gap: 60px;
+              }
+            }
+
             .cmg-blog-toc-sidebar {
-              width: 260px;
-              min-width: 240px;
+              width: 245px;
+              min-width: 220px;
               flex-shrink: 0;
               position: sticky;
               top: 110px;
