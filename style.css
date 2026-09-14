@@ -253,25 +253,15 @@ body.single-post a:active,
     font-size: 12px !important;
 }
 
-/* Right-align Side CTA Banner on Desktop */
-@media (min-width: 1025px) {
-    .cmg-blog-layout-wrapper {
-        padding-right: 24px !important;
-        justify-content: space-between !important;
-    }
-    .cmg-floating-side-banner {
-        margin-left: auto !important;
-        margin-right: 0 !important;
-    }
-}
-
-/* Desktop Left-aligned & Reduced-width Table of Contents */
+/* Desktop 3-Column Equal Gap Spacing & Alignment */
 @media (min-width: 1025px) {
     .cmg-blog-layout-wrapper {
         padding-left: 24px !important;
+        padding-right: 24px !important;
+        justify-content: space-between !important;
     }
     .cmg-blog-toc-sidebar {
-        margin-left: 0 !important;
+        margin: 0 !important;
         width: 220px !important;
         min-width: 190px !important;
         max-width: 230px !important;
@@ -282,16 +272,14 @@ body.single-post a:active,
         gap: 8px !important;
         text-align: left !important;
     }
-}
-
-/* Center Blog Content Container on Desktop (Text remains Left Aligned) */
-@media (min-width: 1025px) {
     .cmg-blog-content {
         flex: 1 1 auto !important;
         min-width: 0 !important;
         max-width: 960px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        margin: 0 !important;
         text-align: left !important;
+    }
+    .cmg-floating-side-banner {
+        margin: 0 !important;
     }
 }

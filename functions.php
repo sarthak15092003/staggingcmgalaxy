@@ -3136,8 +3136,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               min-width: 160px;
               flex-shrink: 0;
               align-self: flex-start;
-              margin-left: auto !important;
-              margin-right: 0 !important;
+              margin: 0 !important;
               background: transparent;
               border-radius: 12px;
               padding: 0;
@@ -4067,8 +4066,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               flex: 1 1 auto !important;
               min-width: 0 !important;
               max-width: 960px !important;
-              margin-left: auto !important;
-              margin-right: auto !important;
+              margin: 0 !important;
               padding-left: 20px !important;
               padding-right: 20px !important;
               box-sizing: border-box !important;
