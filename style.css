@@ -131,17 +131,40 @@ body.single-post a:focus {
     outline: none !important;
 }
 
-.cmg-blog-toc-link:active,
-.cmg-blog-toc-link:focus,
-.cmg-blog-toc-link:focus-visible,
-.cmg-blog-toc-link.is-active {
+/* Ensure TOC links are ALWAYS black and bold when active/focused/visited */
+body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link,
+body.single-post .cmg-blog-toc-sidebar .cmg-blog-toc-link,
+body.single-post a.cmg-blog-toc-link {
+    color: #475569 !important;
+    font-weight: 400;
+    text-decoration: none !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+}
+body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:hover,
+body.single-post a.cmg-blog-toc-link:hover {
+    color: #000000 !important;
+    background: transparent !important;
+    border: none !important;
+}
+body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:active,
+body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:focus,
+body.single-post a.cmg-blog-toc-link:active,
+body.single-post a.cmg-blog-toc-link:focus,
+body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:visited {
+    color: #000000 !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+}
+body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link.is-active,
+body.single-post .cmg-blog-toc-sidebar .cmg-blog-toc-link.is-active,
+body.single-post a.cmg-blog-toc-link.is-active {
     color: #000000 !important;
     font-weight: 700 !important;
     background: transparent !important;
     border: none !important;
-    border-left: none !important;
-    border-right: none !important;
-    outline: none !important;
 }
 
 /* ==========================================================================
@@ -296,6 +319,13 @@ article.cmg-blog-single-article ul.cmg-blog-toc-list li,
     border-left: none !important;
     border-right: none !important;
     background: transparent !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+.cmg-blog-toc-link:visited {
+    color: #475569 !important;
+}
+.cmg-blog-toc-link.is-active:visited {
     color: #000000 !important;
     font-weight: 700 !important;
 }

@@ -290,15 +290,40 @@ add_action( 'wp_head', function() {
         -webkit-tap-highlight-color: transparent !important;
         outline: none !important;
       }
-      .cmg-blog-toc-link:active,
-      .cmg-blog-toc-link:focus,
-      .cmg-blog-toc-link.is-active {
+      /* Ensure TOC links are ALWAYS black and bold when active/focused/visited */
+      body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link,
+      body.single-post .cmg-blog-toc-sidebar .cmg-blog-toc-link,
+      body.single-post a.cmg-blog-toc-link {
+        color: #475569 !important;
+        font-weight: 400;
+        text-decoration: none !important;
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+      }
+      body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:hover,
+      body.single-post a.cmg-blog-toc-link:hover {
+        color: #000000 !important;
+        background: transparent !important;
+        border: none !important;
+      }
+      body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:active,
+      body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:focus,
+      body.single-post a.cmg-blog-toc-link:active,
+      body.single-post a.cmg-blog-toc-link:focus,
+      body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link:visited {
+        color: #000000 !important;
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+      }
+      body.single-post .cmg-blog-toc-sidebar a.cmg-blog-toc-link.is-active,
+      body.single-post .cmg-blog-toc-sidebar .cmg-blog-toc-link.is-active,
+      body.single-post a.cmg-blog-toc-link.is-active {
         color: #000000 !important;
         font-weight: 700 !important;
         background: transparent !important;
         border: none !important;
-        border-left: none !important;
-        border-right: none !important;
       }
       body.single-post .cmg-blog-content,
       body.single-post .cmg-blog-content p,
@@ -5188,6 +5213,9 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
                 a.addEventListener('click', function(e) {
                   e.preventDefault();
+                  links.forEach(function(l) { l.classList.remove('is-active'); });
+                  a.classList.add('is-active');
+                  a.blur();
                   const target = document.getElementById(id);
                   if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -5314,40 +5342,57 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               }
 
 
-              // Active Scrollspy using IntersectionObserver
+              // Active Scrollspy: highlight bold black as sections come into view
               const links = tocList.querySelectorAll('.cmg-blog-toc-link');
               const sheetLinks = sheetList ? sheetList.querySelectorAll('.cmg-docy-sheet-link') : [];
 
-              if (window.IntersectionObserver) {
-                const observer = new IntersectionObserver(function(entries) {
-                  entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                      const id = entry.target.getAttribute('id');
-                      links.forEach(function(link) {
-                        if (link.getAttribute('href') === '#' + id) {
-                          link.classList.add('is-active');
-                        } else {
-                          link.classList.remove('is-active');
-                        }
-                      });
-                      sheetLinks.forEach(function(sLink) {
-                        if (sLink.getAttribute('href') === '#' + id) {
-                          sLink.classList.add('is-active');
-                        } else {
-                          sLink.classList.remove('is-active');
-                        }
-                      });
-                    }
-                  });
-                }, {
-                  rootMargin: '-100px 0px -60% 0px',
-                  threshold: 0
-                });
+              function updateActiveSection() {
+                let currentId = '';
+                const scrollPos = window.scrollY || window.pageYOffset;
+                const offset = 140; // Account for sticky header offset
 
                 headings.forEach(function(h2) {
-                  observer.observe(h2);
+                  const rect = h2.getBoundingClientRect();
+                  if (rect.top <= offset) {
+                    currentId = h2.getAttribute('id');
+                  }
                 });
+
+                if (!currentId && headings.length > 0 && scrollPos < 400) {
+                  currentId = headings[0].getAttribute('id');
+                }
+
+                if (currentId) {
+                  links.forEach(function(link) {
+                    if (link.getAttribute('href') === '#' + currentId) {
+                      link.classList.add('is-active');
+                    } else {
+                      link.classList.remove('is-active');
+                    }
+                  });
+                  sheetLinks.forEach(function(sLink) {
+                    if (sLink.getAttribute('href') === '#' + currentId) {
+                      sLink.classList.add('is-active');
+                    } else {
+                      sLink.classList.remove('is-active');
+                    }
+                  });
+                }
               }
+
+              let isTicking = false;
+              window.addEventListener('scroll', function() {
+                if (!isTicking) {
+                  window.requestAnimationFrame(function() {
+                    updateActiveSection();
+                    isTicking = false;
+                  });
+                  isTicking = true;
+                }
+              }, { passive: true });
+
+              // Run immediately so first section is bold on load
+              updateActiveSection();
             }
 
             if (document.readyState === 'loading') {
