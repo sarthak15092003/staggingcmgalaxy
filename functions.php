@@ -3680,3 +3680,298 @@ add_action( 'wp_head', function() {
         </style>';
     }
 }, 50 );
+
+/* ==========================================================================
+   CMG BLOG RELATED ARTICLES SECTION
+   ========================================================================== */
+
+if ( ! function_exists( 'cmg_render_blog_related_articles' ) ) {
+    function cmg_render_blog_related_articles( $atts = array() ) {
+        if ( ! is_singular( 'post' ) && empty( $atts['force'] ) ) {
+            return '';
+        }
+
+        static $related_rendered = false;
+        if ( $related_rendered && empty( $atts['force'] ) ) {
+            return '';
+        }
+        if ( ! empty( $GLOBALS['cmg_blog_related_articles_already_rendered'] ) && empty( $atts['force'] ) ) {
+            return '';
+        }
+        $related_rendered = true;
+        $GLOBALS['cmg_blog_related_articles_already_rendered'] = true;
+
+        global $post;
+        $current_id = ( $post && isset( $post->ID ) ) ? $post->ID : get_the_ID();
+
+        $articles = array();
+
+        // 1. Query related posts from WordPress
+        $categories = $current_id ? wp_get_post_categories( $current_id ) : array();
+        $query_args = array(
+            'post_type'      => 'post',
+            'post_status'    => 'publish',
+            'posts_per_page' => 3,
+            'post__not_in'   => $current_id ? array( $current_id ) : array(),
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        );
+        if ( ! empty( $categories ) ) {
+            $query_args['category__in'] = $categories;
+        }
+
+        $query = new WP_Query( $query_args );
+
+        // Fallback to recent posts if no category posts found
+        if ( ! $query->have_posts() || $query->post_count < 3 ) {
+            $fallback_args = array(
+                'post_type'      => 'post',
+                'post_status'    => 'publish',
+                'posts_per_page' => 3,
+                'post__not_in'   => $current_id ? array( $current_id ) : array(),
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+            );
+            $query = new WP_Query( $fallback_args );
+        }
+
+        if ( $query->have_posts() ) {
+            while ( $query->have_posts() ) {
+                $query->the_post();
+                $pid   = get_the_ID();
+                $thumb = get_the_post_thumbnail_url( $pid, 'large' );
+                $articles[] = array(
+                    'title'     => get_the_title(),
+                    'permalink' => get_permalink(),
+                    'date'      => get_the_date( 'F j, Y' ),
+                    'image'     => $thumb,
+                );
+            }
+            wp_reset_postdata();
+        }
+
+        // Curated fallback articles from the production blog to guarantee 3 complete cards
+        $curated_fallbacks = array(
+            array(
+                'title'     => 'Ideal Customer Profile Bucketing: Do You Really Know Your Audience?',
+                'permalink' => home_url( '/blog/ideal-customer-profile-bucketing-do-you-really-know-your-audience' ),
+                'date'      => 'August 24, 2026',
+                'image'     => 'https://cdn.prod.website-files.com/67b5e5b17dee6e1ed91f1014/6a8c212b7eab4bd21b88c912_Feature%20image24.jpg',
+            ),
+            array(
+                'title'     => 'The Shift from Vanity Metrics to Value Metrics in Digital Marketing',
+                'permalink' => home_url( '/blog/the-shift-from-vanity-metrics-to-value-metrics-in-digital-marketing' ),
+                'date'      => 'July 30, 2026',
+                'image'     => 'https://cdn.prod.website-files.com/67b5e5b17dee6e1ed91f1014/6a6ae2469c4c58ed4776a782_Feature%20Image.jpg%20(5).jpeg',
+            ),
+            array(
+                'title'     => 'The Marketer’s Time Trap: How Marketing Automation Frees You to Focus on Strategy',
+                'permalink' => home_url( '/blog/the-marketers-time-trap-how-marketing-automation-frees-you-to-focus-on-strategy' ),
+                'date'      => 'July 27, 2026',
+                'image'     => 'https://cdn.prod.website-files.com/67b5e5b17dee6e1ed91f1014/6a8276f7a6a4220b22a6aa87_Feature%20Image%20(6).jpg',
+            ),
+        );
+
+        // Fill up to 3 cards if WP has fewer published posts
+        $fallback_idx = 0;
+        while ( count( $articles ) < 3 && $fallback_idx < count( $curated_fallbacks ) ) {
+            $fb = $curated_fallbacks[ $fallback_idx ];
+            if ( ! $current_id || stripos( get_the_title( $current_id ), substr( $fb['title'], 0, 15 ) ) === false ) {
+                $articles[] = $fb;
+            }
+            $fallback_idx++;
+        }
+
+        // Fill images for any WP posts missing a featured image
+        foreach ( $articles as $k => $art ) {
+            if ( empty( $art['image'] ) ) {
+                $articles[$k]['image'] = $curated_fallbacks[$k % 3]['image'];
+            }
+        }
+
+        $view_all_url = home_url( '/blog/' );
+
+        ob_start();
+        ?>
+        <div class="cmg-related-articles-section">
+          <style>
+            .cmg-related-articles-section {
+              max-width: 1100px;
+              margin: 70px auto 40px auto;
+              padding: 0 20px;
+              box-sizing: border-box;
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+
+            .cmg-related-header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 36px;
+              gap: 20px;
+            }
+
+            .cmg-related-heading {
+              font-size: 38px;
+              font-weight: 700;
+              color: #161c52;
+              margin: 0;
+              line-height: 1.2;
+              letter-spacing: -0.5px;
+            }
+
+            .cmg-related-view-all-btn {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              padding: 11px 26px;
+              border: 1.5px solid #161c52;
+              border-radius: 9999px;
+              background: transparent;
+              color: #161c52;
+              font-size: 14.5px;
+              font-weight: 600;
+              text-decoration: none;
+              white-space: nowrap;
+              transition: all 0.25s ease;
+            }
+
+            .cmg-related-view-all-btn:hover {
+              background: #161c52;
+              color: #ffffff;
+              transform: translateY(-2px);
+              box-shadow: 0 4px 14px rgba(22, 28, 82, 0.2);
+            }
+
+            .cmg-related-grid {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 32px;
+            }
+
+            .cmg-related-card {
+              display: flex;
+              flex-direction: column;
+              text-decoration: none;
+              color: inherit;
+              border-radius: 16px;
+              transition: transform 0.25s ease;
+            }
+
+            .cmg-related-card:hover {
+              transform: translateY(-4px);
+            }
+
+            .cmg-related-thumb-wrap {
+              width: 100%;
+              aspect-ratio: 16 / 9;
+              border-radius: 14px;
+              overflow: hidden;
+              background: #e2e8f0;
+              margin-bottom: 16px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            }
+
+            .cmg-related-thumb {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              display: block;
+              transition: transform 0.35s ease;
+            }
+
+            .cmg-related-card:hover .cmg-related-thumb {
+              transform: scale(1.04);
+            }
+
+            .cmg-related-date {
+              font-size: 14px;
+              font-weight: 500;
+              color: #64748b;
+              margin: 0 0 10px 0;
+            }
+
+            .cmg-related-title {
+              font-size: 19px;
+              font-weight: 700;
+              color: #0f172a;
+              line-height: 1.38;
+              margin: 0;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              transition: color 0.2s ease;
+            }
+
+            .cmg-related-card:hover .cmg-related-title {
+              color: #2563eb;
+            }
+
+            @media (max-width: 900px) {
+              .cmg-related-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+              }
+
+              .cmg-related-heading {
+                font-size: 30px;
+              }
+            }
+
+            @media (max-width: 600px) {
+              .cmg-related-articles-section {
+                margin: 50px auto 30px auto;
+              }
+
+              .cmg-related-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                margin-bottom: 24px;
+              }
+
+              .cmg-related-heading {
+                font-size: 26px;
+              }
+
+              .cmg-related-view-all-btn {
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+              }
+
+              .cmg-related-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+              }
+            }
+          </style>
+
+          <div class="cmg-related-header">
+            <h2 class="cmg-related-heading">Related Articles</h2>
+            <a href="<?php echo esc_url( $view_all_url ); ?>" class="cmg-related-view-all-btn" id="blog-detail-related-view-all">
+              View All Articles
+            </a>
+          </div>
+
+          <div class="cmg-related-grid">
+            <?php foreach ( $articles as $item ) : ?>
+            <a href="<?php echo esc_url( $item['permalink'] ); ?>" class="cmg-related-card">
+              <div class="cmg-related-thumb-wrap">
+                <img src="<?php echo esc_url( $item['image'] ); ?>" alt="<?php echo esc_attr( $item['title'] ); ?>" class="cmg-related-thumb" loading="lazy" />
+              </div>
+              <p class="cmg-related-date"><?php echo esc_html( $item['date'] ); ?></p>
+              <h3 class="cmg-related-title"><?php echo esc_html( $item['title'] ); ?></h3>
+            </a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+add_shortcode( 'cmg_related_articles', 'cmg_render_blog_related_articles' );
+add_shortcode( 'related_articles', 'cmg_render_blog_related_articles' );
+add_shortcode( 'cmg_blog_related', 'cmg_render_blog_related_articles' );
