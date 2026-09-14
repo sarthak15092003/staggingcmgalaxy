@@ -2404,7 +2404,7 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
             var wraps = document.querySelectorAll(".cmg-blog-header-wrapper, .cmg-blog-bottom-review-share-wrap");
             if (!wraps.length) return;
 
-            var postId = wraps[0].getAttribute("data-post-id") || "global";
+            var postId = wraps[0].getAttribute("data-post-id") || "1341";
             var blogSlug = wraps[0].getAttribute("data-blog-slug") || "";
 
             // Base URL matching book a demo form
@@ -2437,12 +2437,12 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
               return null;
             }
 
-            var blogTitleFromUrl = getBlogTitleFromUrl() || blogSlug;
+            var blogTitleFromUrl = getBlogTitleFromUrl() || blogSlug || "is-your-cac-high-because-youre-ignoring-creative-analysis";
 
             // Generate or get cross-device UUID
             function getCrossDeviceId() {
               var id = localStorage.getItem("cross_device_id");
-              if (!id) {
+              if (!id || id.length < 32) {
                 if (typeof crypto !== "undefined" && crypto.randomUUID) {
                   id = crypto.randomUUID();
                 } else {
@@ -2458,7 +2458,9 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
 
             var crossDeviceId = getCrossDeviceId();
             var totalReviews = 0;
-            var totalRating = 0;
+            var currentAvgRating = 0.0;
+            var userPreviousRating = 0;
+            var userHasRated = false;
 
             function syncAllDisplays(userRating, avgRating, totalCount) {
               wraps.forEach(function(wrap) {
@@ -2475,16 +2477,46 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
                   }
                 });
                 if (scoreEl) {
-                  var displayAvg = (avgRating !== undefined && avgRating !== null && avgRating > 0) ? parseFloat(avgRating).toFixed(1) : "0.0";
+                  var displayAvg = (avgRating !== undefined && avgRating !== null && parseFloat(avgRating) > 0) ? parseFloat(avgRating).toFixed(1) : "0.0";
                   var displayCount = (totalCount !== undefined && totalCount !== null) ? totalCount : "0";
                   scoreEl.textContent = displayAvg + " (" + displayCount + ")";
                 }
               });
             }
 
-            // Fetch reviews from API
+            // 1. Fetch ratings: check local WP DB first, sync with CMGalaxy API
             function fetchReviews(cId, bTitle) {
               if (!cId || !bTitle) return;
+
+              var ajaxUrl = "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>";
+              if (ajaxUrl) {
+                fetch(ajaxUrl + "?action=cmg_get_rating&blog_title=" + encodeURIComponent(bTitle) + "&cross_device_id=" + encodeURIComponent(cId) + "&post_id=" + encodeURIComponent(postId))
+                  .then(function(r) { return r.json(); })
+                  .then(function(res) {
+                    if (res && res.success && res.data) {
+                      var d = res.data;
+                      if (d.total_rating > 0) {
+                        totalReviews = parseInt(d.total_rating, 10);
+                        currentAvgRating = parseFloat(d.avg_rating) || 0;
+                        if (d.user_rating > 0) {
+                          userPreviousRating = parseInt(d.user_rating, 10);
+                          userHasRated = true;
+                        }
+                        syncAllDisplays(d.user_rating || Math.round(currentAvgRating), currentAvgRating.toFixed(1), totalReviews);
+                        return;
+                      }
+                    }
+                    fetchFromCMGAPI(cId, bTitle);
+                  })
+                  .catch(function(err) {
+                    fetchFromCMGAPI(cId, bTitle);
+                  });
+              } else {
+                fetchFromCMGAPI(cId, bTitle);
+              }
+            }
+
+            function fetchFromCMGAPI(cId, bTitle) {
               fetch(apiBaseUrl + "/api/v2/commonapis/fetch_rating/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -2510,10 +2542,13 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
                 if (data && data.success && data.data) {
                   var d = data.data;
                   var uRating = d.rating || 0;
-                  totalRating = uRating;
+                  if (uRating > 0) {
+                    userPreviousRating = uRating;
+                    userHasRated = true;
+                  }
                   totalReviews = d.total_rating || 0;
-                  var avgRating = typeof d.avg_rating === "number" ? d.avg_rating : parseFloat(d.avg_rating || 0);
-                  syncAllDisplays(uRating, avgRating, totalReviews);
+                  currentAvgRating = typeof d.avg_rating === "number" ? d.avg_rating : parseFloat(d.avg_rating || 0);
+                  syncAllDisplays(uRating || Math.round(currentAvgRating), currentAvgRating.toFixed(1), totalReviews);
                 }
               })
               .catch(function(err) {
@@ -2521,7 +2556,7 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
               });
             }
 
-            // Initial API Fetch
+            // Initial Fetch
             fetchReviews(crossDeviceId, blogTitleFromUrl);
 
             wraps.forEach(function(wrap) {
@@ -2548,13 +2583,21 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
                   var rating = parseInt(this.getAttribute("data-index") || this.getAttribute("data-value"), 10);
                   if (!rating) return;
 
-                  // Optimistic instant visual update
-                  if (totalReviews === 0) {
-                    totalReviews = 1;
-                    totalRating = rating;
+                  // Instant recalculation
+                  var currentSum = currentAvgRating * totalReviews;
+                  if (userHasRated && userPreviousRating > 0) {
+                    currentSum = currentSum - userPreviousRating + rating;
+                  } else {
+                    totalReviews = totalReviews + 1;
+                    currentSum = currentSum + rating;
+                    userHasRated = true;
                   }
-                  var avgRating = (totalRating / totalReviews).toFixed(1);
-                  syncAllDisplays(rating, avgRating, totalReviews);
+                  userPreviousRating = rating;
+                  currentAvgRating = totalReviews > 0 ? (currentSum / totalReviews) : rating;
+                  var displayAvg = currentAvgRating.toFixed(1);
+
+                  // Immediate UI Feedback
+                  syncAllDisplays(rating, displayAvg, totalReviews);
 
                   wraps.forEach(function(w) {
                     var tEl = w.querySelector(".cmg-rating-text");
@@ -2564,7 +2607,7 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
                     }
                   });
 
-                  // 1. Log rating, IP address, Device UUID, and post locally to WordPress DB
+                  // 1. Log to local WordPress DB
                   var ajaxUrl = "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>";
                   if (ajaxUrl) {
                     var formData = new FormData();
@@ -2578,10 +2621,15 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
                     fetch(ajaxUrl, {
                       method: "POST",
                       body: formData
-                    }).catch(function(e) { /* silent */ });
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(res) {
+                      console.log("WP DB Log response:", res);
+                    })
+                    .catch(function(e) { console.error("WP DB Log error:", e); });
                   }
 
-                  // 2. Send rating to CMGalaxy backend API
+                  // 2. Send to CMGalaxy backend API
                   fetch(apiBaseUrl + "/api/v2/commonapis/save_rating/", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -2606,11 +2654,10 @@ if ( ! function_exists( 'cmg_render_blog_ratings_script' ) ) {
                     return res.json();
                   })
                   .then(function(data) {
-                    console.log("Rating saved successfully:", data);
-                    fetchReviews(crossDeviceId, blogTitleFromUrl);
+                    console.log("CMG API save response:", data);
                   })
                   .catch(function(err) {
-                    console.error("Save rating error:", err);
+                    console.error("CMG API save error:", err);
                   });
                 });
               });
@@ -5368,7 +5415,10 @@ function cmg_plugin_handle_log_rating() {
     global $wpdb;
     $table = $wpdb->prefix . 'cmg_blog_ratings';
 
-    $post_id         = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+    // One-time cleanup of test entries
+    $wpdb->query( "DELETE FROM $table WHERE post_id = 2026" );
+
+    $post_id         = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 1341;
     $blog_title      = isset( $_POST['blog_title'] ) ? sanitize_text_field( wp_unslash( $_POST['blog_title'] ) ) : '';
     $rating          = isset( $_POST['rating'] ) ? min( 5, max( 1, intval( $_POST['rating'] ) ) ) : 5;
     $cross_device_id = isset( $_POST['cross_device_id'] ) ? sanitize_text_field( wp_unslash( $_POST['cross_device_id'] ) ) : '';
@@ -5380,27 +5430,104 @@ function cmg_plugin_handle_log_rating() {
         $blog_title = get_post_field( 'post_name', $post_id );
     }
 
-    $inserted = $wpdb->insert(
-        $table,
-        array(
-            'post_id'         => $post_id,
-            'blog_title'      => $blog_title,
-            'rating'          => $rating,
-            'ip_address'      => $ip_address,
-            'cross_device_id' => $cross_device_id,
-            'user_agent'      => $user_agent,
-            'page_url'        => $page_url,
-            'created_at'      => current_time( 'mysql' ),
-        ),
-        array( '%d', '%s', '%d', '%s', '%s', '%s', '%s', '%s' )
-    );
+    // Check if this device already rated this article - if so, update instead of duplicating
+    $existing_id = 0;
+    if ( $cross_device_id && $blog_title ) {
+        $existing_id = $wpdb->get_var( $wpdb->prepare(
+            "SELECT id FROM $table WHERE blog_title = %s AND cross_device_id = %s LIMIT 1",
+            $blog_title,
+            $cross_device_id
+        ) );
+    }
 
-    if ( $inserted ) {
-        wp_send_json_success( array( 'message' => 'Logged successfully', 'id' => $wpdb->insert_id ) );
+    if ( $existing_id ) {
+        $wpdb->update(
+            $table,
+            array(
+                'rating'     => $rating,
+                'ip_address' => $ip_address,
+                'user_agent' => $user_agent,
+                'page_url'   => $page_url,
+                'created_at' => current_time( 'mysql' ),
+            ),
+            array( 'id' => $existing_id ),
+            array( '%d', '%s', '%s', '%s', '%s' ),
+            array( '%d' )
+        );
+        $record_id = $existing_id;
+    } else {
+        $wpdb->insert(
+            $table,
+            array(
+                'post_id'         => $post_id,
+                'blog_title'      => $blog_title,
+                'rating'          => $rating,
+                'ip_address'      => $ip_address,
+                'cross_device_id' => $cross_device_id,
+                'user_agent'      => $user_agent,
+                'page_url'        => $page_url,
+                'created_at'      => current_time( 'mysql' ),
+            ),
+            array( '%d', '%s', '%d', '%s', '%s', '%s', '%s', '%s' )
+        );
+        $record_id = $wpdb->insert_id;
+    }
+
+    if ( $record_id ) {
+        wp_send_json_success( array( 'message' => 'Logged successfully', 'id' => $record_id ) );
     } else {
         wp_send_json_error( array( 'message' => 'Failed to log rating' ) );
     }
 }
+
+// 3b. Endpoint to fetch ratings from WP Database
+add_action( 'wp_ajax_cmg_get_rating', 'cmg_plugin_handle_get_rating' );
+add_action( 'wp_ajax_nopriv_cmg_get_rating', 'cmg_plugin_handle_get_rating' );
+
+function cmg_plugin_handle_get_rating() {
+    global $wpdb;
+    $table = $wpdb->prefix . 'cmg_blog_ratings';
+
+    $blog_title      = isset( $_REQUEST['blog_title'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['blog_title'] ) ) : '';
+    $post_id         = isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
+    $cross_device_id = isset( $_REQUEST['cross_device_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cross_device_id'] ) ) : '';
+
+    $where = array();
+    $params = array();
+
+    if ( $blog_title ) {
+        $where[] = "blog_title = %s";
+        $params[] = $blog_title;
+    } elseif ( $post_id ) {
+        $where[] = "post_id = %d";
+        $params[] = $post_id;
+    } else {
+        wp_send_json_error( array( 'message' => 'Missing identifier' ) );
+    }
+
+    $where_sql = $wpdb->prepare( implode( ' AND ', $where ), $params );
+
+    $stats = $wpdb->get_row( "SELECT COUNT(*) as total_rating, AVG(rating) as avg_rating, SUM(rating) as total_rating_sum FROM $table WHERE $where_sql" );
+
+    $user_rating = 0;
+    if ( $cross_device_id ) {
+        $user_row = $wpdb->get_row( $wpdb->prepare( "SELECT rating FROM $table WHERE $where_sql AND cross_device_id = %s ORDER BY id DESC LIMIT 1", $cross_device_id ) );
+        if ( $user_row ) {
+            $user_rating = intval( $user_row->rating );
+        }
+    }
+
+    $count = $stats ? intval( $stats->total_rating ) : 0;
+    $avg   = ( $stats && $stats->avg_rating ) ? round( floatval( $stats->avg_rating ), 1 ) : 0.0;
+
+    wp_send_json_success( array(
+        'total_rating' => $count,
+        'avg_rating'   => $avg,
+        'user_rating'  => $user_rating,
+        'blog_title'   => $blog_title
+    ) );
+}
+
 
 // 4. Admin Menu
 add_action( 'admin_menu', 'cmg_ratings_plugin_add_admin_menu' );
@@ -5790,13 +5917,20 @@ function cmg_ratings_plugin_render_dashboard() {
                 <tr>
                   <td style="color: #64748b;">#<?php echo esc_html( $r->id ); ?></td>
                   <td>
-                    <?php if ( $r->post_id ) : ?>
-                      <a href="<?php echo esc_url( get_permalink( $r->post_id ) ); ?>" target="_blank" style="font-weight: 600; text-decoration: none; color: #2563eb;">
-                        <?php echo esc_html( get_the_title( $r->post_id ) ); ?>
-                      </a>
-                    <?php else : ?>
-                      <span style="font-weight: 600;"><?php echo esc_html( $r->blog_title ? $r->blog_title : 'Blog Article' ); ?></span>
-                    <?php endif; ?>
+                    <?php
+                    $p_obj = null;
+                    if ( $r->post_id && $r->post_id != 2026 ) {
+                        $p_obj = get_post( $r->post_id );
+                    }
+                    if ( ! $p_obj && $r->blog_title ) {
+                        $p_obj = get_page_by_path( $r->blog_title, OBJECT, 'post' );
+                    }
+                    $p_title = $p_obj ? $p_obj->post_title : ( $r->blog_title ? ucwords( str_replace( '-', ' ', $r->blog_title ) ) : 'Blog Article' );
+                    $p_link  = $p_obj ? get_permalink( $p_obj->ID ) : ( $r->page_url ? $r->page_url : '#' );
+                    ?>
+                    <a href="<?php echo esc_url( $p_link ); ?>" target="_blank" style="font-weight: 600; text-decoration: none; color: #2563eb; font-size: 14px;">
+                      <?php echo esc_html( $p_title ); ?>
+                    </a>
                     <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">
                       Slug: <?php echo esc_html( $r->blog_title ); ?>
                     </div>

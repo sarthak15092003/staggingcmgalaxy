@@ -77,7 +77,10 @@ function cmg_plugin_handle_log_rating() {
     global $wpdb;
     $table = $wpdb->prefix . 'cmg_blog_ratings';
 
-    $post_id         = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+    // One-time cleanup of test entries
+    $wpdb->query( "DELETE FROM $table WHERE post_id = 2026" );
+
+    $post_id         = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 1341;
     $blog_title      = isset( $_POST['blog_title'] ) ? sanitize_text_field( wp_unslash( $_POST['blog_title'] ) ) : '';
     $rating          = isset( $_POST['rating'] ) ? min( 5, max( 1, intval( $_POST['rating'] ) ) ) : 5;
     $cross_device_id = isset( $_POST['cross_device_id'] ) ? sanitize_text_field( wp_unslash( $_POST['cross_device_id'] ) ) : '';
@@ -89,27 +92,104 @@ function cmg_plugin_handle_log_rating() {
         $blog_title = get_post_field( 'post_name', $post_id );
     }
 
-    $inserted = $wpdb->insert(
-        $table,
-        array(
-            'post_id'         => $post_id,
-            'blog_title'      => $blog_title,
-            'rating'          => $rating,
-            'ip_address'      => $ip_address,
-            'cross_device_id' => $cross_device_id,
-            'user_agent'      => $user_agent,
-            'page_url'        => $page_url,
-            'created_at'      => current_time( 'mysql' ),
-        ),
-        array( '%d', '%s', '%d', '%s', '%s', '%s', '%s', '%s' )
-    );
+    // Check if this device already rated this article - if so, update instead of duplicating
+    $existing_id = 0;
+    if ( $cross_device_id && $blog_title ) {
+        $existing_id = $wpdb->get_var( $wpdb->prepare(
+            "SELECT id FROM $table WHERE blog_title = %s AND cross_device_id = %s LIMIT 1",
+            $blog_title,
+            $cross_device_id
+        ) );
+    }
 
-    if ( $inserted ) {
-        wp_send_json_success( array( 'message' => 'Logged successfully', 'id' => $wpdb->insert_id ) );
+    if ( $existing_id ) {
+        $wpdb->update(
+            $table,
+            array(
+                'rating'     => $rating,
+                'ip_address' => $ip_address,
+                'user_agent' => $user_agent,
+                'page_url'   => $page_url,
+                'created_at' => current_time( 'mysql' ),
+            ),
+            array( 'id' => $existing_id ),
+            array( '%d', '%s', '%s', '%s', '%s' ),
+            array( '%d' )
+        );
+        $record_id = $existing_id;
+    } else {
+        $wpdb->insert(
+            $table,
+            array(
+                'post_id'         => $post_id,
+                'blog_title'      => $blog_title,
+                'rating'          => $rating,
+                'ip_address'      => $ip_address,
+                'cross_device_id' => $cross_device_id,
+                'user_agent'      => $user_agent,
+                'page_url'        => $page_url,
+                'created_at'      => current_time( 'mysql' ),
+            ),
+            array( '%d', '%s', '%d', '%s', '%s', '%s', '%s', '%s' )
+        );
+        $record_id = $wpdb->insert_id;
+    }
+
+    if ( $record_id ) {
+        wp_send_json_success( array( 'message' => 'Logged successfully', 'id' => $record_id ) );
     } else {
         wp_send_json_error( array( 'message' => 'Failed to log rating' ) );
     }
 }
+
+// 3b. Endpoint to fetch ratings from WP Database
+add_action( 'wp_ajax_cmg_get_rating', 'cmg_plugin_handle_get_rating' );
+add_action( 'wp_ajax_nopriv_cmg_get_rating', 'cmg_plugin_handle_get_rating' );
+
+function cmg_plugin_handle_get_rating() {
+    global $wpdb;
+    $table = $wpdb->prefix . 'cmg_blog_ratings';
+
+    $blog_title      = isset( $_REQUEST['blog_title'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['blog_title'] ) ) : '';
+    $post_id         = isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
+    $cross_device_id = isset( $_REQUEST['cross_device_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cross_device_id'] ) ) : '';
+
+    $where = array();
+    $params = array();
+
+    if ( $blog_title ) {
+        $where[] = "blog_title = %s";
+        $params[] = $blog_title;
+    } elseif ( $post_id ) {
+        $where[] = "post_id = %d";
+        $params[] = $post_id;
+    } else {
+        wp_send_json_error( array( 'message' => 'Missing identifier' ) );
+    }
+
+    $where_sql = $wpdb->prepare( implode( ' AND ', $where ), $params );
+
+    $stats = $wpdb->get_row( "SELECT COUNT(*) as total_rating, AVG(rating) as avg_rating, SUM(rating) as total_rating_sum FROM $table WHERE $where_sql" );
+
+    $user_rating = 0;
+    if ( $cross_device_id ) {
+        $user_row = $wpdb->get_row( $wpdb->prepare( "SELECT rating FROM $table WHERE $where_sql AND cross_device_id = %s ORDER BY id DESC LIMIT 1", $cross_device_id ) );
+        if ( $user_row ) {
+            $user_rating = intval( $user_row->rating );
+        }
+    }
+
+    $count = $stats ? intval( $stats->total_rating ) : 0;
+    $avg   = ( $stats && $stats->avg_rating ) ? round( floatval( $stats->avg_rating ), 1 ) : 0.0;
+
+    wp_send_json_success( array(
+        'total_rating' => $count,
+        'avg_rating'   => $avg,
+        'user_rating'  => $user_rating,
+        'blog_title'   => $blog_title
+    ) );
+}
+
 
 // 4. Admin Menu
 add_action( 'admin_menu', 'cmg_ratings_plugin_add_admin_menu' );
@@ -499,13 +579,20 @@ function cmg_ratings_plugin_render_dashboard() {
                 <tr>
                   <td style="color: #64748b;">#<?php echo esc_html( $r->id ); ?></td>
                   <td>
-                    <?php if ( $r->post_id ) : ?>
-                      <a href="<?php echo esc_url( get_permalink( $r->post_id ) ); ?>" target="_blank" style="font-weight: 600; text-decoration: none; color: #2563eb;">
-                        <?php echo esc_html( get_the_title( $r->post_id ) ); ?>
-                      </a>
-                    <?php else : ?>
-                      <span style="font-weight: 600;"><?php echo esc_html( $r->blog_title ? $r->blog_title : 'Blog Article' ); ?></span>
-                    <?php endif; ?>
+                    <?php
+                    $p_obj = null;
+                    if ( $r->post_id && $r->post_id != 2026 ) {
+                        $p_obj = get_post( $r->post_id );
+                    }
+                    if ( ! $p_obj && $r->blog_title ) {
+                        $p_obj = get_page_by_path( $r->blog_title, OBJECT, 'post' );
+                    }
+                    $p_title = $p_obj ? $p_obj->post_title : ( $r->blog_title ? ucwords( str_replace( '-', ' ', $r->blog_title ) ) : 'Blog Article' );
+                    $p_link  = $p_obj ? get_permalink( $p_obj->ID ) : ( $r->page_url ? $r->page_url : '#' );
+                    ?>
+                    <a href="<?php echo esc_url( $p_link ); ?>" target="_blank" style="font-weight: 600; text-decoration: none; color: #2563eb; font-size: 14px;">
+                      <?php echo esc_html( $p_title ); ?>
+                    </a>
                     <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">
                       Slug: <?php echo esc_html( $r->blog_title ); ?>
                     </div>
