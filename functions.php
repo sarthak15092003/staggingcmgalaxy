@@ -4176,36 +4176,108 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               display: flex;
               align-items: center;
               justify-content: space-between;
-              margin-bottom: 0;
-              padding-bottom: 0;
-              border-bottom: none;
-              cursor: pointer;
-              user-select: none;
-              transition: margin-bottom 0.2s ease, padding-bottom 0.2s ease;
-            }
-
-            .cmg-blog-toc-header.is-expanded {
-              margin-bottom: 14px;
+              margin-bottom: 12px;
               padding-bottom: 10px;
               border-bottom: 1px solid #e5e7eb;
+              cursor: pointer;
+              user-select: none;
             }
 
             .cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn {
-              background: #e2e8f0;
-            }
-
-            .cmg-blog-toc-header.is-collapsed {
-              margin-bottom: 0 !important;
-              padding-bottom: 0 !important;
-              border-bottom: none !important;
+              background: #e2e8f0 !important;
             }
 
             .cmg-blog-toc-header.is-expanded .cmg-toc-mobile-toggle-btn svg {
               transform: rotate(180deg);
             }
 
-            .cmg-blog-toc-nav.is-collapsed {
+            /* Nav container & 2-title blur preview */
+            .cmg-blog-toc-nav {
+              position: relative;
+              transition: all 0.3s ease;
+            }
+
+            /* When collapsed: show 2 titles clearly, rest blurred */
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(1),
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(2) {
+              display: block !important;
+              filter: none !important;
+              opacity: 1 !important;
+              pointer-events: auto !important;
+            }
+
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(3) {
+              display: block !important;
+              filter: blur(2.5px) !important;
+              opacity: 0.55 !important;
+              pointer-events: none !important;
+              user-select: none !important;
+            }
+
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(4) {
+              display: block !important;
+              filter: blur(4px) !important;
+              opacity: 0.25 !important;
+              pointer-events: none !important;
+              user-select: none !important;
+            }
+
+            .cmg-blog-toc-nav.is-collapsed .cmg-blog-toc-item:nth-child(n+5) {
               display: none !important;
+            }
+
+            /* When expanded: show all items sharp & interactive */
+            .cmg-blog-toc-nav:not(.is-collapsed) .cmg-blog-toc-item {
+              display: block !important;
+              filter: none !important;
+              opacity: 1 !important;
+              pointer-events: auto !important;
+              user-select: auto !important;
+              transition: filter 0.25s ease, opacity 0.25s ease;
+            }
+
+            /* Show more in text form at bottom */
+            .cmg-toc-show-more-wrap {
+              margin-top: 8px;
+              padding-top: 4px;
+              display: flex;
+              align-items: center;
+            }
+
+            .cmg-toc-show-more-btn {
+              background: transparent !important;
+              background-color: transparent !important;
+              border: none !important;
+              box-shadow: none !important;
+              outline: none !important;
+              padding: 4px 6px !important;
+              color: #2563eb !important;
+              font-size: 13.5px !important;
+              font-weight: 600 !important;
+              cursor: pointer !important;
+              display: inline-flex !important;
+              align-items: center !important;
+              gap: 6px !important;
+              text-decoration: none !important;
+              font-family: inherit !important;
+              border-radius: 4px !important;
+              transition: color 0.2s ease !important;
+              -webkit-tap-highlight-color: transparent !important;
+            }
+
+            .cmg-toc-show-more-btn:hover,
+            .cmg-toc-show-more-btn:focus,
+            .cmg-toc-show-more-btn:active {
+              color: #1d4ed8 !important;
+              background: transparent !important;
+              background-color: transparent !important;
+              text-decoration: underline !important;
+              box-shadow: none !important;
+              outline: none !important;
+            }
+
+            .cmg-toc-show-more-btn svg {
+              transition: transform 0.25s ease;
             }
 
             .cmg-blog-toc-list {
@@ -4338,17 +4410,11 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                margin-bottom: 0 !important;
-                padding-bottom: 0 !important;
-                border-bottom: none !important;
+                margin-bottom: 12px !important;
+                padding-bottom: 10px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
                 cursor: pointer;
                 user-select: none;
-              }
-
-              .cmg-blog-toc-header.is-expanded {
-                margin-bottom: 14px !important;
-                padding-bottom: 12px !important;
-                border-bottom: 1px solid #e2e8f0 !important;
               }
 
               .cmg-toc-count-pill {
@@ -4365,10 +4431,6 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
               .cmg-blog-toc-header.is-expanded .cmg-toc-mobile-toggle-btn svg {
                 transform: rotate(180deg);
-              }
-
-              .cmg-blog-toc-nav.is-collapsed {
-                display: none !important;
               }
 
               .cmg-blog-toc-link {
@@ -4589,6 +4651,14 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               <ul class="cmg-blog-toc-list" id="cmg-blog-toc-list">
                 <!-- Dynamically generated from article H2 elements -->
               </ul>
+              <div class="cmg-toc-show-more-wrap" id="cmg-toc-show-more-wrap">
+                <button type="button" class="cmg-toc-show-more-btn" id="cmg-toc-show-more-btn" aria-label="Show more table of contents headings">
+                  <span class="cmg-toc-show-more-text" id="cmg-toc-show-more-text">Show more</span>
+                  <svg class="cmg-toc-show-more-icon" id="cmg-toc-show-more-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
             </nav>
           </div>
 
@@ -4728,9 +4798,28 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 }
               });
 
-              // Desktop & Mobile in-page accordion toggle (open/close on click)
+              // Bottom "Show more" button elements
+              const showMoreWrap = document.getElementById('cmg-toc-show-more-wrap');
+              const showMoreBtn = document.getElementById('cmg-toc-show-more-btn');
+              const showMoreText = document.getElementById('cmg-toc-show-more-text');
+              const showMoreIcon = document.getElementById('cmg-toc-show-more-icon');
+
+              // Hide "Show more" button if 2 or fewer headings
+              if (headings.length <= 2) {
+                if (showMoreWrap) showMoreWrap.style.display = 'none';
+                if (toggleBtn) toggleBtn.style.display = 'none';
+                if (tocNav) tocNav.classList.remove('is-collapsed');
+              }
+
+              // Toggle between 2-titles (blur) and all-titles (expanded)
               function toggleInPageTOC() {
                 const isCollapsed = tocNav.classList.toggle('is-collapsed');
+                if (showMoreText) {
+                  showMoreText.textContent = isCollapsed ? 'Show more' : 'Show less';
+                }
+                if (showMoreIcon) {
+                  showMoreIcon.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
+                }
                 if (tocHeader) {
                   tocHeader.classList.toggle('is-expanded', !isCollapsed);
                   tocHeader.classList.toggle('is-collapsed', isCollapsed);
@@ -4744,8 +4833,17 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 }
               }
 
+              if (showMoreBtn) {
+                showMoreBtn.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleInPageTOC();
+                });
+              }
+
               if (toggleBtn) {
                 toggleBtn.addEventListener('click', function(e) {
+                  e.preventDefault();
                   e.stopPropagation();
                   toggleInPageTOC();
                 });

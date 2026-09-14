@@ -207,3 +207,22 @@ body.single-post a:active,
     color: #1d4ed8 !important;
     text-decoration-color: #1d4ed8 !important;
 }
+
+/* TOC Show More Text Button */
+.cmg-toc-show-more-btn,
+.cmg-toc-show-more-btn:focus,
+.cmg-toc-show-more-btn:active {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #2563eb !important;
+}
+
+.cmg-toc-show-more-btn:hover {
+    color: #1d4ed8 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    text-decoration: underline !important;
+}
