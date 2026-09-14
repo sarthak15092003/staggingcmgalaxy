@@ -43,7 +43,7 @@ while ( have_posts() ) :
 				}
 				?>
 
-				<div class="page-content cmg-blog-content" style="flex: 1 1 0%; min-width: 0; max-width: 880px; font-size: 18px; line-height: 1.75; color: #374151; box-sizing: border-box;">
+				<div class="page-content cmg-blog-content" style="flex: 1 1 0%; min-width: 0; max-width: 880px; font-size: 18px; line-height: 1.75; color: #374151; box-sizing: border-box; padding: 0 15px;">
 					<?php the_content(); ?>
 
 					<?php wp_link_pages(); ?>
@@ -54,6 +54,13 @@ while ( have_posts() ) :
 					</div>
 					<?php endif; ?>
 				</div>
+
+				<?php
+				/* Side CTA banner - 3rd flex column (right sticky sidebar) */
+				if ( function_exists( 'cmg_render_floating_side_banner' ) ) {
+					echo cmg_render_floating_side_banner();
+				}
+				?>
 			</div>
 
 			<?php

@@ -2997,28 +2997,30 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
         <div class="cmg-floating-side-banner" id="cmg-floating-side-banner">
           <style>
             .cmg-floating-side-banner {
-              position: fixed;
-              right: 28px;
-              top: 130px;
-              width: 224px;
+              position: sticky;
+              top: 110px;
+              width: 240px;
+              min-width: 220px;
+              flex-shrink: 0;
+              align-self: flex-start;
               background: #09102b;
               border-radius: 16px;
               padding: 22px 18px 20px 18px;
               box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08);
               box-sizing: border-box;
               text-align: center;
-              z-index: 9999;
+              z-index: 20;
               font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-              opacity: 0;
-              pointer-events: none;
-              transform: translateY(24px) scale(0.96);
-              transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+              opacity: 1;
+              pointer-events: auto;
+              transform: none;
+              transition: none;
             }
 
             .cmg-floating-side-banner.is-visible {
               opacity: 1;
               pointer-events: auto;
-              transform: translateY(0) scale(1);
+              transform: none;
             }
 
             /* Dismiss button */
@@ -3149,8 +3151,8 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               color: #ffffff !important;
             }
 
-            /* Hide on screens where it might overlap content */
-            @media (max-width: 1280px) {
+            /* Hide side banner on mobile/tablet - show as flex column on desktop */
+            @media (max-width: 1024px) {
               .cmg-floating-side-banner {
                 display: none !important;
               }
@@ -3221,13 +3223,13 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
         return ob_get_clean();
     }
 }
-
-/* Auto-hook to wp_footer so it appears on all single blog posts on scroll */
+/* Removed: banner now rendered inline in single.php as sticky sidebar column
 add_action( 'wp_footer', function() {
     if ( is_singular( 'post' ) && function_exists( 'cmg_render_floating_side_banner' ) ) {
         echo cmg_render_floating_side_banner();
     }
 }, 30 );
+*/
 
 /* Shortcodes */
 add_shortcode( 'cmg_side_banner', 'cmg_render_floating_side_banner' );
@@ -3990,20 +3992,25 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
         ?>
         <aside class="cmg-blog-toc-sidebar" id="cmg-blog-toc-sidebar" aria-label="Table of contents">
           <style>
-            /* Break out of Elementor container to go full viewport width */
+            /* Override Elementor parent container - go full width */
+            .elementor-section, .e-con, .e-con-inner, .elementor-section-wrap,
+            .elementor-container, .elementor-widget-container {
+              max-width: 100% !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+            }
+
             .cmg-blog-layout-wrapper {
-              width: 100vw;
-              max-width: 100vw;
-              position: relative;
-              left: 50%;
-              margin-left: -50vw;
-              margin-right: -50vw;
+              width: 100%;
+              max-width: 100%;
+              margin: 0;
               padding: 0;
               box-sizing: border-box;
               display: flex;
               align-items: flex-start;
               justify-content: flex-start;
               gap: 0;
+              overflow: visible;
             }
 
             /* Center blog content: 15px padding each side, TOC/sidebar flush to edges */
