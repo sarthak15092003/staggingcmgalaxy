@@ -86,3 +86,14 @@ body.single-post .cmg-blog-content td,
 .cmg-related-articles-section {
   font-family: var(--primary-font, 'Onest', sans-serif) !important;
 }
+
+body.single-post .cmg-blog-content,
+body.single-post .cmg-blog-content p,
+body.single-post .cmg-blog-content li,
+body.single-post .cmg-blog-content span,
+body.single-post .cmg-blog-content blockquote,
+body.single-post .cmg-blog-content td,
+body.single-post .cmg-blog-content th {
+    font-size: 16px !important;
+    line-height: 1.75 !important;
+}

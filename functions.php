@@ -219,6 +219,16 @@ add_action( 'wp_head', function() {
       .cmg-related-articles-section {
         font-family: var(--primary-font, 'Onest', sans-serif) !important;
       }
+      body.single-post .cmg-blog-content,
+      body.single-post .cmg-blog-content p,
+      body.single-post .cmg-blog-content li,
+      body.single-post .cmg-blog-content span,
+      body.single-post .cmg-blog-content blockquote,
+      body.single-post .cmg-blog-content td,
+      body.single-post .cmg-blog-content th {
+        font-size: 16px !important;
+        line-height: 1.75 !important;
+      }
     </style>
     <?php
 }, 1 );
@@ -4253,7 +4263,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 max-width: 100% !important;
                 padding: 0 !important;
                 box-sizing: border-box !important;
-                font-size: 16.5px !important;
+                font-size: 16px !important;
                 line-height: 1.7 !important;
               }
 
