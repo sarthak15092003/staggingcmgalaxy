@@ -237,13 +237,8 @@ add_action( 'wp_head', function() {
       .cmg-toc-mobile-toggle-btn:active,
       .cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn,
       .cmg-blog-toc-header:focus .cmg-toc-mobile-toggle-btn {
-        background: #f1f5f9 !important;
-        background-color: #f1f5f9 !important;
-        color: #475569 !important;
-        border: 1px solid #e2e8f0 !important;
-        outline: none !important;
-        box-shadow: none !important;
-      }
+              display: none !important;
+            }
       .cmg-toc-mobile-toggle-btn:hover {
         background: #e2e8f0 !important;
         background-color: #e2e8f0 !important;
@@ -4106,7 +4101,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               display: flex;
               align-items: center;
               justify-content: space-between;
-              margin-bottom: 14px;
+              margin-bottom: 12px;
               padding-bottom: 10px;
               border-bottom: 1px solid #e5e7eb;
             }
@@ -4422,7 +4417,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               }
 
               .cmg-toc-mobile-toggle-btn {
-                display: inline-flex !important;
+                display: none !important;
               }
 
               .cmg-toc-mobile-toggle-btn svg {
@@ -4849,11 +4844,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 });
               }
 
-              if (tocHeader) {
-                tocHeader.addEventListener('click', function(e) {
-                  toggleInPageTOC();
-                });
-              }
+              // Title header remains completely untouched and standard
 
               // Docy-style Bottom Sheet Controls
               function openSheet() {
