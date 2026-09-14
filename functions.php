@@ -2104,7 +2104,19 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
         $title = ! empty( $atts['title'] ) ? esc_html( $atts['title'] ) : ( $post_id ? get_the_title( $post_id ) : 'The Shift from Vanity Metrics to Value Metrics in Digital Marketing' );
 
         $author_id = $post ? $post->post_author : 0;
-        $author_name = ! empty( $atts['author'] ) ? esc_html( $atts['author'] ) : ( $author_id ? get_the_author_meta( 'display_name', $author_id ) : 'Versha Rawat' );
+        $meta_author = $post_id ? get_post_meta( $post_id, 'author_name', true ) : '';
+        if ( empty( $meta_author ) && $post_id ) {
+            $meta_author = get_post_meta( $post_id, 'author', true );
+        }
+        if ( ! empty( $atts['author'] ) ) {
+            $author_name = esc_html( $atts['author'] );
+        } elseif ( ! empty( $meta_author ) ) {
+            $author_name = esc_html( $meta_author );
+        } elseif ( $author_id ) {
+            $author_name = esc_html( get_the_author_meta( 'display_name', $author_id ) );
+        } else {
+            $author_name = 'Author';
+        }
         $author_role = ! empty( $atts['role'] ) ? esc_html( $atts['role'] ) : 'Author';
 
         // Date format: "30 Jul 26"
@@ -3086,7 +3098,7 @@ add_shortcode( 'cmg_floating_banner', 'cmg_render_floating_side_banner' );
 add_shortcode( 'side_banner', 'cmg_render_floating_side_banner' );
 
 /* ==========================================================================
-   CMG BLOG AUTHOR BIO BOX ("Versha Rawat")
+   CMG BLOG AUTHOR BIO BOX (Fully Dynamic from Post / Author Profile)
    ========================================================================== */
 
 if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
@@ -3095,54 +3107,114 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
             return '';
         }
 
-        global $post;
+        static $bio_rendered = false;
+        if ( $bio_rendered && empty( $atts['force'] ) ) {
+            return '';
+        }
+        if ( ! empty( $GLOBALS['cmg_blog_author_bio_already_rendered'] ) && empty( $atts['force'] ) ) {
+            return '';
+        }
+        $bio_rendered = true;
         $GLOBALS['cmg_blog_author_bio_already_rendered'] = true;
 
-        $author_id = ( $post && isset( $post->post_author ) ) ? $post->post_author : 0;
+        global $post;
+        $post_id   = ( $post && isset( $post->ID ) ) ? $post->ID : get_the_ID();
+        $author_id = ( $post && isset( $post->post_author ) ) ? $post->post_author : ( $post_id ? get_post_field( 'post_author', $post_id ) : 0 );
 
-        // Author Name
-        $author_name = ! empty( $atts['name'] ) ? esc_html( $atts['name'] ) : ( $author_id ? get_the_author_meta( 'display_name', $author_id ) : 'Versha Rawat' );
-        if ( empty( $author_name ) || strtolower( $author_name ) === 'admin' ) {
-            $author_name = 'Versha Rawat';
+        // 1. Author Name (from shortcode atts -> Edit Post custom fields -> WordPress author profile)
+        $author_name = ! empty( $atts['name'] ) ? sanitize_text_field( $atts['name'] ) : '';
+        if ( empty( $author_name ) && $post_id ) {
+            $meta_name = get_post_meta( $post_id, 'author_name', true );
+            if ( empty( $meta_name ) ) $meta_name = get_post_meta( $post_id, 'author', true );
+            if ( empty( $meta_name ) ) $meta_name = get_post_meta( $post_id, 'cmg_author_name', true );
+            if ( ! empty( $meta_name ) ) {
+                $author_name = sanitize_text_field( $meta_name );
+            }
         }
+        if ( empty( $author_name ) && $author_id ) {
+            $author_name = get_the_author_meta( 'display_name', $author_id );
+            if ( empty( $author_name ) ) {
+                $first = get_the_author_meta( 'first_name', $author_id );
+                $last  = get_the_author_meta( 'last_name', $author_id );
+                $author_name = trim( $first . ' ' . $last );
+            }
+            if ( empty( $author_name ) ) {
+                $author_name = get_the_author_meta( 'nickname', $author_id );
+            }
+        }
+        $author_name = esc_html( $author_name );
 
-        // Author Avatar
+        $is_versha = ( stripos( $author_name, 'versha' ) !== false );
+
+        // 2. Author Avatar (from shortcode atts -> Edit Post custom fields -> WP user profile / avatar)
         $avatar_url = ! empty( $atts['avatar'] ) ? esc_url( $atts['avatar'] ) : '';
+        if ( empty( $avatar_url ) && $post_id ) {
+            $meta_avatar = get_post_meta( $post_id, 'author_avatar', true );
+            if ( empty( $meta_avatar ) ) $meta_avatar = get_post_meta( $post_id, 'author_image', true );
+            if ( empty( $meta_avatar ) ) $meta_avatar = get_post_meta( $post_id, 'author_photo', true );
+            if ( empty( $meta_avatar ) ) $meta_avatar = get_post_meta( $post_id, 'cmg_author_avatar', true );
+            if ( ! empty( $meta_avatar ) ) {
+                $avatar_url = is_numeric( $meta_avatar ) ? wp_get_attachment_image_url( $meta_avatar, 'full' ) : esc_url( $meta_avatar );
+            }
+        }
         if ( empty( $avatar_url ) && $author_id ) {
             $custom_avatar = get_user_meta( $author_id, 'profile_picture', true );
             if ( ! empty( $custom_avatar ) ) {
-                $avatar_url = $custom_avatar;
+                $avatar_url = is_numeric( $custom_avatar ) ? wp_get_attachment_image_url( $custom_avatar, 'full' ) : esc_url( $custom_avatar );
             } else {
                 $wp_avatar = get_avatar_url( $author_id, array( 'size' => 160 ) );
-                if ( ! empty( $wp_avatar ) && strpos( $wp_avatar, 'gravatar.com' ) === false ) {
+                if ( ! empty( $wp_avatar ) ) {
                     $avatar_url = $wp_avatar;
                 }
             }
         }
-        if ( empty( $avatar_url ) ) {
+        if ( empty( $avatar_url ) && $is_versha ) {
             $avatar_url = 'https://cdn.prod.website-files.com/67b5e5b07dee6e1ed91f0f5a/68c7f03ced5fa62ff8419528_vesha.jpeg';
         }
 
-        // Author Bio Description
-        $author_bio = ! empty( $atts['bio'] ) ? esc_html( $atts['bio'] ) : ( $author_id ? get_the_author_meta( 'description', $author_id ) : '' );
-        if ( empty( $author_bio ) ) {
+        // 3. Author Bio Description (from shortcode atts -> Edit Post custom fields -> WP user description)
+        $author_bio = ! empty( $atts['bio'] ) ? wp_kses_post( $atts['bio'] ) : '';
+        if ( empty( $author_bio ) && $post_id ) {
+            $meta_bio = get_post_meta( $post_id, 'author_bio', true );
+            if ( empty( $meta_bio ) ) $meta_bio = get_post_meta( $post_id, 'author_description', true );
+            if ( empty( $meta_bio ) ) $meta_bio = get_post_meta( $post_id, 'author_desc', true );
+            if ( empty( $meta_bio ) ) $meta_bio = get_post_meta( $post_id, 'cmg_author_bio', true );
+            if ( ! empty( $meta_bio ) ) {
+                $author_bio = wp_kses_post( $meta_bio );
+            }
+        }
+        if ( empty( $author_bio ) && $author_id ) {
+            $wp_desc = get_the_author_meta( 'description', $author_id );
+            if ( ! empty( $wp_desc ) ) {
+                $author_bio = wp_kses_post( $wp_desc );
+            }
+        }
+        if ( empty( $author_bio ) && $is_versha ) {
             $author_bio = 'Marketing technology content specialist with 4+ years of experience creating research-driven content for the EdTech and B2B SaaS space. Passionate about simplifying complex MarTech concepts through strategic storytelling, audience-focused writing, and data-backed insights.';
         }
 
-        // LinkedIn Profile URL
+        // 4. LinkedIn / Profile URL (from shortcode atts -> Edit Post custom fields -> WP user meta / user_url)
         $linkedin_url = ! empty( $atts['linkedin'] ) ? esc_url( $atts['linkedin'] ) : '';
+        if ( empty( $linkedin_url ) && $post_id ) {
+            $meta_li = get_post_meta( $post_id, 'author_linkedin', true );
+            if ( empty( $meta_li ) ) $meta_li = get_post_meta( $post_id, 'linkedin', true );
+            if ( empty( $meta_li ) ) $meta_li = get_post_meta( $post_id, 'author_url', true );
+            if ( ! empty( $meta_li ) ) {
+                $linkedin_url = esc_url( $meta_li );
+            }
+        }
         if ( empty( $linkedin_url ) && $author_id ) {
             $li_meta = get_user_meta( $author_id, 'linkedin', true );
             if ( ! empty( $li_meta ) ) {
-                $linkedin_url = $li_meta;
+                $linkedin_url = esc_url( $li_meta );
             } else {
                 $u_url = get_the_author_meta( 'user_url', $author_id );
-                if ( ! empty( $u_url ) && strpos( $u_url, 'linkedin.com' ) !== false ) {
-                    $linkedin_url = $u_url;
+                if ( ! empty( $u_url ) ) {
+                    $linkedin_url = esc_url( $u_url );
                 }
             }
         }
-        if ( empty( $linkedin_url ) ) {
+        if ( empty( $linkedin_url ) && $is_versha ) {
             $linkedin_url = 'https://www.linkedin.com/in/versha-rawat/?originalSubdomain=in';
         }
 
@@ -3188,6 +3260,7 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
               margin: 0 auto;
               box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
               border: 3px solid #ffffff;
+              background: #f1f5f9;
             }
 
             .cmg-author-bio-name {
@@ -3258,21 +3331,29 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
 
           <div class="cmg-author-bio-line"></div>
 
+          <?php if ( ! empty( $avatar_url ) ) : ?>
           <div class="cmg-author-avatar-badge">
             <img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $author_name ); ?>" class="cmg-author-avatar-img" loading="lazy" />
           </div>
+          <?php endif; ?>
 
+          <?php if ( ! empty( $author_name ) ) : ?>
           <h3 class="cmg-author-bio-name"><?php echo esc_html( $author_name ); ?></h3>
+          <?php endif; ?>
 
-          <p class="cmg-author-bio-text"><?php echo esc_html( $author_bio ); ?></p>
+          <?php if ( ! empty( $author_bio ) ) : ?>
+          <p class="cmg-author-bio-text"><?php echo $author_bio; ?></p>
+          <?php endif; ?>
 
+          <?php if ( ! empty( $linkedin_url ) ) : ?>
           <div class="cmg-author-social-wrap">
-            <a href="<?php echo esc_url( $linkedin_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-author-li-link" aria-label="<?php echo esc_attr( $author_name ); ?> LinkedIn">
+            <a href="<?php echo esc_url( $linkedin_url ); ?>" target="_blank" rel="noopener noreferrer" class="cmg-author-li-link" aria-label="<?php echo esc_attr( $author_name ); ?> Profile">
               <svg viewBox="0 0 24 24">
                 <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
               </svg>
             </a>
           </div>
+          <?php endif; ?>
         </div>
         <?php
         return ob_get_clean();
@@ -3293,6 +3374,14 @@ if ( ! function_exists( 'cmg_render_blog_bottom_growth_banner' ) ) {
             return '';
         }
 
+        static $growth_rendered = false;
+        if ( $growth_rendered && empty( $atts['force'] ) ) {
+            return '';
+        }
+        if ( ! empty( $GLOBALS['cmg_blog_bottom_banner_already_rendered'] ) && empty( $atts['force'] ) ) {
+            return '';
+        }
+        $growth_rendered = true;
         $GLOBALS['cmg_blog_bottom_banner_already_rendered'] = true;
 
         $try_url  = ! empty( $atts['try_url'] ) ? esc_url( $atts['try_url'] ) : 'https://app.cmgalaxy.com';
@@ -3513,21 +3602,3 @@ if ( ! function_exists( 'cmg_render_blog_bottom_growth_banner' ) ) {
 add_shortcode( 'cmg_bottom_banner', 'cmg_render_blog_bottom_growth_banner' );
 add_shortcode( 'cmg_growth_banner', 'cmg_render_blog_bottom_growth_banner' );
 add_shortcode( 'bottom_banner', 'cmg_render_blog_bottom_growth_banner' );
-
-/* Automatic injection of author bio & bottom growth banner at the end of single blog posts */
-if ( ! function_exists( 'cmg_auto_inject_blog_footer_components' ) ) {
-    function cmg_auto_inject_blog_footer_components( $content ) {
-        if ( is_singular( 'post' ) && in_the_loop() && is_main_query() && ! is_admin() ) {
-            $extra = '';
-            if ( empty( $GLOBALS['cmg_blog_author_bio_already_rendered'] ) ) {
-                $extra .= cmg_render_blog_author_bio();
-            }
-            if ( empty( $GLOBALS['cmg_blog_bottom_banner_already_rendered'] ) ) {
-                $extra .= cmg_render_blog_bottom_growth_banner();
-            }
-            return $content . $extra;
-        }
-        return $content;
-    }
-}
-add_filter( 'the_content', 'cmg_auto_inject_blog_footer_components', 99 );
