@@ -4168,18 +4168,57 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
             }
 
             .cmg-toc-mobile-toggle-btn {
-              display: none;
+              display: inline-flex;
               align-items: center;
               gap: 5px;
-              background: #e2e8f0;
-              color: #1e293b;
-              font-size: 12px;
+              background: #f1f5f9;
+              color: #475569;
+              font-size: 11.5px;
               font-weight: 600;
-              padding: 5px 12px;
+              padding: 4px 10px;
               border-radius: 999px;
-              border: none;
+              border: 1px solid #e2e8f0;
               cursor: pointer;
               transition: all 0.2s ease;
+            }
+
+            .cmg-toc-mobile-toggle-btn:hover {
+              background: #e2e8f0;
+              color: #0f172a;
+            }
+
+            .cmg-toc-mobile-toggle-btn svg {
+              transition: transform 0.25s ease;
+            }
+
+            .cmg-blog-toc-header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 14px;
+              padding-bottom: 10px;
+              border-bottom: 1px solid #e5e7eb;
+              cursor: pointer;
+              user-select: none;
+              transition: margin-bottom 0.2s ease, padding-bottom 0.2s ease;
+            }
+
+            .cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn {
+              background: #e2e8f0;
+            }
+
+            .cmg-blog-toc-header.is-collapsed {
+              margin-bottom: 0 !important;
+              padding-bottom: 0 !important;
+              border-bottom: none !important;
+            }
+
+            .cmg-blog-toc-header.is-collapsed .cmg-toc-mobile-toggle-btn svg {
+              transform: rotate(180deg);
+            }
+
+            .cmg-blog-toc-nav.is-collapsed {
+              display: none !important;
             }
 
             .cmg-blog-toc-list {
@@ -4685,15 +4724,19 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 }
               });
 
-              // Mobile in-page accordion toggle
+              // Desktop & Mobile in-page accordion toggle (open/close on click)
               function toggleInPageTOC() {
-                if (window.innerWidth > 1024) return;
                 const isCollapsed = tocNav.classList.toggle('is-collapsed');
                 if (tocHeader) {
                   tocHeader.classList.toggle('is-expanded', !isCollapsed);
+                  tocHeader.classList.toggle('is-collapsed', isCollapsed);
                 }
                 if (toggleLabel) {
                   toggleLabel.textContent = isCollapsed ? 'Show' : 'Hide';
+                }
+                const toggleIcon = toggleBtn ? toggleBtn.querySelector('svg') : null;
+                if (toggleIcon) {
+                  toggleIcon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
                 }
               }
 
@@ -4706,9 +4749,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
               if (tocHeader) {
                 tocHeader.addEventListener('click', function(e) {
-                  if (window.innerWidth <= 1024) {
-                    toggleInPageTOC();
-                  }
+                  toggleInPageTOC();
                 });
               }
 
@@ -4758,6 +4799,17 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               // Initial check for desktop vs mobile
               if (window.innerWidth > 1024 && tocNav) {
                 tocNav.classList.remove('is-collapsed');
+                if (tocHeader) {
+                  tocHeader.classList.add('is-expanded');
+                  tocHeader.classList.remove('is-collapsed');
+                }
+                if (toggleLabel) {
+                  toggleLabel.textContent = 'Hide';
+                }
+                const toggleIcon = toggleBtn ? toggleBtn.querySelector('svg') : null;
+                if (toggleIcon) {
+                  toggleIcon.style.transform = 'rotate(0deg)';
+                }
               }
 
               // Active Scrollspy using IntersectionObserver
