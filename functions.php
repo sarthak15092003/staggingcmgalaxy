@@ -2096,6 +2096,7 @@ add_filter('hello_elementor_page_title', function($title) {
 if ( ! function_exists( 'cmg_render_blog_header' ) ) {
     function cmg_render_blog_header( $atts = array() ) {
         global $post;
+        $GLOBALS['cmg_blog_header_already_rendered'] = true;
 
         $post_id = ( $post && isset( $post->ID ) ) ? $post->ID : 0;
 
@@ -2139,7 +2140,14 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
         ?>
         <div class="cmg-blog-header-wrapper" data-post-id="<?php echo esc_attr( $post_id ); ?>">
           <style>
-            .cmg-blog-header-wrapper {
+            body.single-post .page-header,
+          body.single-post .entry-header,
+          body.single-post h1.entry-title,
+          body.single-post header.entry-header {
+            display: none !important;
+          }
+
+          .cmg-blog-header-wrapper {
               font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
               max-width: 1100px;
               margin: 0 auto;
@@ -2549,3 +2557,20 @@ add_filter( 'hello_elementor_page_title', function( $title ) {
     return $title;
 }, 20 );
 
+/* Automatic injection fallback for single blog posts */
+if ( ! function_exists( 'cmg_auto_inject_blog_header' ) ) {
+    function cmg_auto_inject_blog_header( $content ) {
+        if ( is_singular( 'post' ) && in_the_loop() && is_main_query() && ! is_admin() ) {
+            if ( empty( $GLOBALS['cmg_blog_header_already_rendered'] ) ) {
+                $featured_img = '';
+                if ( has_post_thumbnail() ) {
+                    $featured_img = '<div class="cmg-blog-featured-image-wrap" style="max-width: 1100px; margin: 30px auto 10px auto; padding: 0 20px; box-sizing: border-box;">' . get_the_post_thumbnail( get_the_ID(), 'full', array( 'style' => 'width: 100%; height: auto; border-radius: 16px; display: block; object-fit: cover;' ) ) . '</div>';
+                }
+                $header = cmg_render_blog_header();
+                return $featured_img . $header . $content;
+            }
+        }
+        return $content;
+    }
+}
+add_filter( 'the_content', 'cmg_auto_inject_blog_header', 10 );
