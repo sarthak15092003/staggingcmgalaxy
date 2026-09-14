@@ -2787,3 +2787,258 @@ if ( ! function_exists( 'cmg_render_blog_top_banner' ) ) {
 add_shortcode( 'cmg_blog_top_banner', 'cmg_render_blog_top_banner' );
 add_shortcode( 'blog_top_banner', 'cmg_render_blog_top_banner' );
 add_shortcode( 'audit_banner', 'cmg_render_blog_top_banner' );
+
+/* ==========================================================================
+   CMG FLOATING SIDE BANNER ("Rank Better in ChatGPT, Claude & Perplexity")
+   Appears after user scrolls down ~400px on single blog posts
+   ========================================================================== */
+
+if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
+    function cmg_render_floating_side_banner() {
+        if ( ! is_singular( 'post' ) ) {
+            return '';
+        }
+
+        $audit_url = 'https://geo.cmgalaxy.com/';
+
+        ob_start();
+        ?>
+        <div class="cmg-floating-side-banner" id="cmg-floating-side-banner">
+          <style>
+            .cmg-floating-side-banner {
+              position: fixed;
+              right: 28px;
+              top: 130px;
+              width: 224px;
+              background: #09102b;
+              border-radius: 16px;
+              padding: 22px 18px 20px 18px;
+              box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08);
+              box-sizing: border-box;
+              text-align: center;
+              z-index: 9999;
+              font-family: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              opacity: 0;
+              pointer-events: none;
+              transform: translateY(24px) scale(0.96);
+              transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            .cmg-floating-side-banner.is-visible {
+              opacity: 1;
+              pointer-events: auto;
+              transform: translateY(0) scale(1);
+            }
+
+            /* Dismiss button */
+            .cmg-side-banner-close {
+              position: absolute;
+              top: 8px;
+              right: 10px;
+              background: transparent;
+              border: none;
+              color: rgba(255, 255, 255, 0.4);
+              font-size: 16px;
+              line-height: 1;
+              cursor: pointer;
+              padding: 4px;
+              transition: color 0.2s;
+            }
+
+            .cmg-side-banner-close:hover {
+              color: #ffffff;
+            }
+
+            /* Audit Dial Gauge */
+            .cmg-side-dial-wrap {
+              position: relative;
+              width: 90px;
+              height: 90px;
+              margin: 0 auto 12px auto;
+            }
+
+            .cmg-side-dial-svg {
+              width: 100%;
+              height: 100%;
+              transform: rotate(-90deg);
+            }
+
+            .cmg-side-dial-center {
+              position: absolute;
+              inset: 0;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              line-height: 1;
+            }
+
+            .cmg-side-score {
+              color: #ffffff;
+              font-size: 24px;
+              font-weight: 800;
+              letter-spacing: -0.5px;
+            }
+
+            .cmg-side-score sup {
+              font-size: 13px;
+              font-weight: 700;
+              top: -8px;
+            }
+
+            .cmg-side-score-label {
+              color: #94a3b8;
+              font-size: 8.5px;
+              font-weight: 700;
+              letter-spacing: 0.8px;
+              margin-top: 3px;
+              text-transform: uppercase;
+            }
+
+            /* Mini Feature Tags */
+            .cmg-side-tags {
+              display: flex;
+              justify-content: center;
+              gap: 6px;
+              margin-bottom: 12px;
+            }
+
+            .cmg-side-tag {
+              background: rgba(255, 255, 255, 0.06);
+              color: #38bdf8;
+              font-size: 9px;
+              font-weight: 700;
+              padding: 2px 7px;
+              border-radius: 4px;
+              letter-spacing: 0.3px;
+              border: 1px solid rgba(56, 189, 248, 0.2);
+            }
+
+            /* Title */
+            .cmg-side-title {
+              color: #ffffff;
+              font-size: 18px;
+              font-weight: 700;
+              line-height: 1.3;
+              margin: 0 0 10px 0;
+              letter-spacing: -0.3px;
+            }
+
+            /* Description */
+            .cmg-side-desc {
+              color: #94a3b8;
+              font-size: 12px;
+              line-height: 1.45;
+              margin: 0 0 16px 0;
+            }
+
+            /* Button */
+            .cmg-side-cta-btn {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              gap: 6px;
+              background: #22c55e;
+              color: #ffffff !important;
+              font-size: 12.5px;
+              font-weight: 600;
+              padding: 9px 18px;
+              border-radius: 999px;
+              text-decoration: none !important;
+              width: 100%;
+              box-sizing: border-box;
+              transition: all 0.2s ease;
+              box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            }
+
+            .cmg-side-cta-btn:hover {
+              background: #16a34a;
+              transform: translateY(-1px);
+              box-shadow: 0 6px 16px rgba(34, 197, 94, 0.45);
+              color: #ffffff !important;
+            }
+
+            /* Hide on screens where it might overlap content */
+            @media (max-width: 1280px) {
+              .cmg-floating-side-banner {
+                display: none !important;
+              }
+            }
+          </style>
+
+          <button type="button" class="cmg-side-banner-close" onclick="document.getElementById('cmg-floating-side-banner').style.display='none';" aria-label="Close">&times;</button>
+
+          <!-- Dial score meter -->
+          <div class="cmg-side-dial-wrap">
+            <svg class="cmg-side-dial-svg" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#22c55e" stroke-width="6" stroke-dasharray="213.6" stroke-dashoffset="25" stroke-linecap="round"/>
+            </svg>
+            <div class="cmg-side-dial-center">
+              <span class="cmg-side-score">99<sup>%</sup></span>
+              <span class="cmg-side-score-label">AUDIT SCORE</span>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="cmg-side-tags">
+            <span class="cmg-side-tag">&#10022; AI AUDIT</span>
+            <span class="cmg-side-tag">&#10022; GEO RANK</span>
+          </div>
+
+          <!-- Heading -->
+          <h4 class="cmg-side-title">Rank Better in ChatGPT, Claude &amp; Perplexity</h4>
+
+          <!-- Subtext -->
+          <p class="cmg-side-desc">Free 100-point GEO Audit. Instant AI-powered insights for SEO, performance &amp; visibility.</p>
+
+          <!-- Action Button -->
+          <a href="<?php echo esc_url( $audit_url ); ?>" id="blog-detail-sidebar-geo-audit" target="_blank" rel="noopener noreferrer" class="cmg-side-cta-btn">
+            Start Free Audit &rarr;
+          </a>
+        </div>
+
+        <script>
+        (function() {
+          function initSideScrollBanner() {
+            var banner = document.getElementById('cmg-floating-side-banner');
+            if (!banner || banner.dataset.initialized) return;
+            banner.dataset.initialized = 'true';
+
+            var scrollThreshold = 400; // Pixels scrolled before showing
+
+            function handleScroll() {
+              if (window.scrollY > scrollThreshold) {
+                banner.classList.add('is-visible');
+              } else {
+                banner.classList.remove('is-visible');
+              }
+            }
+
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            handleScroll();
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSideScrollBanner);
+          } else {
+            initSideScrollBanner();
+          }
+        })();
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+/* Auto-hook to wp_footer so it appears on all single blog posts on scroll */
+add_action( 'wp_footer', function() {
+    if ( is_singular( 'post' ) && function_exists( 'cmg_render_floating_side_banner' ) ) {
+        echo cmg_render_floating_side_banner();
+    }
+}, 30 );
+
+/* Shortcodes */
+add_shortcode( 'cmg_side_banner', 'cmg_render_floating_side_banner' );
+add_shortcode( 'cmg_floating_banner', 'cmg_render_floating_side_banner' );
+add_shortcode( 'side_banner', 'cmg_render_floating_side_banner' );
