@@ -4195,12 +4195,18 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               display: flex;
               align-items: center;
               justify-content: space-between;
-              margin-bottom: 14px;
-              padding-bottom: 10px;
-              border-bottom: 1px solid #e5e7eb;
+              margin-bottom: 0;
+              padding-bottom: 0;
+              border-bottom: none;
               cursor: pointer;
               user-select: none;
               transition: margin-bottom 0.2s ease, padding-bottom 0.2s ease;
+            }
+
+            .cmg-blog-toc-header.is-expanded {
+              margin-bottom: 14px;
+              padding-bottom: 10px;
+              border-bottom: 1px solid #e5e7eb;
             }
 
             .cmg-blog-toc-header:hover .cmg-toc-mobile-toggle-btn {
@@ -4213,7 +4219,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
               border-bottom: none !important;
             }
 
-            .cmg-blog-toc-header.is-collapsed .cmg-toc-mobile-toggle-btn svg {
+            .cmg-blog-toc-header.is-expanded .cmg-toc-mobile-toggle-btn svg {
               transform: rotate(180deg);
             }
 
@@ -4562,7 +4568,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
           </style>
 
           <div class="cmg-blog-toc-inner">
-            <div class="cmg-blog-toc-header" id="cmg-blog-toc-header" role="button" tabindex="0" aria-label="Toggle Table of Contents">
+            <div class="cmg-blog-toc-header is-collapsed" id="cmg-blog-toc-header" role="button" tabindex="0" aria-label="Toggle Table of Contents">
               <div class="cmg-blog-toc-title-wrap">
                 <svg class="cmg-toc-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -4736,7 +4742,7 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 }
                 const toggleIcon = toggleBtn ? toggleBtn.querySelector('svg') : null;
                 if (toggleIcon) {
-                  toggleIcon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+                  toggleIcon.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
                 }
               }
 
@@ -4784,32 +4790,27 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
                 if (e.key === 'Escape') closeSheet();
               });
 
-              // If screen resized to desktop, ensure nav is visible
+              // Resize handler: close sheet if resized to desktop
               window.addEventListener('resize', function() {
                 if (window.innerWidth > 1024) {
-                  if (tocNav) tocNav.classList.remove('is-collapsed');
                   closeSheet();
-                } else {
-                  if (tocHeader && !tocHeader.classList.contains('is-expanded') && tocNav) {
-                    tocNav.classList.add('is-collapsed');
-                  }
                 }
               });
 
-              // Initial check for desktop vs mobile
-              if (window.innerWidth > 1024 && tocNav) {
-                tocNav.classList.remove('is-collapsed');
-                if (tocHeader) {
-                  tocHeader.classList.add('is-expanded');
-                  tocHeader.classList.remove('is-collapsed');
-                }
-                if (toggleLabel) {
-                  toggleLabel.textContent = 'Hide';
-                }
-                const toggleIcon = toggleBtn ? toggleBtn.querySelector('svg') : null;
-                if (toggleIcon) {
-                  toggleIcon.style.transform = 'rotate(0deg)';
-                }
+              // Initial state: by default collapsed / hidden on both desktop & mobile
+              if (tocNav) {
+                tocNav.classList.add('is-collapsed');
+              }
+              if (tocHeader) {
+                tocHeader.classList.add('is-collapsed');
+                tocHeader.classList.remove('is-expanded');
+              }
+              if (toggleLabel) {
+                toggleLabel.textContent = 'Show';
+              }
+              const toggleIcon = toggleBtn ? toggleBtn.querySelector('svg') : null;
+              if (toggleIcon) {
+                toggleIcon.style.transform = 'rotate(0deg)';
               }
 
               // Active Scrollspy using IntersectionObserver
