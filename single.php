@@ -111,3 +111,5 @@ while ( have_posts() ) :
 endwhile;
 
 get_footer();
+
+// Build timestamp: 2026-09-16 10:10

@@ -9,7 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'HELLO_ELEMENTOR_VERSION', '3.4.9' );
+define( 'HELLO_ELEMENTOR_VERSION', '99.9.9' );
+
+// Prevent WordPress from auto-updating and overwriting this custom theme
+add_filter( 'site_transient_update_themes', function( $transient ) {
+    if ( isset( $transient->response['hello-elementor'] ) ) {
+        unset( $transient->response['hello-elementor'] );
+    }
+    return $transient;
+} );
+add_filter( 'auto_update_theme', '__return_false' );
 define( 'EHP_THEME_SLUG', 'hello-elementor' );
 
 define( 'HELLO_THEME_PATH', get_template_directory() );
@@ -6117,3 +6126,5 @@ function cmg_ratings_plugin_render_dashboard() {
     </div>
     <?php
 }
+
+// Build timestamp: 2026-09-16 10:10
