@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+﻿name: CI/CD Pipeline
 
 on:
   push:
@@ -30,13 +30,45 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Example FTP Deployment Step (Requires GitHub Secrets: FTP_SERVER, FTP_USERNAME, FTP_PASSWORD)
-      # Uncomment and configure this step when you are ready to deploy.
-      - name: FTP Deploy
+      # Deploy theme files to hello-elementor theme folder
+      - name: Deploy Theme Files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /wp-content/themes/hello-elementor/
+          server-dir: public_html/wp-content/themes/hello-elementor/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/plugins/**
+            .ftp-deploy-sync-state.json
+
+      # Deploy CMGalaxy Blog Ratings plugin to wp-content/plugins
+      - name: Deploy Blog Ratings Plugin
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./plugins/cmg-blog-ratings/
+          server-dir: public_html/wp-content/plugins/cmg-blog-ratings/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+
+      # Deploy CMGalaxy Lead Form plugin to wp-content/plugins
+      - name: Deploy Lead Form Plugin
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./plugins/cmg-lead-form/
+          server-dir: public_html/wp-content/plugins/cmg-lead-form/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
