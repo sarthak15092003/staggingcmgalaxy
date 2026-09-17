@@ -94,12 +94,11 @@ function cmg_lead_form_shortcode( $atts ) {
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <style>
-        .iti__flag-container, .iti__country-list { display: none !important; }
         .iti { display: block !important; width: 100% !important; }
         .iti__tel-input { width: 100% !important; }
 
         .lead-form-wrapper {
-            max-width: 600px;
+            max-width: 800px;
             margin: 40px auto;
             padding: 40px 48px;
             background: #ffffff;
@@ -140,32 +139,6 @@ function cmg_lead_form_shortcode( $atts ) {
             box-shadow: 0 0 0 1px rgba(58, 125, 255, 0.08);
         }
 
-        .lead-phone-row { display: flex; gap: 10px; align-items: center; }
-        .country-dropdown { flex: 0 0 140px; position: relative; font-size: 14px; }
-        .country-selected { display: flex; align-items: center; justify-content: space-between; padding: 16px 12px; border-radius: 8px; border: 1px solid #dde3f0; background: #fff; cursor: pointer; }
-        .country-selected-left { display: flex; align-items: center; gap: 6px; overflow: hidden; }
-        #countrySelectedFlag { display: inline-block; width: 20px; height: 14px; border-radius: 2px; flex-shrink: 0; object-fit: cover; }
-        #countrySelectedLabel { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #1b2230; white-space: nowrap; }
-        .country-arrow { border-width: 6px 5px 0 5px; border-style: solid; border-color: #9aa3b5 transparent transparent transparent; flex-shrink: 0; }
-
-        .country-options {
-            position: absolute;
-            top: 100%; left: 0; right: auto;
-            width: 280px; margin-top: 4px;
-            background: #fff; border-radius: 8px; border: 1px solid #dde3f0;
-            max-height: 300px; overflow-y: auto; overflow-x: hidden; white-space: normal;
-            box-shadow: 0 14px 30px rgba(15, 35, 52, 0.16); z-index: 9999; display: none;
-        }
-        .country-options.open { display: block; }
-        .country-search { position: sticky; top: 0; background: #fff; padding: 10px; border-bottom: 1px solid #eee; }
-        .country-search input { width: 100%; padding: 8px 10px; border: 1px solid #dde3f0; border-radius: 6px; font-size: 14px; outline: none; box-sizing: border-box; }
-        .country-search input:focus { border-color: #3a7dff; }
-        .country-option { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; font-size: 14px; white-space: normal; }
-        .country-option img { width: 20px; height: 14px; flex-shrink: 0; border-radius: 2px; object-fit: cover; }
-        .country-option span { flex: 1; }
-        .country-option:hover { background: #f3f6ff; }
-        .country-option.hidden { display: none; }
-        .lead-phone-row .iti { flex: 1; }
         #phone-input::placeholder { opacity: 0.6; }
 
         .lead-form-button-wrap { margin-top: 30px; }
@@ -180,11 +153,7 @@ function cmg_lead_form_shortcode( $atts ) {
         .form-status.error { color: #d63939; }
 
         @media (max-width: 767px) {
-            .lead-phone-row { flex-direction: row; gap: 10px; align-items: center; }
-            .country-dropdown { flex: 0 0 110px; }
-            .lead-phone-row .iti { flex: 1; }
             .lead-form-wrapper { padding: 20px 20px; border-radius: 20px; }
-            .country-options { width: 260px; }
         }
     </style>
 
@@ -200,26 +169,8 @@ function cmg_lead_form_shortcode( $atts ) {
             </div>
             <div class="lead-form-row">
                 <label class="lead-form-label" for="phone-input">Phone Number</label>
-                <div class="lead-phone-row">
-                    <div class="country-dropdown" id="countryDropdown">
-                        <div class="country-selected" id="countrySelected">
-                            <div class="country-selected-left">
-                                <img id="countrySelectedFlag" class="country-flag" src="" alt="Country Flag">
-                                <span id="countrySelectedLabel">IN +91</span>
-                            </div>
-                            <span class="country-arrow"></span>
-                        </div>
-                        <div class="country-options" id="countryOptions">
-                            <div class="country-search">
-                                <input type="text" id="countrySearchInput" placeholder="Search country...">
-                            </div>
-                            <div id="countryList"></div>
-                        </div>
-                        <input type="hidden" id="countryDialHidden" value="+91">
-                    </div>
-                    <input id="phone-input" type="tel" class="lead-form-input" placeholder="+91" required pattern="[0-9]*"
-                        inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
+                <input id="phone-input" type="tel" class="lead-form-input" placeholder="" required pattern="[0-9]*"
+                    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="lead-form-row">
                 <label class="lead-form-label" for="company_name">Company Name</label>
@@ -254,7 +205,6 @@ function cmg_lead_form_shortcode( $atts ) {
             const statusEl = document.getElementById("form-status");
             const submitBtn = document.getElementById("lead-submit-btn");
             const phoneInput = document.getElementById("phone-input");
-            const dialHidden = document.getElementById("countryDialHidden");
 
             /* Optional: Auto-load Amplitude SDK if API Key provided and not loaded */
             if (AMPLITUDE_API_KEY && (!window.amplitude || !window.amplitude.init)) {
@@ -374,7 +324,7 @@ function cmg_lead_form_shortcode( $atts ) {
                 const payload = {
                     full_name: fullName,
                     email_address: emailAddress,
-                    phone_number: iti ? iti.getNumber() : (dialHidden.value + phoneNumber),
+                    phone_number: iti ? iti.getNumber() : phoneNumber,
                     company_name: companyName,
                     ad_spend: document.getElementById("ad_spend").selectedOptions[0].textContent,
                     website: window.location.hostname,
@@ -440,84 +390,6 @@ function cmg_lead_form_shortcode( $atts ) {
             }
         })();
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const phoneInput = document.getElementById("phone-input");
-            const flagImg = document.getElementById("countrySelectedFlag");
-            const label = document.getElementById("countrySelectedLabel");
-            const dialHidden = document.getElementById("countryDialHidden");
-            const countrySelected = document.getElementById("countrySelected");
-            const countryOptions = document.getElementById("countryOptions");
-            const countryList = document.getElementById("countryList");
-            const searchInput = document.getElementById("countrySearchInput");
-
-            if (!window.intlTelInputGlobals) return;
-
-            const iti = window.intlTelInputGlobals.getInstance(phoneInput);
-            const allCountries = window.intlTelInputGlobals.getCountryData();
-
-            allCountries.forEach(country => {
-                const option = document.createElement("div");
-                option.className = "country-option";
-                option.dataset.iso2 = country.iso2;
-                option.dataset.dial = country.dialCode;
-                option.dataset.name = country.name.toLowerCase();
-                option.innerHTML = `
-                    <img src="https://flagcdn.com/w20/${country.iso2}.png" alt="${country.name}">
-                    <span>${country.name} (+${country.dialCode})</span>
-                `;
-                option.addEventListener("click", function () {
-                    selectCountry(country);
-                    countryOptions.classList.remove("open");
-                    searchInput.value = "";
-                    filterCountries("");
-                });
-                countryList.appendChild(option);
-            });
-
-            (async function setDefaultCountry() {
-                let countryCode = "in";
-                try {
-                    const res = await fetch("https://ipapi.co/json/");
-                    const data = await res.json();
-                    if (data && data.country_code) countryCode = data.country_code.toLowerCase();
-                } catch (err) { }
-                const detected = allCountries.find(c => c.iso2 === countryCode);
-                selectCountry(detected || allCountries.find(c => c.iso2 === "in"));
-            })();
-
-            countrySelected.addEventListener("click", function (e) {
-                e.stopPropagation();
-                countryOptions.classList.toggle("open");
-                if (countryOptions.classList.contains("open")) {
-                    setTimeout(() => searchInput.focus(), 100);
-                }
-            });
-
-            searchInput.addEventListener("input", function (e) { filterCountries(e.target.value.toLowerCase()); });
-            searchInput.addEventListener("click", function (e) { e.stopPropagation(); });
-
-            function filterCountries(query) {
-                const options = countryList.querySelectorAll(".country-option");
-                options.forEach(option => {
-                    const name = option.dataset.name;
-                    const dial = option.dataset.dial;
-                    const iso2 = option.dataset.iso2;
-                    if (name.includes(query) || dial.includes(query) || iso2.includes(query)) option.classList.remove("hidden");
-                    else option.classList.add("hidden");
-                });
-            }
-
-            document.addEventListener("click", function () { countryOptions.classList.remove("open"); });
-            countryOptions.addEventListener("click", function (e) { e.stopPropagation(); });
-
-            function selectCountry(country) {
-                flagImg.src = `https://flagcdn.com/w20/${country.iso2}.png`;
-                label.textContent = `${country.iso2.toUpperCase()} +${country.dialCode}`;
-                dialHidden.value = `+${country.dialCode}`;
-                phoneInput.placeholder = `+${country.dialCode}`;
-                if (iti) iti.setCountry(country.iso2);
-            }
-        });
     </script>
     <?php
     return ob_get_clean();
