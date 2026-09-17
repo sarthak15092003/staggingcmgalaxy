@@ -585,7 +585,23 @@ function cmg_lead_form_shortcode( $atts ) {
 
     <style>
         .iti { display: block !important; width: 100% !important; }
-        .iti__tel-input { width: 100% !important; }
+        #phone-input { 
+            width: 100% !important; 
+            padding-top: 16px !important; 
+            padding-bottom: 16px !important; 
+            padding-right: 14px !important; 
+            border-radius: 8px !important; 
+            border: 1px solid #dde3f0 !important; 
+            font-size: 15px !important; 
+            box-sizing: border-box !important;
+            background-color: #ffffff !important;
+            height: auto !important;
+            line-height: normal !important;
+        }
+        #phone-input:focus {
+            border-color: #3a7dff !important;
+            box-shadow: 0 0 0 1px rgba(58, 125, 255, 0.08) !important;
+        }
 
         .lead-form-wrapper {
             max-width: 800px;
