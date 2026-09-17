@@ -2406,6 +2406,12 @@ if ( ! function_exists( 'cmg_get_post_author_data' ) ) {
             $avatar_url = 'https://cdn.prod.website-files.com/67b5e5b07dee6e1ed91f0f5a/68c7f03ced5fa62ff8419528_vesha.jpeg';
         }
 
+        // Use high-resolution unclipped CMGalaxy brand icon for admin / CMGalaxy author
+        $default_cmg_avatar = get_template_directory_uri() . '/assets/images/cmg-avatar-icon.png';
+        if ( empty( $avatar_url ) || stripos( $avatar_url, 'Group-1000004539' ) !== false || ( ( stripos( $author_name, 'admin' ) !== false || stripos( $author_name, 'cmgalaxy' ) !== false ) && ! $is_versha ) ) {
+            $avatar_url = $default_cmg_avatar;
+        }
+
         // 3. Author Bio
         $author_bio = ! empty( $atts['bio'] ) ? wp_kses_post( $atts['bio'] ) : '';
         if ( empty( $author_bio ) && $post_id ) {
@@ -2885,19 +2891,26 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
             .cmg-blog-author-avatar {
               width: 44px;
               height: 44px;
-              border-radius: 50%;
-              overflow: hidden;
-              background: #eef2ff;
+              border-radius: 50% !important;
+              overflow: hidden !important;
+              background: #ffffff !important;
+              border: 1.5px solid #e2e8f0 !important;
               flex-shrink: 0;
-              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+              box-sizing: border-box !important;
             }
 
             .cmg-blog-author-avatar img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              border-radius: 50%;
-              display: block;
+              width: 100% !important;
+              height: 100% !important;
+              object-fit: contain !important;
+              border-radius: 50% !important;
+              display: block !important;
+              padding: 2px !important;
+              box-sizing: border-box !important;
             }
 
             .cmg-blog-author-info {
@@ -3874,13 +3887,15 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
             .cmg-author-avatar-img {
               width: 72px;
               height: 72px;
-              border-radius: 50%;
-              object-fit: cover;
-              display: block;
+              border-radius: 50% !important;
+              object-fit: contain !important;
+              display: block !important;
               margin: 0 auto;
               box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-              border: 3px solid #ffffff;
-              background: #f1f5f9;
+              border: 3px solid #ffffff !important;
+              background: #ffffff !important;
+              padding: 4px !important;
+              box-sizing: border-box !important;
             }
 
             .cmg-author-bio-name {
