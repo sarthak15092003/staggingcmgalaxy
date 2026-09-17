@@ -1,4 +1,4 @@
-﻿name: CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: public_html/wp-content/themes/hello-elementor/
+          server-dir: /wp-content/themes/hello-elementor/
           dangerous-clean-slate: false
           exclude: |
             **/.git*
@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./plugins/cmg-blog-ratings/
-          server-dir: public_html/wp-content/plugins/cmg-blog-ratings/
+          server-dir: /wp-content/plugins/cmg-blog-ratings/
           dangerous-clean-slate: false
           exclude: |
             **/.git*
@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./plugins/cmg-lead-form/
-          server-dir: public_html/wp-content/plugins/cmg-lead-form/
+          server-dir: /wp-content/plugins/cmg-lead-form/
           dangerous-clean-slate: false
           exclude: |
             **/.git*
