@@ -399,4 +399,33 @@ body.single-post h3.wp-block-heading {
     margin-top: 20px !important;
 }
 
-/* Build timestamp: 2026-09-16 10:10 */
+/* ==========================================================================
+   PROTECT FOOTER TEMPLATE ON SINGLE BLOG POSTS
+   Ensure site footer & Elementor template-content-footer maintain exact
+   layout, colors, fonts, links, and container constraints.
+   ========================================================================== */
+body.single-post .ekit-template-content-footer,
+body.single-post footer#site-footer,
+body.single-post .site-footer {
+    width: 100% !important;
+    max-width: 100% !important;
+    clear: both !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Prevent article 16px body line-height & generic link styles from bleeding into footer */
+body.single-post .ekit-template-content-footer a,
+body.single-post footer#site-footer a,
+body.single-post .site-footer a {
+    text-decoration: none !important;
+}
+
+body.single-post .ekit-template-content-footer a:hover,
+body.single-post footer#site-footer a:hover,
+body.single-post .site-footer a:hover {
+    text-decoration: none !important;
+}
+
+/* Build timestamp: 2026-09-17 10:00 */
+

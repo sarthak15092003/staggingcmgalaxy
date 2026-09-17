@@ -4485,10 +4485,10 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
         ?>
         <aside class="cmg-blog-toc-sidebar" id="cmg-blog-toc-sidebar" aria-label="Table of contents">
           <style>
-            /* Override Elementor parent container + WP content area - full width */
-            .elementor-section, .e-con, .e-con-inner, .elementor-section-wrap,
-            .elementor-container, .elementor-widget-container,
-            .site-main, .hentry, article.post, .entry-content {
+            /* Override Elementor parent container + WP content area - scoped to blog single article and wrapper only */
+            body.single-post #content.site-main,
+            body.single-post article.cmg-blog-single-article,
+            body.single-post .entry-content {
               max-width: 100% !important;
               width: 100% !important;
               padding-left: 0 !important;
