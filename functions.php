@@ -176,6 +176,13 @@ if ( ! function_exists( 'hello_elementor_scripts_styles' ) ) {
 		);
 
 		wp_enqueue_style(
+			'hello-elementor-style',
+			get_stylesheet_uri(),
+			[ 'hello-elementor', 'hello-elementor-main' ],
+			HELLO_ELEMENTOR_VERSION
+		);
+
+		wp_enqueue_style(
 			'cmg-google-font-onest',
 			'https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&display=swap',
 			[],
@@ -237,6 +244,35 @@ add_action( 'wp_head', function() {
       body.single-post article.cmg-blog-single-article .page-content h3,
       body.single-post h3.wp-block-heading {
         margin-top: 20px !important;
+      }
+
+      /* ==========================================================================
+         ALL ARTICLE IMAGES BORDER RADIUS 20PX
+         ========================================================================== */
+      body.single-post .cmg-blog-featured-image-wrap img,
+      body.single-post .cmg-blog-content img,
+      body.single-post .cmg-blog-content figure img,
+      body.single-post .cmg-blog-content .wp-block-image img,
+      body.single-post .page-content img,
+      body.single-post .entry-content img,
+      body.single-post article.cmg-blog-single-article img:not(.cmg-blog-author-avatar img):not(.cmg-author-avatar-img):not(.nav-rating-avatar):not(.cmg-author-badge-avatar),
+      body.single-post .cmg-related-thumb-wrap,
+      body.single-post .cmg-related-thumb {
+        border-radius: 20px !important;
+      }
+      body.single-post .cmg-blog-featured-image-wrap,
+      body.single-post .cmg-blog-content figure,
+      body.single-post .cmg-blog-content .wp-block-image,
+      body.single-post .cmg-related-thumb-wrap {
+        border-radius: 20px !important;
+        overflow: hidden !important;
+      }
+      body.single-post .cmg-blog-author-avatar,
+      body.single-post .cmg-blog-author-avatar img,
+      body.single-post .cmg-author-avatar-img,
+      body.single-post .cmg-author-avatar-badge,
+      body.single-post .nav-rating-avatar {
+        border-radius: 50% !important;
       }
       
       /* Eradicate red #c36 on all buttons and links */
@@ -3604,28 +3640,17 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
                 align-self: flex-start;
                 margin: 0 !important;
                 background: transparent;
-                border-radius: 12px;
+                border-radius: 20px;
                 padding: 0;
                 box-shadow: none;
                 box-sizing: border-box;
                 text-align: center;
                 z-index: 20;
-                opacity: 0;
-                pointer-events: none;
-                transform: translateY(20px);
-                transition: opacity 0.4s ease, transform 0.4s ease;
-                visibility: hidden;
-              }
-
-              .cmg-floating-side-banner.is-visible {
-                opacity: 1;
-                pointer-events: auto;
-                transform: translateY(0);
-                visibility: visible;
-              }
-
-              .cmg-floating-side-banner.is-dismissed {
-                display: none !important;
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                transform: none !important;
               }
 
               .cmg-side-banner-close {
@@ -3657,8 +3682,8 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               .cmg-side-banner-link {
                 display: block;
                 text-decoration: none !important;
-                border-radius: 12px;
-                overflow: hidden;
+                border-radius: 20px !important;
+                overflow: hidden !important;
                 transition: transform 0.25s ease, filter 0.25s ease;
                 outline: none !important;
                 line-height: 0;
@@ -3675,7 +3700,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
                 max-width: 100%;
                 height: auto;
                 display: block;
-                border-radius: 12px;
+                border-radius: 20px !important;
                 box-shadow: 0 8px 24px rgba(9, 16, 43, 0.15);
               }
 
@@ -3701,61 +3726,24 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
             <button type="button" class="cmg-side-banner-close" onclick="cmgDismissSideBanner();" aria-label="Close">&times;</button>
 
             <a href="<?php echo esc_url( $audit_url ); ?>" id="blog-detail-sidebar-geo-audit" target="_blank" rel="noopener noreferrer" class="cmg-side-banner-link">
-              <img src="<?php echo esc_url( $banner_img_url ); ?>" alt="Free GEO Audit - Rank Better in ChatGPT, Claude &amp; Perplexity" width="160" height="540" class="cmg-side-banner-img" loading="lazy" />
+              <img src="<?php echo esc_url( $banner_img_url ); ?>" alt="Free GEO Audit - Rank Better in ChatGPT, Claude &amp; Perplexity" width="160" height="540" class="cmg-side-banner-img" />
             </a>
           </div>
         </aside>
 
         <script>
         (function() {
+          // Clear any stale sessionStorage dismissal
+          try {
+            sessionStorage.removeItem('cmg_side_banner_dismissed');
+          } catch(e) {}
+
           window.cmgDismissSideBanner = function() {
             var banner = document.getElementById('cmg-floating-side-banner');
             if (banner) {
-              banner.classList.add('is-dismissed');
               banner.style.display = 'none';
-              try {
-                sessionStorage.setItem('cmg_side_banner_dismissed', 'true');
-              } catch(e) {}
             }
           };
-
-          function initSideScrollBanner() {
-            var banner = document.getElementById('cmg-floating-side-banner');
-            if (!banner || banner.dataset.initialized) return;
-            banner.dataset.initialized = 'true';
-
-            try {
-              if (sessionStorage.getItem('cmg_side_banner_dismissed') === 'true') {
-                banner.classList.add('is-dismissed');
-                banner.style.display = 'none';
-                return;
-              }
-            } catch(e) {}
-
-            var scrollThreshold = 1000; // Pixels scrolled before showing
-
-            function handleScroll() {
-              if (banner.classList.contains('is-dismissed')) return;
-              if (window.innerWidth <= 1024) {
-                banner.classList.remove('is-visible');
-                return;
-              }
-              if (window.scrollY > scrollThreshold) {
-                banner.classList.add('is-visible');
-              } else {
-                banner.classList.remove('is-visible');
-              }
-            }
-
-            window.addEventListener('scroll', handleScroll, { passive: true });
-            handleScroll();
-          }
-
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initSideScrollBanner);
-          } else {
-            initSideScrollBanner();
-          }
         })();
         </script>
         <?php

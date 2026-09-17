@@ -372,9 +372,11 @@ article.cmg-blog-single-article ul.cmg-blog-toc-list li,
     }
     .cmg-floating-side-banner {
         margin: 0 !important;
-    }
-    .cmg-floating-side-banner.is-dismissed {
-        display: none !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        border-radius: 20px !important;
     }
 }
 
