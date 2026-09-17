@@ -4406,7 +4406,7 @@ if ( ! function_exists( 'cmg_render_blog_related_articles' ) ) {
             .cmg-related-thumb-wrap {
               width: 100%;
               aspect-ratio: 16 / 9;
-              border-radius: 14px;
+              border-radius: 20px;
               overflow: hidden;
               background: #e2e8f0;
               margin-bottom: 16px;

@@ -18,7 +18,7 @@ while ( have_posts() ) :
 		<article class="cmg-blog-single-article">
 			<?php if ( has_post_thumbnail() ) : ?>
 				<div class="cmg-blog-featured-image-wrap" style="max-width: 1100px; margin: 30px auto 10px auto; padding: 0 20px; box-sizing: border-box;">
-					<?php the_post_thumbnail( 'full', array( 'style' => 'width: 100%; height: auto; border-radius: 16px; display: block; object-fit: cover;' ) ); ?>
+					<?php the_post_thumbnail( 'full', array( 'style' => 'width: 100%; height: auto; border-radius: 20px; display: block; object-fit: cover;' ) ); ?>
 				</div>
 			<?php endif; ?>
 

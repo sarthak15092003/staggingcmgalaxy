@@ -446,11 +446,41 @@ body.single-post .site-footer a {
     text-decoration: none !important;
 }
 
-body.single-post .ekit-template-content-footer a:hover,
-body.single-post footer#site-footer a:hover,
-body.single-post .site-footer a:hover {
-    text-decoration: none !important;
+/* ==========================================================================
+   ARTICLE IMAGES BORDER RADIUS (20px)
+   ========================================================================== */
+body.single-post article.cmg-blog-single-article .cmg-blog-featured-image-wrap img,
+body.single-post article.cmg-blog-single-article .cmg-blog-featured-image-wrap,
+body.single-post .cmg-blog-content img,
+body.single-post .cmg-blog-content figure,
+body.single-post .cmg-blog-content figure img,
+body.single-post .cmg-blog-content .wp-block-image,
+body.single-post .cmg-blog-content .wp-block-image img,
+body.single-post .page-content.cmg-blog-content img,
+body.single-post .page-content img,
+body.single-post .entry-content img,
+body.single-post .cmg-related-thumb-wrap,
+body.single-post .cmg-related-thumb {
+    border-radius: 20px !important;
 }
 
-/* Build timestamp: 2026-09-17 10:00 */
+/* Ensure image containers clip the rounded corners cleanly */
+body.single-post .cmg-blog-featured-image-wrap,
+body.single-post .cmg-blog-content figure,
+body.single-post .cmg-blog-content .wp-block-image,
+body.single-post .cmg-related-thumb-wrap {
+    overflow: hidden !important;
+}
+
+/* Preserve 50% circle for author avatars and rating badges */
+body.single-post .cmg-blog-author-avatar,
+body.single-post .cmg-blog-author-avatar img,
+body.single-post .cmg-author-avatar-img,
+body.single-post .cmg-author-avatar-badge,
+body.single-post .nav-rating-avatar,
+body.single-post .cmg-author-badge-avatar {
+    border-radius: 50% !important;
+}
+
+/* Build timestamp: 2026-09-17 14:00 */
 
