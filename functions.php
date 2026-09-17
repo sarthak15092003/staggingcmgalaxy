@@ -2074,11 +2074,11 @@ if (!function_exists('cmg_render_single_glossary_content')) {
           }
 
           .cmg-single-term-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 40px 0;
+            box-shadow: none;
             text-align: center;
           }
 
