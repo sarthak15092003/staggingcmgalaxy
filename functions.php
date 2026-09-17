@@ -2893,13 +2893,12 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
               height: 44px;
               border-radius: 50% !important;
               overflow: hidden !important;
-              background: #ffffff !important;
+              background: #f3f4f6 !important;
               border: 1.5px solid #e2e8f0 !important;
               flex-shrink: 0;
               display: flex !important;
               align-items: center !important;
               justify-content: center !important;
-              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
               box-sizing: border-box !important;
             }
 
@@ -3891,9 +3890,8 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
               object-fit: contain !important;
               display: block !important;
               margin: 0 auto;
-              box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
               border: 3px solid #ffffff !important;
-              background: #ffffff !important;
+              background: #f3f4f6 !important;
               padding: 4px !important;
               box-sizing: border-box !important;
             }
