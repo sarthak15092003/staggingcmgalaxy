@@ -584,12 +584,33 @@ function cmg_lead_form_shortcode( $atts ) {
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <style>
-        .iti { display: block !important; width: 100% !important; }
+        .iti { 
+            display: flex !important; 
+            gap: 10px; 
+            width: 100% !important; 
+            align-items: stretch;
+        }
+        .iti__flag-container {
+            position: relative !important;
+            border-radius: 8px !important;
+            border: 1px solid #dde3f0 !important;
+            background-color: #ffffff !important;
+            display: flex;
+            align-items: center;
+        }
+        .iti__selected-flag {
+            background-color: transparent !important;
+        }
+        .iti__selected-flag:hover, .iti__selected-flag:focus {
+            background-color: transparent !important;
+        }
         #phone-input { 
+            flex: 1;
             width: 100% !important; 
             padding-top: 16px !important; 
             padding-bottom: 16px !important; 
             padding-right: 14px !important; 
+            padding-left: 14px !important; 
             border-radius: 8px !important; 
             border: 1px solid #dde3f0 !important; 
             font-size: 15px !important; 
