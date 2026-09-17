@@ -116,7 +116,6 @@ button:focus-visible {
 
 body.single-post a:active,
 body.single-post a:focus {
-    color: #2563eb !important;
     outline: none !important;
 }
 
@@ -214,22 +213,16 @@ button:active,
     color: #0f172a !important;
 }
 
-/* Content Links: clean blue brand links instead of #c36 red */
-body.single-post a,
-body.single-post a:visited,
-.cmg-blog-content a,
-.cmg-blog-content a:visited {
+/* Content Links: clean blue brand links strictly inside editorial paragraphs and lists */
+.cmg-blog-content p a:not(.btn):not(.button):not(.cmg-share-btn),
+.cmg-blog-content li a:not(.btn):not(.button):not(.cmg-share-btn) {
     color: #2563eb !important;
     text-decoration: underline !important;
     text-decoration-color: rgba(37, 99, 235, 0.4) !important;
 }
 
-body.single-post a:hover,
-body.single-post a:focus,
-body.single-post a:active,
-.cmg-blog-content a:hover,
-.cmg-blog-content a:focus,
-.cmg-blog-content a:active {
+.cmg-blog-content p a:not(.btn):not(.button):not(.cmg-share-btn):hover,
+.cmg-blog-content li a:not(.btn):not(.button):not(.cmg-share-btn):hover {
     color: #1d4ed8 !important;
     text-decoration-color: #1d4ed8 !important;
 }
@@ -372,11 +365,19 @@ article.cmg-blog-single-article ul.cmg-blog-toc-list li,
     }
     .cmg-floating-side-banner {
         margin: 0 !important;
-        display: block !important;
+        border-radius: 20px !important;
+    }
+    .cmg-floating-side-banner.is-visible {
         opacity: 1 !important;
         visibility: visible !important;
         pointer-events: auto !important;
-        border-radius: 20px !important;
+        transform: translateY(0) !important;
+    }
+    .cmg-floating-side-banner.is-hidden {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
     }
 }
 
@@ -462,7 +463,8 @@ body.single-post .page-content.cmg-blog-content img,
 body.single-post .page-content img,
 body.single-post .entry-content img,
 body.single-post .cmg-related-thumb-wrap,
-body.single-post .cmg-related-thumb {
+body.single-post .cmg-related-thumb,
+body.single-post .cmg-side-banner-img {
     border-radius: 20px !important;
 }
 
@@ -470,7 +472,9 @@ body.single-post .cmg-related-thumb {
 body.single-post .cmg-blog-featured-image-wrap,
 body.single-post .cmg-blog-content figure,
 body.single-post .cmg-blog-content .wp-block-image,
-body.single-post .cmg-related-thumb-wrap {
+body.single-post .cmg-related-thumb-wrap,
+body.single-post .cmg-side-banner-link {
+    border-radius: 20px !important;
     overflow: hidden !important;
 }
 

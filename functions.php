@@ -176,13 +176,6 @@ if ( ! function_exists( 'hello_elementor_scripts_styles' ) ) {
 		);
 
 		wp_enqueue_style(
-			'hello-elementor-style',
-			get_stylesheet_uri(),
-			[ 'hello-elementor', 'hello-elementor-main' ],
-			HELLO_ELEMENTOR_VERSION
-		);
-
-		wp_enqueue_style(
 			'cmg-google-font-onest',
 			'https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&display=swap',
 			[],
@@ -255,15 +248,16 @@ add_action( 'wp_head', function() {
       body.single-post .cmg-blog-content .wp-block-image img,
       body.single-post .page-content img,
       body.single-post .entry-content img,
-      body.single-post article.cmg-blog-single-article img:not(.cmg-blog-author-avatar img):not(.cmg-author-avatar-img):not(.nav-rating-avatar):not(.cmg-author-badge-avatar),
       body.single-post .cmg-related-thumb-wrap,
-      body.single-post .cmg-related-thumb {
+      body.single-post .cmg-related-thumb,
+      body.single-post .cmg-side-banner-img {
         border-radius: 20px !important;
       }
       body.single-post .cmg-blog-featured-image-wrap,
       body.single-post .cmg-blog-content figure,
       body.single-post .cmg-blog-content .wp-block-image,
-      body.single-post .cmg-related-thumb-wrap {
+      body.single-post .cmg-related-thumb-wrap,
+      body.single-post .cmg-side-banner-link {
         border-radius: 20px !important;
         overflow: hidden !important;
       }
@@ -271,7 +265,8 @@ add_action( 'wp_head', function() {
       body.single-post .cmg-blog-author-avatar img,
       body.single-post .cmg-author-avatar-img,
       body.single-post .cmg-author-avatar-badge,
-      body.single-post .nav-rating-avatar {
+      body.single-post .nav-rating-avatar,
+      body.single-post .cmg-author-badge-avatar {
         border-radius: 50% !important;
       }
       
@@ -299,12 +294,15 @@ add_action( 'wp_head', function() {
         background-color: #e2e8f0 !important;
         color: #0f172a !important;
       }
-      .cmg-blog-content a, .cmg-blog-content a:visited {
+      /* In-content text links only: keep header, nav, TOC, buttons and footer clean */
+      .cmg-blog-content p a:not(.btn):not(.button):not(.cmg-share-btn),
+      .cmg-blog-content li a:not(.btn):not(.button):not(.cmg-share-btn) {
         color: #2563eb !important;
         text-decoration: underline !important;
         text-decoration-color: rgba(37, 99, 235, 0.4) !important;
       }
-      .cmg-blog-content a:hover, .cmg-blog-content a:focus, .cmg-blog-content a:active {
+      .cmg-blog-content p a:not(.btn):not(.button):not(.cmg-share-btn):hover,
+      .cmg-blog-content li a:not(.btn):not(.button):not(.cmg-share-btn):hover {
         color: #1d4ed8 !important;
         text-decoration-color: #1d4ed8 !important;
       }
@@ -320,10 +318,6 @@ add_action( 'wp_head', function() {
       button:focus-visible {
         outline: none !important;
         -webkit-tap-highlight-color: transparent !important;
-      }
-      body.single-post a:active,
-      body.single-post a:focus {
-        color: #2563eb !important;
       }
       .cmg-blog-toc-sidebar *,
       .cmg-blog-toc-header,
@@ -3640,43 +3634,62 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
                 align-self: flex-start;
                 margin: 0 !important;
                 background: transparent;
-                border-radius: 20px;
+                border-radius: 20px !important;
                 padding: 0;
                 box-shadow: none;
                 box-sizing: border-box;
                 text-align: center;
                 z-index: 20;
-                display: block !important;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateY(16px);
+                transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+              }
+
+              .cmg-floating-side-banner.is-visible {
                 opacity: 1 !important;
                 visibility: visible !important;
                 pointer-events: auto !important;
-                transform: none !important;
+                transform: translateY(0) !important;
+              }
+
+              .cmg-floating-side-banner.is-hidden {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
               }
 
               .cmg-side-banner-close {
                 position: absolute;
-                top: 6px;
-                right: 6px;
-                background: rgba(0, 0, 0, 0.45);
-                border: none;
-                color: rgba(255, 255, 255, 0.7);
-                font-size: 15px;
+                top: 8px;
+                right: 8px;
+                background: rgba(15, 23, 42, 0.6);
+                border: none !important;
+                color: #ffffff !important;
+                font-size: 16px;
                 line-height: 1;
                 cursor: pointer;
-                width: 22px;
-                height: 22px;
-                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                border-radius: 50% !important;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                z-index: 5;
-                transition: background 0.2s, color 0.2s;
+                z-index: 30;
+                transition: background 0.2s, transform 0.15s;
                 outline: none !important;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+                padding: 0;
+                -webkit-tap-highlight-color: transparent !important;
               }
 
-              .cmg-side-banner-close:hover {
-                background: rgba(0, 0, 0, 0.85);
-                color: #ffffff;
+              .cmg-side-banner-close:hover,
+              .cmg-side-banner-close:focus {
+                background: rgba(15, 23, 42, 0.95);
+                color: #ffffff !important;
+                transform: scale(1.1);
               }
 
               .cmg-side-banner-link {
@@ -3723,7 +3736,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
               }
             </style>
 
-            <button type="button" class="cmg-side-banner-close" onclick="cmgDismissSideBanner();" aria-label="Close">&times;</button>
+            <button type="button" class="cmg-side-banner-close" id="cmg-side-banner-close-btn" onclick="cmgDismissSideBanner(event);" aria-label="Close side banner">&times;</button>
 
             <a href="<?php echo esc_url( $audit_url ); ?>" id="blog-detail-sidebar-geo-audit" target="_blank" rel="noopener noreferrer" class="cmg-side-banner-link">
               <img src="<?php echo esc_url( $banner_img_url ); ?>" alt="Free GEO Audit - Rank Better in ChatGPT, Claude &amp; Perplexity" width="160" height="540" class="cmg-side-banner-img" />
@@ -3733,17 +3746,49 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
 
         <script>
         (function() {
-          // Clear any stale sessionStorage dismissal
-          try {
-            sessionStorage.removeItem('cmg_side_banner_dismissed');
-          } catch(e) {}
+          var isDismissed = false;
+          var banner = document.getElementById('cmg-floating-side-banner');
+          var closeBtn = document.getElementById('cmg-side-banner-close-btn');
 
-          window.cmgDismissSideBanner = function() {
-            var banner = document.getElementById('cmg-floating-side-banner');
+          window.cmgDismissSideBanner = function(e) {
+            if (e) {
+              if (e.stopPropagation) e.stopPropagation();
+              if (e.preventDefault) e.preventDefault();
+            }
+            isDismissed = true;
             if (banner) {
-              banner.style.display = 'none';
+              banner.classList.remove('is-visible');
+              banner.classList.add('is-hidden');
+              banner.style.setProperty('display', 'none', 'important');
             }
           };
+
+          if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+              window.cmgDismissSideBanner(e);
+            });
+          }
+
+          function checkScroll() {
+            if (isDismissed || !banner) return;
+            var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+            if (scrollY > 350) {
+              if (!banner.classList.contains('is-visible') && !banner.classList.contains('is-hidden')) {
+                banner.classList.add('is-visible');
+              }
+            } else {
+              if (banner.classList.contains('is-visible')) {
+                banner.classList.remove('is-visible');
+              }
+            }
+          }
+
+          window.addEventListener('scroll', checkScroll, { passive: true });
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', checkScroll);
+          } else {
+            checkScroll();
+          }
         })();
         </script>
         <?php
