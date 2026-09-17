@@ -2894,7 +2894,7 @@ if ( ! function_exists( 'cmg_render_blog_header' ) ) {
               border-radius: 50% !important;
               overflow: hidden !important;
               background: #f3f4f6 !important;
-              border: 1.5px solid #e2e8f0 !important;
+              border: none !important;
               flex-shrink: 0;
               display: flex !important;
               align-items: center !important;
@@ -3890,7 +3890,7 @@ if ( ! function_exists( 'cmg_render_blog_author_bio' ) ) {
               object-fit: contain !important;
               display: block !important;
               margin: 0 auto;
-              border: 3px solid #ffffff !important;
+              border: none !important;
               background: #f3f4f6 !important;
               padding: 4px !important;
               box-sizing: border-box !important;
