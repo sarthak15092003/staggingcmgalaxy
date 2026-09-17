@@ -52,6 +52,13 @@ while ( have_posts() ) :
 					}
 					?>
 				</div>
+
+				<?php
+				/* Side CTA banner - 3rd flex column (right sticky sidebar) */
+				if ( function_exists( 'cmg_render_floating_side_banner' ) ) {
+					echo cmg_render_floating_side_banner();
+				}
+				?>
 			</div>
 
 			<?php

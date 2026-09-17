@@ -3580,116 +3580,162 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
 
         ob_start();
         ?>
-        <div class="cmg-floating-side-banner" id="cmg-floating-side-banner">
-          <style>
-            .cmg-floating-side-banner {
-              position: sticky;
-              top: 110px;
-              width: 160px;
-              min-width: 160px;
-              flex-shrink: 0;
-              align-self: flex-start;
-              margin: 0 !important;
-              background: transparent;
-              border-radius: 12px;
-              padding: 0;
-              box-shadow: none;
-              box-sizing: border-box;
-              text-align: center;
-              z-index: 20;
-              opacity: 0;
-              pointer-events: none;
-              transform: translateY(20px);
-              transition: opacity 0.4s ease, transform 0.4s ease;
-              visibility: hidden;
-            }
-
-            .cmg-floating-side-banner.is-visible {
-              opacity: 1;
-              pointer-events: auto;
-              transform: translateY(0);
-              visibility: visible;
-            }
-
-            .cmg-side-banner-close {
-              position: absolute;
-              top: 6px;
-              right: 6px;
-              background: rgba(0, 0, 0, 0.45);
-              border: none;
-              color: rgba(255, 255, 255, 0.7);
-              font-size: 15px;
-              line-height: 1;
-              cursor: pointer;
-              width: 22px;
-              height: 22px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              z-index: 5;
-              transition: background 0.2s, color 0.2s;
-              outline: none !important;
-            }
-
-            .cmg-side-banner-close:hover {
-              background: rgba(0, 0, 0, 0.85);
-              color: #ffffff;
-            }
-
-            .cmg-side-banner-link {
-              display: block;
-              text-decoration: none !important;
-              border-radius: 12px;
-              overflow: hidden;
-              transition: transform 0.25s ease, filter 0.25s ease;
-              outline: none !important;
-              line-height: 0;
-            }
-
-            .cmg-side-banner-link:hover {
-              transform: translateY(-2px);
-              filter: brightness(1.03);
-            }
-
-            .cmg-side-banner-img {
-              width: 160px;
-              height: 540px;
-              max-width: 100%;
-              height: auto;
-              display: block;
-              border-radius: 12px;
-              box-shadow: 0 8px 24px rgba(9, 16, 43, 0.15);
-            }
-
-            /* Hide side banner on mobile/tablet - show as flex column on desktop */
-            @media (max-width: 1024px) {
-              .cmg-floating-side-banner {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                pointer-events: none !important;
+        <aside class="cmg-blog-right-sidebar" id="cmg-blog-right-sidebar" aria-label="Sidebar banner">
+          <div class="cmg-floating-side-banner" id="cmg-floating-side-banner">
+            <style>
+              .cmg-blog-right-sidebar {
+                width: 160px;
+                min-width: 160px;
+                max-width: 160px;
+                flex-shrink: 0;
+                align-self: stretch;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-sizing: border-box;
+                position: relative;
               }
-            }
-          </style>
 
-          <button type="button" class="cmg-side-banner-close" onclick="document.getElementById('cmg-floating-side-banner').style.display='none';" aria-label="Close">&times;</button>
+              .cmg-floating-side-banner {
+                position: sticky;
+                top: 110px;
+                width: 160px;
+                min-width: 160px;
+                flex-shrink: 0;
+                align-self: flex-start;
+                margin: 0 !important;
+                background: transparent;
+                border-radius: 12px;
+                padding: 0;
+                box-shadow: none;
+                box-sizing: border-box;
+                text-align: center;
+                z-index: 20;
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(20px);
+                transition: opacity 0.4s ease, transform 0.4s ease;
+                visibility: hidden;
+              }
 
-          <a href="<?php echo esc_url( $audit_url ); ?>" id="blog-detail-sidebar-geo-audit" target="_blank" rel="noopener noreferrer" class="cmg-side-banner-link">
-            <img src="<?php echo esc_url( $banner_img_url ); ?>" alt="Free GEO Audit - Rank Better in ChatGPT, Claude &amp; Perplexity" width="160" height="540" class="cmg-side-banner-img" loading="lazy" />
-          </a>
-        </div>
+              .cmg-floating-side-banner.is-visible {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
+                visibility: visible;
+              }
+
+              .cmg-floating-side-banner.is-dismissed {
+                display: none !important;
+              }
+
+              .cmg-side-banner-close {
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                background: rgba(0, 0, 0, 0.45);
+                border: none;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 15px;
+                line-height: 1;
+                cursor: pointer;
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 5;
+                transition: background 0.2s, color 0.2s;
+                outline: none !important;
+              }
+
+              .cmg-side-banner-close:hover {
+                background: rgba(0, 0, 0, 0.85);
+                color: #ffffff;
+              }
+
+              .cmg-side-banner-link {
+                display: block;
+                text-decoration: none !important;
+                border-radius: 12px;
+                overflow: hidden;
+                transition: transform 0.25s ease, filter 0.25s ease;
+                outline: none !important;
+                line-height: 0;
+              }
+
+              .cmg-side-banner-link:hover {
+                transform: translateY(-2px);
+                filter: brightness(1.03);
+              }
+
+              .cmg-side-banner-img {
+                width: 160px;
+                height: 540px;
+                max-width: 100%;
+                height: auto;
+                display: block;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(9, 16, 43, 0.15);
+              }
+
+              /* Hide on mobile/tablet */
+              @media (max-width: 1024px) {
+                .cmg-blog-right-sidebar {
+                  display: none !important;
+                  visibility: hidden !important;
+                  width: 0 !important;
+                  height: 0 !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                }
+                .cmg-floating-side-banner {
+                  display: none !important;
+                  visibility: hidden !important;
+                  opacity: 0 !important;
+                  pointer-events: none !important;
+                }
+              }
+            </style>
+
+            <button type="button" class="cmg-side-banner-close" onclick="cmgDismissSideBanner();" aria-label="Close">&times;</button>
+
+            <a href="<?php echo esc_url( $audit_url ); ?>" id="blog-detail-sidebar-geo-audit" target="_blank" rel="noopener noreferrer" class="cmg-side-banner-link">
+              <img src="<?php echo esc_url( $banner_img_url ); ?>" alt="Free GEO Audit - Rank Better in ChatGPT, Claude &amp; Perplexity" width="160" height="540" class="cmg-side-banner-img" loading="lazy" />
+            </a>
+          </div>
+        </aside>
 
         <script>
         (function() {
+          window.cmgDismissSideBanner = function() {
+            var banner = document.getElementById('cmg-floating-side-banner');
+            if (banner) {
+              banner.classList.add('is-dismissed');
+              banner.style.display = 'none';
+              try {
+                sessionStorage.setItem('cmg_side_banner_dismissed', 'true');
+              } catch(e) {}
+            }
+          };
+
           function initSideScrollBanner() {
             var banner = document.getElementById('cmg-floating-side-banner');
             if (!banner || banner.dataset.initialized) return;
             banner.dataset.initialized = 'true';
 
+            try {
+              if (sessionStorage.getItem('cmg_side_banner_dismissed') === 'true') {
+                banner.classList.add('is-dismissed');
+                banner.style.display = 'none';
+                return;
+              }
+            } catch(e) {}
+
             var scrollThreshold = 1000; // Pixels scrolled before showing
 
             function handleScroll() {
+              if (banner.classList.contains('is-dismissed')) return;
               if (window.innerWidth <= 1024) {
                 banner.classList.remove('is-visible');
                 return;

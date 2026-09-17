@@ -359,8 +359,33 @@ article.cmg-blog-single-article ul.cmg-blog-toc-list li,
         margin: 0 !important;
         text-align: left !important;
     }
+    .cmg-blog-right-sidebar {
+        width: 160px !important;
+        min-width: 160px !important;
+        max-width: 160px !important;
+        flex-shrink: 0 !important;
+        align-self: stretch !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+    }
     .cmg-floating-side-banner {
         margin: 0 !important;
+    }
+    .cmg-floating-side-banner.is-dismissed {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .cmg-blog-right-sidebar {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 }
 
