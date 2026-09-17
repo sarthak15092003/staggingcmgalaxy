@@ -95,7 +95,7 @@ function cmg_lead_form_shortcode( $atts ) {
 
     <style>
         .iti { display: block !important; width: 100% !important; }
-        .iti input, .iti__tel-input { 
+        #phone-input { 
             width: 100% !important; 
             padding-top: 16px !important; 
             padding-bottom: 16px !important; 
@@ -108,7 +108,7 @@ function cmg_lead_form_shortcode( $atts ) {
             height: auto !important;
             line-height: normal !important;
         }
-        .iti input:focus {
+        #phone-input:focus {
             border-color: #3a7dff !important;
             box-shadow: 0 0 0 1px rgba(58, 125, 255, 0.08) !important;
         }
