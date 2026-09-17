@@ -119,7 +119,7 @@ function cmg_lead_form_shortcode( $atts ) {
             padding: 40px 48px;
             background: #ffffff;
             border-radius: 28px;
-            box-shadow: 0 22px 60px rgba(15, 35, 52, 0.08);
+            box-shadow: 0 10px 30px rgba(15, 35, 52, 0.04);
             font-family: system-ui, -apple-system, sans-serif;
             box-sizing: border-box;
         }
