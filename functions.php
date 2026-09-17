@@ -3772,7 +3772,7 @@ if ( ! function_exists( 'cmg_render_floating_side_banner' ) ) {
           function checkScroll() {
             if (isDismissed || !banner) return;
             var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-            if (scrollY > 2000) {
+            if (scrollY > 3000) {
               if (!banner.classList.contains('is-visible') && !banner.classList.contains('is-hidden')) {
                 banner.classList.add('is-visible');
               }
