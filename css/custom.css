@@ -10,7 +10,15 @@
     display: block !important;
 
 }
-
-.elementor-element-0b1169c {
+.elementor-element-0b1169c,
+.elementor-element-0b1169c .elementor-widget-container,
+.elementor-element-0b1169c h1,
+.elementor-element-0b1169c h2,
+.elementor-element-0b1169c h3,
+.elementor-element-0b1169c h4,
+.elementor-element-0b1169c h5,
+.elementor-element-0b1169c h6,
+.elementor-element-0b1169c p {
     margin: 0 !important;
+    padding: 0 !important;
 }
