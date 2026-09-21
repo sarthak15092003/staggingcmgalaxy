@@ -6127,60 +6127,137 @@ function cmg_ratings_plugin_render_dashboard() {
     <?php
 }
 
-// Build timestamp: 2026-09-21 09:35
+// Build timestamp: 2026-09-21 09:40
 
 /**
- * CMG: Fix SVG Sanitization & Auto-Restore Intact SVGs
+ * CMG: Permanent SVG Protection System
+ * Prevents WordPress and plugins (like SVG Support, Safe SVG, Elementor)
+ * from stripping clipPath, mask, filter, gradients, and casing on ALL future uploads.
  */
+class CMG_SVG_Protector {
+    private static $raw_svg_cache = [];
 
-// 1. Disable sanitization in SVG Support plugin if hook is supported
-add_filter('bodhi_svgs_disable_sanitization', '__return_true');
+    public static function init() {
+        // 1. Ensure SVG mime types are allowed
+        add_filter('upload_mimes', [__CLASS__, 'allow_svg_mimes'], 99);
 
-// 2. Whitelist tags for SVG upload sanitizers (Safe SVG, SVG Support, etc.)
-add_filter('svg_allowed_tags', function($tags) {
-    if (!is_array($tags)) {
-        $tags = [];
+        // 2. Prefilter: Store pristine raw SVG content BEFORE any plugin/sanitizer runs
+        add_filter('wp_handle_upload_prefilter', [__CLASS__, 'on_upload_prefilter'], 1);
+
+        // 3. Post-upload: If any sanitizer stripped tags or reduced size, restore original content
+        add_filter('wp_handle_upload', [__CLASS__, 'on_upload_complete'], 9999);
+
+        // 4. Dynamically unhook bodhi_svgs_sanitize and other aggressive sanitizers
+        add_action('admin_init', [__CLASS__, 'remove_plugin_sanitizers'], 999);
+        add_action('wp_loaded', [__CLASS__, 'remove_plugin_sanitizers'], 999);
+
+        // 5. Whitelist SVG tags for plugins that support filtering
+        add_filter('bodhi_svgs_disable_sanitization', '__return_true');
+        add_filter('svg_allowed_tags', [__CLASS__, 'whitelist_tags']);
+        add_filter('svg_allowed_attributes', [__CLASS__, 'whitelist_attributes']);
+        add_filter('elementor/files/svg/allowed_elements', [__CLASS__, 'whitelist_tags']);
+        add_filter('elementor/files/svg/allowed_attributes', [__CLASS__, 'whitelist_attributes']);
     }
-    return array_unique(array_merge($tags, [
-        'clipPath', 'mask', 'filter', 'feFlood', 'feColorMatrix', 
-        'feOffset', 'feGaussianBlur', 'feComposite', 'feBlend', 'defs', 'style'
-    ]));
-});
 
-add_filter('svg_allowed_attributes', function($attributes) {
-    if (!is_array($attributes)) {
-        $attributes = [];
+    public static function allow_svg_mimes($mimes) {
+        $mimes['svg']  = 'image/svg+xml';
+        $mimes['svgz'] = 'image/svg+xml';
+        return $mimes;
     }
-    return array_unique(array_merge($attributes, [
-        'clip-path', 'mask', 'filter', 'filterUnits', 'color-interpolation-filters',
-        'stdDeviation', 'dx', 'dy', 'in', 'in2', 'operator', 'values', 'result', 
-        'flood-opacity', 'viewBox', 'maskUnits'
-    ]));
-});
 
-// 3. Whitelist tags for Elementor native SVG sanitizer
-add_filter('elementor/files/svg/allowed_elements', function($elements) {
-    if (!is_array($elements)) {
-        $elements = [];
+    public static function remove_plugin_sanitizers() {
+        global $wp_filter;
+        if (isset($wp_filter['wp_handle_upload_prefilter'])) {
+            $hook = $wp_filter['wp_handle_upload_prefilter'];
+            if (is_object($hook) && isset($hook->callbacks)) {
+                foreach ($hook->callbacks as $priority => $callbacks) {
+                    foreach ($callbacks as $id => $cb) {
+                        $fn = $cb['function'] ?? '';
+                        if (is_string($fn) && (stripos($fn, 'bodhi') !== false || stripos($fn, 'sanitize') !== false)) {
+                            unset($hook->callbacks[$priority][$id]);
+                        }
+                    }
+                }
+            }
+        }
     }
-    return array_unique(array_merge($elements, [
-        'clipPath', 'mask', 'filter', 'feFlood', 'feColorMatrix', 
-        'feOffset', 'feGaussianBlur', 'feComposite', 'feBlend', 'defs', 'style'
-    ]));
-});
 
-add_filter('elementor/files/svg/allowed_attributes', function($attributes) {
-    if (!is_array($attributes)) {
-        $attributes = [];
+    public static function on_upload_prefilter($file) {
+        self::remove_plugin_sanitizers();
+
+        if (empty($file['name']) || empty($file['tmp_name'])) {
+            return $file;
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if ($ext === 'svg' && file_exists($file['tmp_name'])) {
+            $raw_content = file_get_contents($file['tmp_name']);
+            if (!empty($raw_content)) {
+                self::$raw_svg_cache[$file['name']] = $raw_content;
+            }
+        }
+
+        return $file;
     }
-    return array_unique(array_merge($attributes, [
-        'clip-path', 'mask', 'filter', 'filterUnits', 'color-interpolation-filters',
-        'stdDeviation', 'dx', 'dy', 'in', 'in2', 'operator', 'values', 'result', 
-        'flood-opacity', 'viewBox', 'maskUnits'
-    ]));
-});
 
-// 4. Auto-repair broken Group-178969.svg in uploads directory
+    public static function on_upload_complete($upload) {
+        if (empty($upload['file'])) {
+            return $upload;
+        }
+
+        $filepath = $upload['file'];
+        $ext = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
+
+        if ($ext === 'svg' && file_exists($filepath)) {
+            $filename = basename($filepath);
+
+            // If we captured the pristine SVG before sanitizers altered it, restore it
+            if (isset(self::$raw_svg_cache[$filename])) {
+                $raw = self::$raw_svg_cache[$filename];
+                $current = file_get_contents($filepath);
+                if (strlen($current) < strlen($raw)) {
+                    file_put_contents($filepath, $raw);
+                }
+            }
+
+            // Guarantee viewBox is never lowercased to viewbox
+            $saved_content = file_get_contents($filepath);
+            if (strpos($saved_content, 'viewbox=') !== false) {
+                $fixed = preg_replace('/\bviewbox\b/i', 'viewBox', $saved_content);
+                file_put_contents($filepath, $fixed);
+            }
+        }
+
+        return $upload;
+    }
+
+    public static function whitelist_tags($tags) {
+        if (!is_array($tags)) {
+            $tags = [];
+        }
+        return array_unique(array_merge($tags, [
+            'svg', 'g', 'path', 'defs', 'clipPath', 'mask', 'filter', 
+            'feFlood', 'feColorMatrix', 'feOffset', 'feGaussianBlur', 
+            'feComposite', 'feBlend', 'rect', 'circle', 'line', 'polygon', 
+            'polyline', 'style', 'text', 'tspan', 'linearGradient', 'radialGradient', 'stop'
+        ]));
+    }
+
+    public static function whitelist_attributes($attributes) {
+        if (!is_array($attributes)) {
+            $attributes = [];
+        }
+        return array_unique(array_merge($attributes, [
+            'clip-path', 'mask', 'filter', 'filterUnits', 'color-interpolation-filters',
+            'stdDeviation', 'dx', 'dy', 'in', 'in2', 'operator', 'values', 'result', 
+            'flood-opacity', 'viewBox', 'maskUnits', 'fill', 'stroke', 'stroke-width',
+            'stroke-linecap', 'stroke-dasharray', 'opacity', 'width', 'height', 'x', 'y'
+        ]));
+    }
+}
+CMG_SVG_Protector::init();
+
+// Auto-repair broken Group-178969.svg in uploads directory if needed
 add_action('init', function() {
     $theme_clean_svg = get_stylesheet_directory() . '/assets/images/67eca388d05621cf04a778bf_Group-178969.svg';
     if (!file_exists($theme_clean_svg)) {
@@ -6192,7 +6269,6 @@ add_action('init', function() {
     $target_file = $target_dir . '/67eca388d05621cf04a778bf_Group-178969.svg';
 
     if (file_exists($target_file)) {
-        // If file exists but is stripped/smaller than 108KB, replace with intact version
         if (filesize($target_file) < 108000) {
             @copy($theme_clean_svg, $target_file);
         }
@@ -6200,4 +6276,5 @@ add_action('init', function() {
         @copy($theme_clean_svg, $target_file);
     }
 });
+
 
