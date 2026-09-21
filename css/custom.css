@@ -5,6 +5,8 @@
 .cta,
 .cta1 {
     font-size: 14px !important;
-    background-color: red !important;
+
+    border-radius: 58px;
     display: block !important;
+
 }
