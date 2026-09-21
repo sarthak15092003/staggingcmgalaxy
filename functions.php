@@ -6867,4 +6867,12 @@ add_shortcode( 'brand_analysis_report', 'cmg_render_brand_report_form' );
 add_shortcode( 'cmg_report_form', 'cmg_render_brand_report_form' );
 
 
-
+function my_custom_styles() {
+    wp_enqueue_style(
+        'custom-css',
+        get_template_directory_uri() . '/css/custom.css',
+        array(),
+        '1.0'
+    );
+}
+add_action('wp_enqueue_scripts', 'my_custom_styles');
