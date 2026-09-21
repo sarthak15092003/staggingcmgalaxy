@@ -1,5 +1,5 @@
 /* common button css  */
-.cta .elementor-button {
+.cta .elementor-button.elementor-button-link.elementor-size-sm {
 
     padding: 12px 30px !important;
     text-align: center !important;
