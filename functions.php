@@ -6127,4 +6127,77 @@ function cmg_ratings_plugin_render_dashboard() {
     <?php
 }
 
-// Build timestamp: 2026-09-16 10:10
+// Build timestamp: 2026-09-21 09:35
+
+/**
+ * CMG: Fix SVG Sanitization & Auto-Restore Intact SVGs
+ */
+
+// 1. Disable sanitization in SVG Support plugin if hook is supported
+add_filter('bodhi_svgs_disable_sanitization', '__return_true');
+
+// 2. Whitelist tags for SVG upload sanitizers (Safe SVG, SVG Support, etc.)
+add_filter('svg_allowed_tags', function($tags) {
+    if (!is_array($tags)) {
+        $tags = [];
+    }
+    return array_unique(array_merge($tags, [
+        'clipPath', 'mask', 'filter', 'feFlood', 'feColorMatrix', 
+        'feOffset', 'feGaussianBlur', 'feComposite', 'feBlend', 'defs', 'style'
+    ]));
+});
+
+add_filter('svg_allowed_attributes', function($attributes) {
+    if (!is_array($attributes)) {
+        $attributes = [];
+    }
+    return array_unique(array_merge($attributes, [
+        'clip-path', 'mask', 'filter', 'filterUnits', 'color-interpolation-filters',
+        'stdDeviation', 'dx', 'dy', 'in', 'in2', 'operator', 'values', 'result', 
+        'flood-opacity', 'viewBox', 'maskUnits'
+    ]));
+});
+
+// 3. Whitelist tags for Elementor native SVG sanitizer
+add_filter('elementor/files/svg/allowed_elements', function($elements) {
+    if (!is_array($elements)) {
+        $elements = [];
+    }
+    return array_unique(array_merge($elements, [
+        'clipPath', 'mask', 'filter', 'feFlood', 'feColorMatrix', 
+        'feOffset', 'feGaussianBlur', 'feComposite', 'feBlend', 'defs', 'style'
+    ]));
+});
+
+add_filter('elementor/files/svg/allowed_attributes', function($attributes) {
+    if (!is_array($attributes)) {
+        $attributes = [];
+    }
+    return array_unique(array_merge($attributes, [
+        'clip-path', 'mask', 'filter', 'filterUnits', 'color-interpolation-filters',
+        'stdDeviation', 'dx', 'dy', 'in', 'in2', 'operator', 'values', 'result', 
+        'flood-opacity', 'viewBox', 'maskUnits'
+    ]));
+});
+
+// 4. Auto-repair broken Group-178969.svg in uploads directory
+add_action('init', function() {
+    $theme_clean_svg = get_stylesheet_directory() . '/assets/images/67eca388d05621cf04a778bf_Group-178969.svg';
+    if (!file_exists($theme_clean_svg)) {
+        return;
+    }
+
+    $upload_info = wp_upload_dir();
+    $target_dir = $upload_info['basedir'] . '/2026/09';
+    $target_file = $target_dir . '/67eca388d05621cf04a778bf_Group-178969.svg';
+
+    if (file_exists($target_file)) {
+        // If file exists but is stripped/smaller than 108KB, replace with intact version
+        if (filesize($target_file) < 108000) {
+            @copy($theme_clean_svg, $target_file);
+        }
+    } else if (is_dir($target_dir) && is_writable($target_dir)) {
+        @copy($theme_clean_svg, $target_file);
+    }
+});
+
