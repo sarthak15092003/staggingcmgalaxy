@@ -6282,3 +6282,589 @@ add_action('init', function() {
 });
 
 
+/* ==========================================================================
+   CMGALAXY BRAND ANALYSIS REPORT SHORTCODE
+   Shortcode: [cmg_brand_report], [brand_report_form], [brand_analysis_report]
+   ========================================================================== */
+function cmg_render_brand_report_form( $atts = [] ) {
+    ob_start();
+    ?>
+    <style>
+    /* =========================================================
+       CMGALAXY BRAND ANALYSIS REPORT
+       DESKTOP WIDTH FIX | TABLET + MOBILE RESPONSIVE
+       ========================================================= */
+
+    /* MAIN REPORT FORM WRAPPER */
+    .report-form-wrapper {
+      display: block !important;
+      width: 704px !important;
+      max-width: calc(100vw - 48px) !important;
+      min-width: 0 !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      overflow: visible !important;
+    }
+
+    /* FORM */
+    .report-form {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      overflow: visible !important;
+    }
+
+    /* BOX SIZING */
+    .report-form,
+    .report-form *,
+    .report-form-wrapper,
+    .report-form-wrapper * {
+      box-sizing: border-box !important;
+    }
+
+    /* INPUTS */
+    .report-input,
+    .report-form input.report-input,
+    .report-form .w-input {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      height: 52px !important;
+      margin-top: 0 !important;
+      margin-right: 0 !important;
+      margin-bottom: 24px !important;
+      margin-left: 0 !important;
+      padding-top: 0 !important;
+      padding-right: 16px !important;
+      padding-bottom: 0 !important;
+      padding-left: 16px !important;
+      border: 1px solid #6f7285 !important;
+      border-radius: 14px !important;
+      background-color: #ffffff !important;
+      color: #20244f !important;
+      font-family: inherit !important;
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      line-height: normal !important;
+      outline: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    /* PLACEHOLDER */
+    .report-input::placeholder {
+      color: #9294a1 !important;
+      opacity: 1 !important;
+    }
+
+    /* INPUT FOCUS */
+    .report-input:focus,
+    .report-form .w-input:focus {
+      border-color: #315eea !important;
+      box-shadow: 0 0 0 2px rgba(49, 94, 234, 0.08) !important;
+    }
+
+    /* SUBMIT BUTTON */
+    .report-submit,
+    .report-form button.report-submit,
+    .report-form input[type="submit"].report-submit {
+      display: block !important;
+      width: 332px !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      height: 50px !important;
+      margin-top: 1px !important;
+      margin-right: auto !important;
+      margin-bottom: 28px !important;
+      margin-left: auto !important;
+      padding-top: 0 !important;
+      padding-right: 20px !important;
+      padding-bottom: 0 !important;
+      padding-left: 20px !important;
+      border: none !important;
+      border-radius: 30px !important;
+      background-color: #2fc653 !important;
+      color: #ffffff !important;
+      font-family: inherit !important;
+      font-size: 16px !important;
+      font-weight: 500 !important;
+      line-height: 50px !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      box-sizing: border-box !important;
+      transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease !important;
+    }
+
+    /* BUTTON HOVER (GREEN -> BLUE) */
+    .report-submit:hover,
+    .report-form button.report-submit:hover {
+      background-color: #2f64e8 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 5px 14px rgba(47, 100, 232, 0.18) !important;
+    }
+
+    /* BUTTON ACTIVE */
+    .report-submit:active {
+      transform: translateY(0) !important;
+      box-shadow: none !important;
+    }
+
+    /* LOADING */
+    .report-submit.loading {
+      opacity: 0.75 !important;
+      cursor: wait !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .report-submit:disabled {
+      cursor: wait !important;
+    }
+
+    /* DISCLAIMER */
+    .report-disclaimer {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      color: #a1a3b0 !important;
+      font-family: inherit !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      text-align: center !important;
+      overflow-wrap: break-word !important;
+      word-wrap: break-word !important;
+      box-sizing: border-box !important;
+    }
+
+    /* SUCCESS & ERROR */
+    .report-success {
+      display: none;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 14px 0 0 0 !important;
+      padding: 0 10px !important;
+      color: #2a9d4b !important;
+      font-family: inherit !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      text-align: center !important;
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
+      box-sizing: border-box !important;
+    }
+
+    .report-error {
+      display: none;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 14px 0 0 0 !important;
+      padding: 0 10px !important;
+      color: #d33b3b !important;
+      font-family: inherit !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      text-align: center !important;
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
+      box-sizing: border-box !important;
+    }
+
+    /* RESPONSIVE MEDIA QUERIES */
+    @media screen and (min-width: 1200px) {
+      .report-form-wrapper {
+        width: 704px !important;
+        max-width: 704px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      .report-input,
+      .report-form .w-input {
+        width: 704px !important;
+        max-width: 704px !important;
+      }
+    }
+
+    @media screen and (min-width: 992px) and (max-width: 1199px) {
+      .report-form-wrapper {
+        width: 704px !important;
+        max-width: calc(100vw - 48px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      .report-input,
+      .report-form .w-input {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+
+    @media screen and (min-width: 768px) and (max-width: 991px) {
+      .report-form-wrapper {
+        width: 100% !important;
+        max-width: 704px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+      }
+      .report-form,
+      .report-input,
+      .report-form .w-input {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .report-submit {
+        width: 332px !important;
+        max-width: 100% !important;
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      .report-form-wrapper {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+      }
+      .report-form,
+      .report-input,
+      .report-form .w-input {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
+      .report-form {
+        align-items: stretch !important;
+      }
+      .report-input,
+      .report-form .w-input {
+        height: 48px !important;
+        margin-bottom: 18px !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        border-radius: 12px !important;
+        font-size: 16px !important;
+      }
+      .report-submit {
+        width: 100% !important;
+        max-width: 332px !important;
+        min-width: 0 !important;
+        height: 48px !important;
+        margin-top: 2px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 24px !important;
+        font-size: 16px !important;
+        line-height: 48px !important;
+      }
+      .report-disclaimer {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+      }
+      .report-success,
+      .report-error {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 13px !important;
+      }
+    }
+
+    @media screen and (max-width: 479px) {
+      .report-form-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+      .report-input,
+      .report-form .w-input {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 46px !important;
+        margin-bottom: 16px !important;
+        padding-left: 13px !important;
+        padding-right: 13px !important;
+        border-radius: 11px !important;
+        font-size: 15px !important;
+      }
+      .report-submit {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 46px !important;
+        margin-top: 2px !important;
+        margin-bottom: 22px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        font-size: 15px !important;
+        line-height: 46px !important;
+      }
+      .report-disclaimer,
+      .report-success,
+      .report-error {
+        font-size: 12px !important;
+        line-height: 1.45 !important;
+      }
+      .report-success,
+      .report-error {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+      }
+    }
+
+    @media screen and (max-width: 359px) {
+      .report-form-wrapper {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
+      .report-input,
+      .report-form .w-input {
+        height: 44px !important;
+        font-size: 14px !important;
+      }
+      .report-submit {
+        height: 44px !important;
+        font-size: 14px !important;
+        line-height: 44px !important;
+      }
+      .report-disclaimer {
+        font-size: 11px !important;
+      }
+    }
+    </style>
+
+    <div class="report-form-wrapper">
+      <form id="brand-report-form" class="report-form" novalidate>
+        <input
+          type="text"
+          id="report-full-name"
+          name="fullName"
+          class="report-input"
+          placeholder="Full Name"
+          maxlength="256"
+          autocomplete="name"
+          required
+        >
+        <input
+          type="email"
+          id="report-work-email"
+          name="workEmail"
+          class="report-input"
+          placeholder="Work Email"
+          maxlength="256"
+          autocomplete="email"
+          required
+        >
+        <button
+          type="submit"
+          id="report-submit"
+          class="report-submit"
+        >
+          Download the Report
+        </button>
+        <p class="report-disclaimer">
+          No calls. No follow-up unless you ask for one.
+        </p>
+        <p id="report-success" class="report-success">
+          Thank you! Your report is downloading.
+        </p>
+        <p id="report-error" class="report-error"></p>
+      </form>
+    </div>
+
+    <script>
+    (function () {
+      "use strict";
+
+      const API_URL = "https://staging-api.cmgalaxy.com/api/v2/onboarding/milestone_lead_magnet/";
+      const REPORT_PDF_URL = "https://gtm.cmgalaxy.com/BrandAnalysisReport.pdf";
+
+      function initBrandReportForm() {
+        const forms = document.querySelectorAll('.report-form');
+        if (!forms.length) return;
+
+        forms.forEach(function(form) {
+          if (form.dataset.cmgReportInit === "true") return;
+          form.dataset.cmgReportInit = "true";
+
+          const fullNameInput = form.querySelector('input[name="fullName"]');
+          const workEmailInput = form.querySelector('input[name="workEmail"]');
+          const submitButton = form.querySelector('.report-submit');
+          const successMessage = form.querySelector('.report-success');
+          const errorMessage = form.querySelector('.report-error');
+
+          if (!fullNameInput || !workEmailInput || !submitButton) return;
+
+          form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            if (successMessage) successMessage.style.display = "none";
+            if (errorMessage) {
+              errorMessage.style.display = "none";
+              errorMessage.textContent = "";
+            }
+
+            const fullName = fullNameInput.value.trim();
+            const workEmail = workEmailInput.value.trim();
+
+            if (!fullName) {
+              if (errorMessage) {
+                errorMessage.textContent = "Please enter your full name.";
+                errorMessage.style.display = "block";
+              }
+              fullNameInput.focus();
+              return;
+            }
+
+            if (!workEmail) {
+              if (errorMessage) {
+                errorMessage.textContent = "Please enter your work email.";
+                errorMessage.style.display = "block";
+              }
+              workEmailInput.focus();
+              return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(workEmail)) {
+              if (errorMessage) {
+                errorMessage.textContent = "Please enter a valid work email.";
+                errorMessage.style.display = "block";
+              }
+              workEmailInput.focus();
+              return;
+            }
+
+            const originalButtonText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.classList.add("loading");
+            submitButton.textContent = "Please wait...";
+
+            const payload = {
+              fullName: fullName,
+              workEmail: workEmail
+            };
+
+            try {
+              const response = await fetch(API_URL, {
+                method: "POST",
+                mode: "cors",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+                },
+                body: JSON.stringify(payload)
+              });
+
+              const contentType = response.headers.get("content-type") || "";
+              let responseData = null;
+
+              if (contentType.includes("application/json")) {
+                try {
+                  responseData = await response.json();
+                } catch (err) {
+                  responseData = null;
+                }
+              } else {
+                try {
+                  responseData = await response.text();
+                } catch (err) {
+                  responseData = null;
+                }
+              }
+
+              if (!response.ok) {
+                let apiMessage = "Unable to submit your details.";
+                if (responseData && typeof responseData === "object") {
+                  apiMessage = responseData.message || responseData.error || responseData.detail || responseData.non_field_errors || apiMessage;
+                } else if (typeof responseData === "string" && responseData.trim()) {
+                  apiMessage = responseData.trim();
+                }
+                throw new Error("API " + response.status + ": " + apiMessage);
+              }
+
+              if (successMessage) {
+                successMessage.textContent = "Thank you! Your report is downloading.";
+                successMessage.style.display = "block";
+              }
+
+              submitButton.textContent = "Downloading...";
+
+              const downloadLink = document.createElement("a");
+              downloadLink.href = REPORT_PDF_URL;
+              downloadLink.target = "_blank";
+              downloadLink.rel = "noopener";
+              downloadLink.download = "BrandAnalysisReport.pdf";
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              document.body.removeChild(downloadLink);
+
+              submitButton.textContent = "Report Downloaded";
+              submitButton.classList.remove("loading");
+
+            } catch (error) {
+              console.error("CMGalaxy Report Error:", error);
+              if (errorMessage) {
+                errorMessage.textContent = error.message || "Something went wrong. Please try again.";
+                errorMessage.style.display = "block";
+              }
+              submitButton.disabled = false;
+              submitButton.classList.remove("loading");
+              submitButton.textContent = originalButtonText;
+            }
+          });
+        });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initBrandReportForm);
+      } else {
+        initBrandReportForm();
+      }
+    })();
+    </script>
+    <?php
+    return ob_get_clean();
+}
+
+add_shortcode( 'cmg_brand_report', 'cmg_render_brand_report_form' );
+add_shortcode( 'brand_report_form', 'cmg_render_brand_report_form' );
+add_shortcode( 'brand_analysis_report', 'cmg_render_brand_report_form' );
+add_shortcode( 'cmg_report_form', 'cmg_render_brand_report_form' );
+
+
+
