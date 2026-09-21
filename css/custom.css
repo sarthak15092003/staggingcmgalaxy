@@ -1,6 +1,7 @@
 /* common button css  */
 .cta .elementor-button.elementor-button-link.elementor-size-sm {
-
+    width: 100% !important;
+    display: block !important;
     padding: 12px 30px !important;
     text-align: center !important;
 }
