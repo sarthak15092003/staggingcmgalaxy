@@ -1,6 +1,6 @@
 /* common button css  */
-/* .hero-sect-heading h1 {
-    font-size: 54px;
-    line-height: 100%;
-    color: red;
-} */
+.cta .elementor-button {
+    width: 100% !important;
+    padding: 12px 30px !important;
+    text-align: center !important;
+}
