@@ -6879,14 +6879,39 @@ if ( ! function_exists( 'cmg_enqueue_custom_styles' ) ) {
 
 /**
  * Forward custom classes from Elementor Button Widget wrapper directly to inner <a> tag
- * Solves: "class not coming to button"
+ * Ensures any class entered in Elementor (e.g. cta, cta1) appears directly on <a class="elementor-button ...">
  */
+function cmg_forward_elementor_button_classes( $content ) {
+    if ( empty( $content ) || strpos( $content, 'elementor-widget-button' ) === false ) {
+        return $content;
+    }
+    return preg_replace_callback(
+        '/(<div[^>]*class=["\'][^"\']*elementor-widget-button[^"\']*["\'][^>]*>)([\s\S]*?)(?=<\/div>)/i',
+        function( $match ) {
+            $div_tag = $match[1];
+            $inner   = $match[2];
+            if ( preg_match( '/class=["\']([^"\']+)["\']/', $div_tag, $m ) ) {
+                $classes = array_filter( explode( ' ', $m[1] ), function( $c ) {
+                    return ! empty( $c ) && strpos( $c, 'elementor-' ) !== 0 && strpos( $c, 'e-' ) !== 0 && strpos( $c, 'wp-' ) !== 0 && strpos( $c, 'wor-' ) !== 0;
+                } );
+                if ( ! empty( $classes ) ) {
+                    $class_str = ' ' . esc_attr( implode( ' ', $classes ) );
+                    $inner = preg_replace( '/(<a\s+[^>]*class=["\']elementor-button\b)/i', '$1' . $class_str, $inner, 1 );
+                }
+            }
+            return $div_tag . $inner;
+        },
+        $content
+    );
+}
+add_filter( 'the_content', 'cmg_forward_elementor_button_classes', 99 );
+add_filter( 'elementor/frontend/the_content', 'cmg_forward_elementor_button_classes', 99 );
+
 add_filter( 'elementor/widget/render_content', function( $content, $widget ) {
     if ( 'button' === $widget->get_name() ) {
         $classes = $widget->get_settings( '_css_classes' );
         if ( ! empty( $classes ) ) {
             $classes_clean = esc_attr( trim( $classes ) );
-            // Add custom classes directly to <a class="elementor-button ...">
             $content = preg_replace(
                 '/(<a\s+[^>]*class=["\']elementor-button\b)/i',
                 '$1 ' . $classes_clean,
@@ -6911,7 +6936,7 @@ add_action( 'wp_footer', function() {
                 var classList = w.className.split(/\s+/);
                 for (var j = 0; j < classList.length; j++) {
                     var c = classList[j];
-                    if (c && !c.startsWith('elementor-') && !btn.classList.contains(c)) {
+                    if (c && !c.startsWith('elementor-') && !c.startsWith('e-') && !c.startsWith('wp-') && !c.startsWith('wor-') && !btn.classList.contains(c)) {
                         btn.classList.add(c);
                     }
                 }
@@ -6927,3 +6952,4 @@ add_action( 'wp_footer', function() {
     </script>
     <?php
 }, 999 );
+

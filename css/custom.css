@@ -3,14 +3,11 @@
    ========================================================= */
 
 .cta,
-.cta .elementor-button,
+.cta1 {
+    font-size: 14px !important;
+}
+
 .cta .elementor-button-text,
-.cta1,
-.cta1 .elementor-button,
-.cta1 .elementor-button-text,
-.elementor-widget-button.cta .elementor-button,
-.elementor-widget-button.cta1 .elementor-button,
-.elementor-widget-button.cta .elementor-button-text,
-.elementor-widget-button.cta1 .elementor-button-text {
+.cta1 .elementor-button-text {
     font-size: 14px !important;
 }
