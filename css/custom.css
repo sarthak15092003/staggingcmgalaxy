@@ -1,5 +1,6 @@
 /* common button css  */
-h1 {
+hero-sect-heading {
     font-size: 54px;
     line-height: 100%;
+    color: red;
 }
