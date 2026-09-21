@@ -6865,14 +6865,65 @@ add_shortcode( 'cmg_brand_report', 'cmg_render_brand_report_form' );
 add_shortcode( 'brand_report_form', 'cmg_render_brand_report_form' );
 add_shortcode( 'brand_analysis_report', 'cmg_render_brand_report_form' );
 add_shortcode( 'cmg_report_form', 'cmg_render_brand_report_form' );
-
-
-function my_custom_styles() {
-    wp_enqueue_style(
-        'custom-css',
-        get_template_directory_uri() . '/css/custom.css',
-        array(),
-        time()
-    );
+if ( ! function_exists( 'cmg_enqueue_custom_styles' ) ) {
+    function cmg_enqueue_custom_styles() {
+        wp_enqueue_style(
+            'cmg-custom-css',
+            get_template_directory_uri() . '/css/custom.css',
+            array(),
+            time()
+        );
+    }
+    add_action( 'wp_enqueue_scripts', 'cmg_enqueue_custom_styles', 999 );
 }
-add_action('wp_enqueue_scripts', 'my_custom_styles', 999);
+
+/**
+ * Forward custom classes from Elementor Button Widget wrapper directly to inner <a> tag
+ * Solves: "class not coming to button"
+ */
+add_filter( 'elementor/widget/render_content', function( $content, $widget ) {
+    if ( 'button' === $widget->get_name() ) {
+        $classes = $widget->get_settings( '_css_classes' );
+        if ( ! empty( $classes ) ) {
+            $classes_clean = esc_attr( trim( $classes ) );
+            // Add custom classes directly to <a class="elementor-button ...">
+            $content = preg_replace(
+                '/(<a\s+[^>]*class=["\']elementor-button\b)/i',
+                '$1 ' . $classes_clean,
+                $content,
+                1
+            );
+        }
+    }
+    return $content;
+}, 10, 2 );
+
+add_action( 'wp_footer', function() {
+    ?>
+    <script>
+    (function() {
+        function forwardButtonClasses() {
+            var widgets = document.querySelectorAll('.elementor-widget-button');
+            for (var i = 0; i < widgets.length; i++) {
+                var w = widgets[i];
+                var btn = w.querySelector('.elementor-button');
+                if (!btn) continue;
+                var classList = w.className.split(/\s+/);
+                for (var j = 0; j < classList.length; j++) {
+                    var c = classList[j];
+                    if (c && !c.startsWith('elementor-') && !btn.classList.contains(c)) {
+                        btn.classList.add(c);
+                    }
+                }
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', forwardButtonClasses);
+        } else {
+            forwardButtonClasses();
+        }
+        window.addEventListener('load', forwardButtonClasses);
+    })();
+    </script>
+    <?php
+}, 999 );

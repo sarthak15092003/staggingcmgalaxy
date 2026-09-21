@@ -1,4 +1,16 @@
-/* common button css  */
-.cta .elementor-button.elementor-button-link.elementor-size-sm .elementor-button-content-wrapper.elementor-button-text {
-    font-size: 14px;
+/* =========================================================
+   CMGALAXY COMMON BUTTON (CTA) STYLES
+   ========================================================= */
+
+.cta,
+.cta .elementor-button,
+.cta .elementor-button-text,
+.cta1,
+.cta1 .elementor-button,
+.cta1 .elementor-button-text,
+.elementor-widget-button.cta .elementor-button,
+.elementor-widget-button.cta1 .elementor-button,
+.elementor-widget-button.cta .elementor-button-text,
+.elementor-widget-button.cta1 .elementor-button-text {
+    font-size: 14px !important;
 }
