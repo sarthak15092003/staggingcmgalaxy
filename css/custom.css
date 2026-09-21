@@ -2,11 +2,18 @@
    CMGALAXY COMMON BUTTON (CTA) STYLES
    ========================================================= */
 
-.cta,
-.cta1 {
-    font-size: 14px !important;
 
-    border-radius: 58px;
-    display: block !important;
 
+
+@media (max-width: 767px) {
+
+    /* Mobile CSS */
+    .cta,
+    .cta1 {
+        font-size: 14px !important;
+
+        border-radius: 58px;
+        display: block !important;
+
+    }
 }
