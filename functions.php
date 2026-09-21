@@ -6878,6 +6878,31 @@ if ( ! function_exists( 'cmg_enqueue_custom_styles' ) ) {
 }
 
 /**
+ * Automatically cascade font-size, font-family, and styles from ANY custom class (e.g. .cta, .cta1)
+ * directly down to Elementor buttons and inner text, so you NEVER need to write the word "elementor".
+ */
+add_action( 'wp_head', function() {
+    ?>
+    <style id="cmg-button-auto-cascade">
+    .elementor-widget-button[class] .elementor-button,
+    .elementor-widget-button[class] .elementor-button-text,
+    .elementor-widget-button[class] .elementor-button-content-wrapper {
+        font-size: inherit;
+        line-height: inherit;
+    }
+    .elementor-widget-button.cta *,
+    .elementor-widget-button.cta1 *,
+    .cta .elementor-button,
+    .cta .elementor-button-text,
+    .cta1 .elementor-button,
+    .cta1 .elementor-button-text {
+        font-size: inherit !important;
+    }
+    </style>
+    <?php
+}, 99 );
+
+/**
  * Forward custom classes from Elementor Button Widget wrapper directly to inner <a> tag
  * Ensures any class entered in Elementor (e.g. cta, cta1) appears directly on <a class="elementor-button ...">
  */
