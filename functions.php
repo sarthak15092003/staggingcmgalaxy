@@ -5419,6 +5419,10 @@ if ( ! function_exists( 'cmg_render_blog_toc_sidebar' ) ) {
 
 add_shortcode( 'cmg_blog_toc', 'cmg_render_blog_toc_sidebar' );
 add_shortcode( 'blog_toc', 'cmg_render_blog_toc_sidebar' );
+add_shortcode( 'jump-to-nav', 'cmg_render_blog_toc_sidebar' );
+add_shortcode( 'jump_to_nav', 'cmg_render_blog_toc_sidebar' );
+add_shortcode( 'jump_nav', 'cmg_render_blog_toc_sidebar' );
+
 
 
 /* ==========================================================================
