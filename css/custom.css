@@ -4,4 +4,5 @@
     display: block !important;
     padding: 12px 30px !important;
     text-align: center !important;
+    white-space: nowrap !important;
 }
