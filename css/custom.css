@@ -594,7 +594,7 @@ img[src*=".svg"] {
 
 .ekit-wid-con .elementskit-post-image-card .post-meta-list,
 .elementor-widget-elementskit-blog-posts .elementskit-post-image-card .post-meta-list {
-    margin-bottom: 6px !important;
+    margin-bottom: 16px !important;
 }
 
 .ekit-wid-con .elementskit-post-image-card .post-meta-list .meta-date,
