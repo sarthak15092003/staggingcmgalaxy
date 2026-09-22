@@ -7263,10 +7263,24 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
         }
     }
 
+    // Inspect control names from ElementsKit Blog Posts widget file
+    $controls = [];
+    $matched_code = [];
+    $widget_file = WP_PLUGIN_DIR . '/elementskit-lite/widgets/blog-posts/blog-posts.php';
+    if ( file_exists( $widget_file ) ) {
+        $code = file_get_contents( $widget_file );
+        preg_match_all( "/add_control\(\s*['\"]([^'\"]+)['\"]/i", $code, $m );
+        $controls = $m[1] ?? [];
+        preg_match_all( "/(\\\$this->add_control\(\s*['\"][^'\"]*posts?[^'\"]*['\"][^;]+;)/is", $code, $cm );
+        $matched_code = $cm[0] ?? [];
+    }
+
     return new WP_REST_Response( [
         'success'               => true,
         'updated_articles'      => count( $results ),
         'articles'              => $results,
+        'controls'              => $controls,
+        'matched_code'          => $matched_code,
         'prior_widget_settings' => $widget_settings,
     ], 200 );
 }
