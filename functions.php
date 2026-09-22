@@ -6875,6 +6875,7 @@ if ( ! function_exists( 'cmg_enqueue_custom_styles' ) ) {
         );
     }
     add_action( 'wp_enqueue_scripts', 'cmg_enqueue_custom_styles', 999 );
+    add_action( 'elementor/preview/enqueue_styles', 'cmg_enqueue_custom_styles', 999 );
 }
 
 /**

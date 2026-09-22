@@ -56,4 +56,92 @@ a.cm-signin svg {
         max-width: 15px !important;
         max-height: 15px !important;
     }
-}
+}
+
+/* =========================================================
+   FIX BLOG POSTS CONTAINER BREAKING & HORIZONTAL SCROLL
+   ========================================================= */
+
+/* Prevent full page horizontal overflow */
+html,
+body,
+.elementor-1339 {
+    overflow-x: clip !important;
+    max-width: 100vw !important;
+}
+
+/* Force container a9c2c37 to column and 100% width */
+.elementor-1339 .elementor-element.elementor-element-a9c2c37,
+.elementor-element-a9c2c37 {
+    --display: flex !important;
+    --flex-direction: column !important;
+    --container-widget-width: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+}
+
+/* Ensure the blog posts widget takes full 100% width of the container */
+.elementor-1339 .elementor-element.elementor-element-b6cafce,
+.elementor-element-b6cafce,
+.elementor-element-b6cafce .ekit-wid-con,
+.elementor-widget-elementskit-blog-posts,
+.elementor-widget-elementskit-blog-posts .ekit-wid-con {
+    width: 100% !important;
+    max-width: 100% !important;
+    --container-widget-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Fix ElementsKit row negative margins causing overflow */
+.elementor-element-b6cafce .ekit-wid-con .ekit-row,
+.elementor-widget-elementskit-blog-posts .ekit-wid-con .ekit-row {
+    width: auto !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.elementor-element-b6cafce .post-item,
+.elementor-widget-elementskit-blog-posts .post-item {
+    box-sizing: border-box !important;
+}
+
+/* =========================================================
+   UNIVERSAL SVG RESPONSIVENESS & FIX FOR UPLOADED SVGS
+   ========================================================= */
+
+/* Ensure SVGs never overflow their containers or blow up */
+svg {
+    max-width: 100%;
+}
+
+/* Elementor image widgets using SVG files */
+.elementor-widget-image img[src*=".svg"],
+.elementor-widget-image svg,
+img[src*=".svg"] {
+    max-width: 100% !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Elementor icon widgets using inline SVGs */
+.elementor-icon svg,
+.elementor-widget-icon svg,
+.elementor-icon-box-icon svg,
+.elementor-button-icon svg {
+    width: 1em;
+    height: 1em;
+    max-width: 100%;
+    fill: currentColor;
+}
+
+/* Prevent inline SVG with huge intrinsic width/height from breaking flex layouts */
+.e-con svg,
+.elementor-widget svg {
+    max-width: 100%;
+}
+
+
