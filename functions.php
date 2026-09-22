@@ -7192,8 +7192,31 @@ function cmg_debug_svg_handler( WP_REST_Request $request ) {
             $elementor_code = implode( '', $lines );
         }
 
+        // Inspect Gutenkit
+        $gutenkit_code = '';
+        if ( class_exists( 'Gutenkit\Libs\UnfilteredFileSupport' ) && method_exists( 'Gutenkit\Libs\UnfilteredFileSupport', 'check_files_formate' ) ) {
+            $ref = new ReflectionMethod( 'Gutenkit\Libs\UnfilteredFileSupport', 'check_files_formate' );
+            $file = $ref->getFileName();
+            $start = $ref->getStartLine();
+            $end = $ref->getEndLine();
+            $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
+            $gutenkit_code = implode( '', $lines );
+        }
+
+        // Inspect Bodhi
+        $bodhi_code = '';
+        if ( function_exists( 'bodhi_svgs_upload_check' ) ) {
+            $ref = new ReflectionFunction( 'bodhi_svgs_upload_check' );
+            $file = $ref->getFileName();
+            $start = $ref->getStartLine();
+            $end = $ref->getEndLine();
+            $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
+            $bodhi_code = implode( '', $lines );
+        }
+
         return new WP_REST_Response( [
-            'bodhi_settings' => get_option( 'bodhi_svgs_settings' ),
+            'gutenkit_code'  => $gutenkit_code,
+            'bodhi_code'     => $bodhi_code,
             'elementor_code' => $elementor_code,
             'hooks'          => $hooks_info,
         ], 200 );
