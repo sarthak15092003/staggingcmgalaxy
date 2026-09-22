@@ -7132,4 +7132,239 @@ add_filter( 'the_content', function( $content ) {
     return $content;
 }, 999 );
 
+/**
+ * REST API Endpoint to import articles from https://cmgalaxy.com/blog
+ * Accessible via:
+ * GET or POST https://y9xt93xns6.onrocket.site/wp-json/cmg/v1/import-articles?key=cmg_import_2026
+ */
+add_action( 'rest_api_init', function() {
+    register_rest_route( 'cmg/v1', '/import-articles', [
+        'methods'             => [ 'GET', 'POST' ],
+        'callback'            => 'cmg_import_articles_handler',
+        'permission_callback' => '__return_true',
+    ] );
+} );
+
+function cmg_find_post_by_slug( $slug ) {
+    $posts = get_posts( [
+        'name'        => sanitize_title( $slug ),
+        'post_type'   => 'post',
+        'post_status' => 'any',
+        'numberposts' => 1,
+    ] );
+    return ! empty( $posts ) ? $posts[0] : null;
+}
+
+function cmg_attach_featured_image( $img_url, $post_id, $title = '' ) {
+    if ( empty( $img_url ) ) return false;
+
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+
+    $attach_id = media_sideload_image( $img_url, $post_id, $title, 'id' );
+    if ( ! is_wp_error( $attach_id ) && is_numeric( $attach_id ) ) {
+        set_post_thumbnail( $post_id, (int) $attach_id );
+        return (int) $attach_id;
+    }
+
+    $tmp = download_url( $img_url, 30 );
+    if ( is_wp_error( $tmp ) ) {
+        return false;
+    }
+
+    $path_info = pathinfo( parse_url( $img_url, PHP_URL_PATH ) );
+    $ext = ! empty( $path_info['extension'] ) ? $path_info['extension'] : 'webp';
+    $file_array = [
+        'name'     => sanitize_file_name( ( ! empty( $path_info['filename'] ) ? $path_info['filename'] : 'featured' ) . '.' . $ext ),
+        'tmp_name' => $tmp,
+    ];
+
+    $attach_id = media_handle_sideload( $file_array, $post_id, $title );
+    if ( is_wp_error( $attach_id ) ) {
+        @unlink( $tmp );
+        return false;
+    }
+
+    set_post_thumbnail( $post_id, (int) $attach_id );
+    return (int) $attach_id;
+}
+
+function cmg_scrape_webflow_articles() {
+    $blog_url = 'https://cmgalaxy.com/blog';
+    $response = wp_remote_get( $blog_url, [ 'timeout' => 30, 'sslverify' => false ] );
+    if ( is_wp_error( $response ) ) {
+        return [];
+    }
+
+    $html = wp_remote_retrieve_body( $response );
+    if ( empty( $html ) ) {
+        return [];
+    }
+
+    preg_match_all( '/href="(\/blog\/[^"]+)"/', $html, $matches );
+    if ( empty( $matches[1] ) ) {
+        return [];
+    }
+
+    $slugs = [];
+    foreach ( array_unique( $matches[1] ) as $path ) {
+        if ( $path === '/blog' || $path === '/blog/' ) continue;
+        $slug = trim( str_replace( [ '/blog/', '/blog' ], '', $path ), '/' );
+        if ( ! empty( $slug ) && ! in_array( $slug, $slugs ) ) {
+            $slugs[] = $slug;
+        }
+    }
+
+    $articles = [];
+    foreach ( $slugs as $slug ) {
+        $art_url = 'https://cmgalaxy.com/blog/' . $slug;
+        $art_res = wp_remote_get( $art_url, [ 'timeout' => 30, 'sslverify' => false ] );
+        if ( is_wp_error( $art_res ) ) continue;
+        $art_html = wp_remote_retrieve_body( $art_res );
+        if ( empty( $art_html ) ) continue;
+
+        $title = '';
+        if ( preg_match( '/<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']/i', $art_html, $m ) ) {
+            $title = $m[1];
+        } elseif ( preg_match( '/<title>([^<]+)<\/title>/i', $art_html, $m ) ) {
+            $title = $m[1];
+        }
+        $title = preg_replace( '/\s*\|\s*CMGalaxy.*$/i', '', $title );
+        $title = html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
+        $featured_img = '';
+        if ( preg_match( '/<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']/i', $art_html, $m ) ) {
+            $featured_img = $m[1];
+        }
+
+        $content = '';
+        if ( preg_match( '/<div[^>]*class=["\'][^"\']*w-richtext[^"\']*["\'][^>]*>(.*?)<\/div>/is', $art_html, $m ) ) {
+            $content = $m[1];
+        }
+
+        $articles[] = [
+            'title'          => $title,
+            'slug'           => $slug,
+            'featured_image' => $featured_img,
+            'content'        => $content,
+        ];
+    }
+
+    return $articles;
+}
+
+function cmg_import_articles_handler( WP_REST_Request $request ) {
+    $secret = 'cmg_import_2026';
+    $provided_key = $request->get_param( 'key' );
+    if ( $provided_key !== $secret ) {
+        return new WP_REST_Response( [ 'error' => 'Unauthorized. Invalid or missing key.' ], 403 );
+    }
+
+    if ( function_exists( 'set_time_limit' ) ) {
+        @set_time_limit( 300 );
+    }
+
+    $articles = $request->get_json_params();
+
+    if ( empty( $articles ) || ! is_array( $articles ) ) {
+        $param_articles = $request->get_param( 'articles' );
+        if ( ! empty( $param_articles ) && is_array( $param_articles ) ) {
+            $articles = $param_articles;
+        }
+    }
+
+    if ( empty( $articles ) ) {
+        $articles = cmg_scrape_webflow_articles();
+    }
+
+    if ( empty( $articles ) ) {
+        return new WP_REST_Response( [ 'error' => 'No articles found or provided to import.' ], 400 );
+    }
+
+    $results = [];
+
+    foreach ( $articles as $article ) {
+        $title = isset( $article['title'] ) ? sanitize_text_field( $article['title'] ) : '';
+        $slug = isset( $article['slug'] ) ? sanitize_title( $article['slug'] ) : '';
+        $content = isset( $article['content'] ) ? $article['content'] : '';
+        $featured_img = isset( $article['featured_image'] ) ? esc_url_raw( $article['featured_image'] ) : '';
+
+        if ( empty( $title ) && empty( $slug ) ) {
+            continue;
+        }
+
+        $existing_post = cmg_find_post_by_slug( $slug );
+        if ( ! $existing_post && ! empty( $title ) ) {
+            $posts_by_title = get_posts( [
+                'title'       => $title,
+                'post_type'   => 'post',
+                'post_status' => 'any',
+                'numberposts' => 1,
+            ] );
+            if ( ! empty( $posts_by_title ) ) {
+                $existing_post = $posts_by_title[0];
+            }
+        }
+
+        if ( $existing_post ) {
+            $post_id = $existing_post->ID;
+            $status = 'already_exists';
+
+            if ( ! has_post_thumbnail( $post_id ) && ! empty( $featured_img ) ) {
+                $thumb_id = cmg_attach_featured_image( $featured_img, $post_id, $title );
+                if ( $thumb_id ) {
+                    $status .= '_thumbnail_added';
+                }
+            }
+        } else {
+            $post_data = [
+                'post_title'   => $title,
+                'post_name'    => $slug,
+                'post_content' => $content,
+                'post_status'  => 'publish',
+                'post_type'    => 'post',
+            ];
+
+            $post_id = wp_insert_post( $post_data, true );
+
+            if ( is_wp_error( $post_id ) ) {
+                $results[] = [
+                    'title'  => $title,
+                    'slug'   => $slug,
+                    'status' => 'error',
+                    'error'  => $post_id->get_error_message(),
+                ];
+                continue;
+            }
+
+            $status = 'imported';
+
+            if ( ! empty( $featured_img ) ) {
+                $thumb_id = cmg_attach_featured_image( $featured_img, $post_id, $title );
+                if ( $thumb_id ) {
+                    $status .= '_with_thumbnail';
+                } else {
+                    $status .= '_thumbnail_failed';
+                }
+            }
+        }
+
+        $results[] = [
+            'id'     => $post_id,
+            'title'  => $title,
+            'slug'   => $slug,
+            'status' => $status,
+            'url'    => get_permalink( $post_id ),
+        ];
+    }
+
+    return new WP_REST_Response( [
+        'success' => true,
+        'count'   => count( $results ),
+        'results' => $results,
+    ], 200 );
+}
+
+
 
