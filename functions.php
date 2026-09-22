@@ -6140,6 +6140,7 @@ function cmg_ratings_plugin_render_dashboard() {
  */
 class CMG_SVG_Protector {
     private static $raw_svg_cache = [];
+    private static $last_raw_svg = null;
 
     public static function init() {
         // 1. Ensure SVG mime types are allowed
@@ -6148,7 +6149,7 @@ class CMG_SVG_Protector {
         // 2. Prefilter: Store pristine raw SVG content BEFORE any plugin/sanitizer runs
         add_filter('wp_handle_upload_prefilter', [__CLASS__, 'on_upload_prefilter'], 1);
 
-        // 3. Post-upload: If any sanitizer stripped tags or reduced size, restore original content
+        // 3. Post-upload: Restore original content and guarantee viewBox/xmlns
         add_filter('wp_handle_upload', [__CLASS__, 'on_upload_complete'], 9999);
 
         // 4. Dynamically unhook bodhi_svgs_sanitize and other aggressive sanitizers
@@ -6161,6 +6162,13 @@ class CMG_SVG_Protector {
         add_filter('svg_allowed_attributes', [__CLASS__, 'whitelist_attributes']);
         add_filter('elementor/files/svg/allowed_elements', [__CLASS__, 'whitelist_tags']);
         add_filter('elementor/files/svg/allowed_attributes', [__CLASS__, 'whitelist_attributes']);
+
+        // 6. Fix SVG thumbnails in WordPress Media Library & Elementor
+        add_action('admin_head', [__CLASS__, 'admin_svg_styles']);
+        add_action('elementor/editor/after_enqueue_styles', [__CLASS__, 'admin_svg_styles']);
+
+        // 7. Calculate and save accurate SVG dimensions for WordPress & Elementor
+        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'generate_svg_metadata'], 10, 2);
     }
 
     public static function allow_svg_mimes($mimes) {
@@ -6198,6 +6206,7 @@ class CMG_SVG_Protector {
             $raw_content = file_get_contents($file['tmp_name']);
             if (!empty($raw_content)) {
                 self::$raw_svg_cache[$file['name']] = $raw_content;
+                self::$last_raw_svg = $raw_content;
             }
         }
 
@@ -6214,25 +6223,93 @@ class CMG_SVG_Protector {
 
         if ($ext === 'svg' && file_exists($filepath)) {
             $filename = basename($filepath);
+            $base_name_clean = preg_replace('/-\d+(\.svg)$/i', '$1', $filename);
 
-            // If we captured the pristine SVG before sanitizers altered it, restore it
-            if (isset(self::$raw_svg_cache[$filename])) {
-                $raw = self::$raw_svg_cache[$filename];
-                $current = file_get_contents($filepath);
-                if (strlen($current) < strlen($raw)) {
-                    file_put_contents($filepath, $raw);
+            // Restore pristine content if altered by any sanitizer (support renamed uploads like -1.svg)
+            $raw = self::$raw_svg_cache[$filename] ?? self::$raw_svg_cache[$base_name_clean] ?? self::$last_raw_svg;
+            if (!empty($raw)) {
+                file_put_contents($filepath, $raw);
+            }
+
+            $content = file_get_contents($filepath);
+
+            // 1. Guarantee viewBox casing
+            if (strpos($content, 'viewbox=') !== false) {
+                $content = preg_replace('/\bviewbox\b/i', 'viewBox', $content);
+            }
+
+            // 2. Guarantee xmlns="http://www.w3.org/2000/svg" exists (essential for <img> tag rendering)
+            if (stripos($content, 'xmlns=') === false) {
+                $content = preg_replace('/<svg\b/i', '<svg xmlns="http://www.w3.org/2000/svg"', $content, 1);
+            }
+
+            // 3. Guarantee viewBox exists so SVG can scale responsively
+            if (!preg_match('/\bviewBox\s*=/i', $content)) {
+                if (preg_match('/width=["\']([0-9.]+)(?:px)?["\']/i', $content, $wm) &&
+                    preg_match('/height=["\']([0-9.]+)(?:px)?["\']/i', $content, $hm)) {
+                    $content = preg_replace('/<svg\b/i', '<svg viewBox="0 0 ' . $wm[1] . ' ' . $hm[1] . '"', $content, 1);
                 }
             }
 
-            // Guarantee viewBox is never lowercased to viewbox
-            $saved_content = file_get_contents($filepath);
-            if (strpos($saved_content, 'viewbox=') !== false) {
-                $fixed = preg_replace('/\bviewbox\b/i', 'viewBox', $saved_content);
-                file_put_contents($filepath, $fixed);
-            }
+            file_put_contents($filepath, $content);
         }
 
         return $upload;
+    }
+
+    public static function admin_svg_styles() {
+        echo '<style id="cmg-svg-admin-media-fix">
+            .thumbnail img[src*=".svg"],
+            .attachment img[src*=".svg"],
+            .attachment-preview img[src*=".svg"],
+            .media-frame .attachment .thumbnail .centered img[src*=".svg"],
+            .media-frame-content .attachments-browser .attachment-preview img[src*=".svg"],
+            .media-modal .attachment-preview img[src*=".svg"] {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+                max-height: 100% !important;
+                object-fit: contain !important;
+                position: static !important;
+                transform: none !important;
+                display: block !important;
+            }
+            .media-sidebar .attachment-details .thumbnail img[src*=".svg"],
+            .attachment-info .thumbnail img[src*=".svg"] {
+                width: auto !important;
+                height: auto !important;
+                max-width: 120px !important;
+                max-height: 120px !important;
+                object-fit: contain !important;
+                margin: 0 auto !important;
+            }
+            .elementor-control-media-area .elementor-control-media__preview {
+                background-size: contain !important;
+                background-repeat: no-repeat !important;
+                background-position: center !important;
+            }
+        </style>';
+    }
+
+    public static function generate_svg_metadata($metadata, $attachment_id) {
+        $mime = get_post_mime_type($attachment_id);
+        if ($mime === 'image/svg+xml') {
+            $file = get_attached_file($attachment_id);
+            if (file_exists($file)) {
+                $content = file_get_contents($file);
+                if (empty($metadata['width']) || empty($metadata['height'])) {
+                    if (preg_match('/\bviewBox=["\']\s*0\s+0\s+([0-9.]+)\s+([0-9.]+)\s*["\']/i', $content, $m)) {
+                        $metadata['width'] = round(floatval($m[1]));
+                        $metadata['height'] = round(floatval($m[2]));
+                    } elseif (preg_match('/width=["\']([0-9.]+)(?:px)?["\']/i', $content, $wm) &&
+                              preg_match('/height=["\']([0-9.]+)(?:px)?["\']/i', $content, $hm)) {
+                        $metadata['width'] = round(floatval($wm[1]));
+                        $metadata['height'] = round(floatval($hm[1]));
+                    }
+                }
+            }
+        }
+        return $metadata;
     }
 
     public static function whitelist_tags($tags) {
