@@ -7234,8 +7234,8 @@ function cmg_scrape_webflow_articles() {
         $title = html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 
         $featured_img = '';
-        if ( preg_match( '/<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']/i', $art_html, $m ) ) {
-            $featured_img = $m[1];
+        if ( preg_match( '/<meta[^>]+(?:property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']|content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\'])/i', $art_html, $m ) ) {
+            $featured_img = ! empty( $m[1] ) ? $m[1] : ( ! empty( $m[2] ) ? $m[2] : '' );
         }
 
         $content = '';
