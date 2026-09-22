@@ -7307,13 +7307,7 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
 add_filter( 'elementor/widget/render_content', 'cmg_filter_elementor_widget_render_content', 999, 2 );
 function cmg_filter_elementor_widget_render_content( $content, $widget ) {
     if ( strpos( $content, 'cmgalaxy-search' ) !== false ) {
-        // Strip any unescaped raw CSS leaked into HTML text
-        if ( strpos( $content, '.cmgalaxy-search-wrap{' ) !== false || strpos( $content, '.cmgalaxy-search-wrap {' ) !== false ) {
-            $content = preg_replace( '/\s*\.cmgalaxy-search-wrap\s*\{.*$/s', '</div>', $content );
-        }
-        // Ensure input and button with SVG icon are always properly intact
-        if ( strpos( $content, '<input' ) === false || strpos( $content, '<path' ) === false ) {
-            $search_bar = '<div class="cmgalaxy-search-wrap">
+        return '<div class="cmgalaxy-search-wrap">
     <div class="cmgalaxy-search-icon">
         <img decoding="async" src="https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/09/lex-logo.png" alt="icon">
     </div>
@@ -7325,8 +7319,6 @@ function cmg_filter_elementor_widget_render_content( $content, $widget ) {
         </svg>
     </button>
 </div>';
-            $content = preg_replace( '/<div class="cmgalaxy-search-wrap">.*?<\/div>\s*(?:<\/div>)?/s', $search_bar, $content );
-        }
     }
     return $content;
 }
