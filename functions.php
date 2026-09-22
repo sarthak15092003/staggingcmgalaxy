@@ -7254,7 +7254,7 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
                         $it['settings']['ekit_blog_posts_order_by'] = 'date';
                         $it['settings']['ekit_blog_posts_sort'] = 'desc';
                         $it['settings']['ekit_blog_posts_meta'] = 'yes';
-                        $it['settings']['ekit_blog_posts_meta_select'] = [ 'date', 'author' ];
+                        $it['settings']['ekit_blog_posts_meta_select'] = [ 'date' ];
                         // Disable duplicate excerpt/content paragraph
                         $it['settings']['ekit_blog_posts_content'] = '';
                         $it['settings']['ekit_blog_posts_show_content'] = '';
@@ -7340,10 +7340,12 @@ function cmg_blog_enhancements_script() {
         var postItems = Array.from(document.querySelectorAll('.elementor-widget-elementskit-blog-posts .post-item'));
         if (!postItems.length) return;
 
-        // Remove duplicate excerpt/title paragraph from post cards
+        // Remove duplicate excerpt and author (cmgalaxyadmin) from post cards
         postItems.forEach(function(item) {
             var p = item.querySelector('.elementskit-post-body > p');
             if (p) p.remove();
+            var auth = item.querySelector('.meta-author');
+            if (auth) auth.remove();
         });
 
         var container = document.querySelector('.elementor-widget-elementskit-blog-posts .ekit-wid-con') ||

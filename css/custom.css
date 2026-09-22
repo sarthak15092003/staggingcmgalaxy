@@ -576,6 +576,34 @@ img[src*=".svg"] {
     margin-bottom: 18px !important;
 }
 
+/* =========================================================
+   REMOVE AUTHOR (cmgalaxyadmin) FROM OUTSIDE BLOG CARDS
+   & REDUCE GAP BETWEEN DATE AND TITLE
+   ========================================================= */
+
+.ekit-wid-con .elementskit-post-image-card .post-meta-list .meta-author,
+.elementor-widget-elementskit-blog-posts .post-meta-list .meta-author {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.ekit-wid-con .elementskit-post-image-card .post-meta-list,
+.elementor-widget-elementskit-blog-posts .elementskit-post-image-card .post-meta-list {
+    margin-bottom: 6px !important;
+}
+
+.ekit-wid-con .elementskit-post-image-card .post-meta-list .meta-date,
+.elementor-widget-elementskit-blog-posts .post-meta-list .meta-date {
+    display: block !important;
+    margin-bottom: 0 !important;
+}
+
+
 
 
 
