@@ -6151,31 +6151,41 @@ class CMG_SVG_Protector {
     private static $last_raw_svg = null;
 
     public static function init() {
-        // 1. Ensure SVG mime types are allowed
+        // 1. Ensure SVG mime types and file types are always recognized
         add_filter('upload_mimes', [__CLASS__, 'allow_svg_mimes'], 99);
+        add_filter('wp_check_filetype_and_ext', [__CLASS__, 'check_filetype_and_ext'], 99, 4);
 
-        // 2. Prefilter: Store pristine raw SVG content BEFORE any plugin/sanitizer runs
+        // 2. Enable unfiltered SVG uploads in Elementor
+        add_filter('pre_option_elementor_unfiltered_files_upload', '__return_true');
+        add_filter('elementor/files/svg/allow_unfiltered_upload', '__return_true');
+        add_filter('elementor/files/svg/sanitizer/is_safe', '__return_true');
+        add_filter('elementor/files/svg/validate', '__return_true');
+
+        // 3. Prefilter (Priority 1): Capture untouched raw SVG content before any sanitizer runs
         add_filter('wp_handle_upload_prefilter', [__CLASS__, 'on_upload_prefilter'], 1);
 
-        // 3. Post-upload: Restore original content and guarantee viewBox/xmlns
+        // 4. Prefilter Cleanup (Priority 999999): Clear any "could not be sanitized" errors set by Elementor/plugins
+        add_filter('wp_handle_upload_prefilter', [__CLASS__, 'on_upload_prefilter_cleanup'], 999999);
+
+        // 5. Post-upload (Priority 9999): Restore original content, guarantee viewBox & xmlns
         add_filter('wp_handle_upload', [__CLASS__, 'on_upload_complete'], 9999);
 
-        // 4. Dynamically unhook bodhi_svgs_sanitize and other aggressive sanitizers
+        // 6. Dynamically unhook aggressive sanitizers (Elementor, SVG Support, Safe SVG)
         add_action('admin_init', [__CLASS__, 'remove_plugin_sanitizers'], 999);
         add_action('wp_loaded', [__CLASS__, 'remove_plugin_sanitizers'], 999);
 
-        // 5. Whitelist SVG tags for plugins that support filtering
+        // 7. Whitelist SVG tags for plugins that support filtering
         add_filter('bodhi_svgs_disable_sanitization', '__return_true');
         add_filter('svg_allowed_tags', [__CLASS__, 'whitelist_tags']);
         add_filter('svg_allowed_attributes', [__CLASS__, 'whitelist_attributes']);
         add_filter('elementor/files/svg/allowed_elements', [__CLASS__, 'whitelist_tags']);
         add_filter('elementor/files/svg/allowed_attributes', [__CLASS__, 'whitelist_attributes']);
 
-        // 6. Fix SVG thumbnails in WordPress Media Library & Elementor
+        // 8. Fix SVG thumbnails in WordPress Media Library & Elementor
         add_action('admin_head', [__CLASS__, 'admin_svg_styles']);
         add_action('elementor/editor/after_enqueue_styles', [__CLASS__, 'admin_svg_styles']);
 
-        // 7. Calculate and save accurate SVG dimensions for WordPress & Elementor
+        // 9. Calculate and save accurate SVG dimensions for WordPress & Elementor
         add_filter('wp_generate_attachment_metadata', [__CLASS__, 'generate_svg_metadata'], 10, 2);
     }
 
@@ -6185,6 +6195,16 @@ class CMG_SVG_Protector {
         return $mimes;
     }
 
+    public static function check_filetype_and_ext($data, $file, $filename, $mimes) {
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if ($ext === 'svg' || $ext === 'svgz') {
+            $data['ext']  = 'svg';
+            $data['type'] = 'image/svg+xml';
+            $data['proper_filename'] = $filename;
+        }
+        return $data;
+    }
+
     public static function remove_plugin_sanitizers() {
         global $wp_filter;
         if (isset($wp_filter['wp_handle_upload_prefilter'])) {
@@ -6192,9 +6212,22 @@ class CMG_SVG_Protector {
             if (is_object($hook) && isset($hook->callbacks)) {
                 foreach ($hook->callbacks as $priority => $callbacks) {
                     foreach ($callbacks as $id => $cb) {
-                        $fn = $cb['function'] ?? '';
-                        if (is_string($fn) && (stripos($fn, 'bodhi') !== false || stripos($fn, 'sanitize') !== false)) {
-                            unset($hook->callbacks[$priority][$id]);
+                        $callable = $cb['function'] ?? null;
+                        $callable_name = '';
+                        if (is_string($callable)) {
+                            $callable_name = $callable;
+                        } elseif (is_array($callable)) {
+                            $class = is_object($callable[0]) ? get_class($callable[0]) : (string)$callable[0];
+                            $method = (string)($callable[1] ?? '');
+                            $callable_name = $class . '::' . $method;
+                        }
+                        if (!empty($callable_name) && stripos($callable_name, 'CMG_SVG_Protector') === false) {
+                            if (stripos($callable_name, 'bodhi') !== false ||
+                                stripos($callable_name, 'sanitize') !== false ||
+                                stripos($callable_name, 'svg_handler') !== false ||
+                                stripos($callable_name, 'check_svg') !== false) {
+                                unset($hook->callbacks[$priority][$id]);
+                            }
                         }
                     }
                 }
@@ -6218,6 +6251,24 @@ class CMG_SVG_Protector {
             }
         }
 
+        return $file;
+    }
+
+    public static function on_upload_prefilter_cleanup($file) {
+        $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+        if ($ext === 'svg') {
+            // If any sanitizer set an error ("could not be sanitized"), clear it so upload proceeds
+            if (!empty($file['error'])) {
+                unset($file['error']);
+            }
+
+            // If the sanitizer damaged or emptied the temp file, restore our pristine copy
+            if (!empty(self::$last_raw_svg) && !empty($file['tmp_name'])) {
+                if (!file_exists($file['tmp_name']) || filesize($file['tmp_name']) === 0) {
+                    file_put_contents($file['tmp_name'], self::$last_raw_svg);
+                }
+            }
+        }
         return $file;
     }
 
