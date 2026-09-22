@@ -7191,7 +7191,8 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
             if ( ! $post ) continue;
 
             $update_data = [
-                'ID' => $post->ID,
+                'ID'          => $post->ID,
+                'post_author' => 1,
             ];
 
             if ( ! empty( $item['post_date'] ) ) {
