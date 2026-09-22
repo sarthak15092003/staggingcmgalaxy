@@ -7143,7 +7143,68 @@ add_action( 'rest_api_init', function() {
         'callback'            => 'cmg_import_articles_handler',
         'permission_callback' => '__return_true',
     ] );
+
+    register_rest_route( 'cmg/v1', '/debug-svg', [
+        'methods'             => [ 'GET', 'POST' ],
+        'callback'            => 'cmg_debug_svg_handler',
+        'permission_callback' => '__return_true',
+    ] );
 } );
+
+function cmg_debug_svg_handler( WP_REST_Request $request ) {
+    $secret = 'cmg_import_2026';
+    if ( $request->get_param( 'key' ) !== $secret ) {
+        return new WP_REST_Response( [ 'error' => 'Unauthorized' ], 403 );
+    }
+
+    global $wp_filter;
+
+    $hooks_info = [];
+    foreach ( [ 'wp_handle_upload_prefilter', 'wp_handle_sideload_prefilter', 'wp_check_filetype_and_ext', 'upload_mimes' ] as $hook_name ) {
+        $hooks_info[ $hook_name ] = [];
+        if ( isset( $wp_filter[ $hook_name ] ) && is_object( $wp_filter[ $hook_name ] ) ) {
+            foreach ( $wp_filter[ $hook_name ]->callbacks as $pri => $cbs ) {
+                foreach ( $cbs as $id => $cb ) {
+                    $fn = $cb['function'] ?? null;
+                    $name = '';
+                    if ( is_string( $fn ) ) {
+                        $name = $fn;
+                    } elseif ( is_array( $fn ) ) {
+                        $c = is_object( $fn[0] ) ? get_class( $fn[0] ) : (string)$fn[0];
+                        $m = (string)($fn[1] ?? '');
+                        $name = $c . '::' . $m;
+                    }
+                    $hooks_info[ $hook_name ][] = [ 'priority' => $pri, 'name' => $name, 'id' => $id ];
+                }
+            }
+        }
+    }
+
+    // Try a test SVG upload
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+
+    $test_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red"/></svg>';
+    $tmp = wp_tempnam( 'test.svg' );
+    file_put_contents( $tmp, $test_svg );
+
+    $file_array = [
+        'name'     => 'test_debug_' . time() . '.svg',
+        'tmp_name' => $tmp,
+        'type'     => 'image/svg+xml',
+        'error'    => 0,
+        'size'     => strlen( $test_svg ),
+    ];
+
+    $upload_result = wp_handle_sideload( $file_array, [ 'test_form' => false ] );
+
+    return new WP_REST_Response( [
+        'active_plugins' => get_option( 'active_plugins' ),
+        'hooks'          => $hooks_info,
+        'upload_result'  => $upload_result,
+    ], 200 );
+}
 
 function cmg_find_post_by_slug( $slug ) {
     $posts = get_posts( [
