@@ -430,36 +430,60 @@ img[src*=".svg"] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 15px 38px;
+    gap: 8px;
+    padding: 12px 32px;
     font-family: 'Onest', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1d2547;
-    background: #ffffff;
-    border: 1.5px solid #e0e5f2;
-    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #484a61 !important;
+    background: transparent !important;
+    border: 1.5px solid #c8cad9 !important;
+    border-radius: 50px !important;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    outline: none;
+    box-shadow: none !important;
+    outline: none !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .cmg-load-more-btn:hover {
-    background: #f7f9fd;
-    border-color: #3b79ff;
-    color: #3b79ff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(59, 121, 255, 0.16);
+    border-color: #3a7dff !important;
+    color: #3a7dff !important;
+    background: #f4f7ff !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.cmg-load-more-btn:focus,
+.cmg-load-more-btn:active,
+.cmg-load-more-btn:visited {
+    border-color: #c8cad9 !important;
+    color: #484a61 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transform: none !important;
+}
+
+.cmg-load-more-btn:hover:focus,
+.cmg-load-more-btn:hover:active {
+    border-color: #3a7dff !important;
+    color: #3a7dff !important;
+    background: #f4f7ff !important;
+    box-shadow: none !important;
 }
 
 .cmg-load-more-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 2.2;
     transition: transform 0.25s ease;
 }
 
 .cmg-load-more-btn:hover svg {
+    stroke: #3a7dff;
     transform: translateY(2px);
 }
 
