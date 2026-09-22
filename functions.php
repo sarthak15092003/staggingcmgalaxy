@@ -7257,6 +7257,26 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
                         $it['settings']['ekit_blog_posts_meta_select'] = [ 'date', 'author' ];
                         $updated = true;
                     }
+                    if ( isset( $it['widgetType'] ) && $it['widgetType'] === 'html' ) {
+                        if ( isset( $it['settings']['html'] ) && strpos( $it['settings']['html'], 'cmgalaxy-search' ) !== false ) {
+                            $it['settings']['html'] = '<div class="cmgalaxy-search-wrap">' . "\n" .
+                                '    <!-- LEFT IMAGE ICON -->' . "\n" .
+                                '    <div class="cmgalaxy-search-icon">' . "\n" .
+                                '        <img decoding="async" src="https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/09/lex-logo.png" alt="icon">' . "\n" .
+                                '    </div>' . "\n\n" .
+                                '    <!-- INPUT -->' . "\n" .
+                                '    <input type="search" class="cmgalaxy-search-input" placeholder="Search articles, insights, or topics...">' . "\n\n" .
+                                '    <!-- RIGHT BUTTON -->' . "\n" .
+                                '    <button type="button" class="cmgalaxy-search-btn" aria-label="Search">' . "\n" .
+                                '        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">' . "\n" .
+                                '            <path d="M14.707 13.293a1 1 0 0 1 1.32-.083l.094.083 2.5 2.5a1 1 0 0 1-1.32 1.497l-.094-.083-2.5-2.5a1 1 0 0 1 0-1.414z" fill="white"/>' . "\n" .
+                                '            <path d="M9 2a7 7 0 1 1 0 14A7 7 0 0 1 9 2zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 9 4z" fill="white"/>' . "\n" .
+                                '        </svg>' . "\n" .
+                                '    </button>' . "\n" .
+                                '</div>';
+                            $updated = true;
+                        }
+                    }
                     if ( ! empty( $it['elements'] ) ) {
                         $updater( $it['elements'] );
                     }
@@ -7279,6 +7299,88 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
         'articles'              => $results,
         'prior_widget_settings' => $widget_settings,
     ], 200 );
+}
+
+/**
+ * Filter Elementor HTML widget output to ensure bare CSS code is never printed as text
+ */
+add_filter( 'elementor/widget/render_content', 'cmg_filter_elementor_widget_render_content', 999, 2 );
+function cmg_filter_elementor_widget_render_content( $content, $widget ) {
+    if ( strpos( $content, 'cmgalaxy-search' ) !== false ) {
+        // Strip any unescaped raw CSS leaked into HTML text
+        if ( strpos( $content, '.cmgalaxy-search-wrap{' ) !== false || strpos( $content, '.cmgalaxy-search-wrap {' ) !== false ) {
+            $content = preg_replace( '/\s*\.cmgalaxy-search-wrap\s*\{.*$/s', '</div>', $content );
+            // Ensure input and button are properly intact
+            if ( strpos( $content, '<input' ) === false ) {
+                $search_bar = '<div class="cmgalaxy-search-wrap">
+    <div class="cmgalaxy-search-icon">
+        <img decoding="async" src="https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/09/lex-logo.png" alt="icon">
+    </div>
+    <input type="search" class="cmgalaxy-search-input" placeholder="Search articles, insights, or topics...">
+    <button type="button" class="cmgalaxy-search-btn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M14.707 13.293a1 1 0 0 1 1.32-.083l.094.083 2.5 2.5a1 1 0 0 1-1.32 1.497l-.094-.083-2.5-2.5a1 1 0 0 1 0-1.414z" fill="white"/>
+            <path d="M9 2a7 7 0 1 1 0 14A7 7 0 0 1 9 2zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 9 4z" fill="white"/>
+        </svg>
+    </button>
+</div>';
+                $content = preg_replace( '/<div class="cmgalaxy-search-wrap">.*?<\/div>/s', $search_bar, $content );
+            }
+        }
+    }
+    return $content;
+}
+
+/**
+ * Add instant client-side article search interactivity
+ */
+add_action( 'wp_footer', 'cmg_blog_instant_search_script', 999 );
+function cmg_blog_instant_search_script() {
+    if ( ! is_page( [ 1339, 'blog', 'blog-2' ] ) ) return;
+    ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchInput = document.querySelector('.cmgalaxy-search-wrap input');
+        if (!searchInput) return;
+
+        function filterPosts(query) {
+            query = (query || '').toLowerCase().trim();
+            var items = document.querySelectorAll('.elementor-widget-elementskit-blog-posts .post-item');
+            items.forEach(function(item) {
+                var titleEl = item.querySelector('.entry-title');
+                var text = titleEl ? titleEl.textContent.toLowerCase() : '';
+                if (!query || text.indexOf(query) !== -1) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', function() {
+            filterPosts(this.value);
+        });
+
+        // Quick tags
+        document.querySelectorAll('.elementor-widget-text-editor').forEach(function(editor) {
+            if (editor.textContent && editor.textContent.indexOf('Recent searches') !== -1) {
+                var html = editor.innerHTML;
+                var tags = ['Marketing Automation', 'GA4', 'AI Marketing', 'Data Insights'];
+                tags.forEach(function(tag) {
+                    html = html.replace(tag, '<span class="cmg-search-tag" style="cursor:pointer;color:#3b79ff;text-decoration:underline;">' + tag + '</span>');
+                });
+                editor.innerHTML = html;
+                editor.querySelectorAll('.cmg-search-tag').forEach(function(span) {
+                    span.addEventListener('click', function() {
+                        searchInput.value = this.textContent.trim();
+                        filterPosts(searchInput.value);
+                    });
+                });
+            }
+        });
+    });
+    </script>
+    <?php
 }
 
 /**
