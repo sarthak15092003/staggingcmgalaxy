@@ -6978,3 +6978,21 @@ add_action( 'wp_footer', function() {
     <?php
 }, 999 );
 
+/**
+ * Neutralize unscoped global 'svg { width: 100%; height: auto; }' in video-thumbnail HTML widgets
+ */
+add_filter( 'elementor/widget/render_content', function( $widget_content, $widget ) {
+    if ( is_string( $widget_content ) && strpos( $widget_content, 'video-thumbnail' ) !== false && strpos( $widget_content, 'svg' ) !== false ) {
+        $widget_content = preg_replace( '/(\b)svg\s*\{\s*width:\s*100%;\s*height:\s*auto;\s*\}/i', '$1.video-thumbnail svg { width: 100%; height: auto; }', $widget_content );
+    }
+    return $widget_content;
+}, 10, 2 );
+
+add_filter( 'the_content', function( $content ) {
+    if ( is_string( $content ) && strpos( $content, 'video-thumbnail' ) !== false && strpos( $content, 'svg' ) !== false ) {
+        $content = preg_replace( '/(\b)svg\s*\{\s*width:\s*100%;\s*height:\s*auto;\s*\}/i', '$1.video-thumbnail svg { width: 100%; height: auto; }', $content );
+    }
+    return $content;
+}, 999 );
+
+
