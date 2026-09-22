@@ -7324,24 +7324,93 @@ function cmg_filter_elementor_widget_render_content( $content, $widget ) {
 }
 
 /**
- * Add instant client-side article search interactivity
+ * Add Load More (show 6 at a time) and instant article search interactivity
  */
-add_action( 'wp_footer', 'cmg_blog_instant_search_script', 999 );
-function cmg_blog_instant_search_script() {
+add_action( 'wp_footer', 'cmg_blog_enhancements_script', 999 );
+function cmg_blog_enhancements_script() {
     if ( ! is_page( [ 1339, 'blog', 'blog-2' ] ) ) return;
     ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var searchInput = document.querySelector('.cmgalaxy-search-wrap input');
-        if (!searchInput) return;
+        var BATCH_SIZE = 6;
+        var visibleCount = BATCH_SIZE;
+        var postItems = Array.from(document.querySelectorAll('.elementor-widget-elementskit-blog-posts .post-item'));
+        if (!postItems.length) return;
 
+        var container = document.querySelector('.elementor-widget-elementskit-blog-posts .ekit-wid-con') ||
+                        document.querySelector('.elementor-widget-elementskit-blog-posts');
+
+        // Create Load More button wrapper
+        var loadMoreWrap = document.createElement('div');
+        loadMoreWrap.className = 'cmg-load-more-wrap';
+        loadMoreWrap.innerHTML = 
+            '<button type="button" class="cmg-load-more-btn" id="cmgLoadMoreBtn">' +
+            '    <span>Load More Articles</span>' +
+            '    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+            '        <polyline points="6 9 12 15 18 9"></polyline>' +
+            '    </svg>' +
+            '</button>' +
+            '<div class="cmg-load-more-count" id="cmgLoadMoreCount"></div>';
+
+        if (container) {
+            container.appendChild(loadMoreWrap);
+        }
+
+        var loadMoreBtn = document.getElementById('cmgLoadMoreBtn');
+        var loadMoreCount = document.getElementById('cmgLoadMoreCount');
+
+        function updateVisibility() {
+            var total = postItems.length;
+            postItems.forEach(function(item, idx) {
+                if (idx < visibleCount) {
+                    if (item.style.display === 'none') {
+                        item.style.display = '';
+                        item.classList.add('cmg-post-reveal');
+                    } else {
+                        item.style.display = '';
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            if (loadMoreCount) {
+                loadMoreCount.textContent = 'Showing ' + Math.min(visibleCount, total) + ' of ' + total + ' articles';
+            }
+
+            if (visibleCount >= total) {
+                if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+            } else {
+                if (loadMoreBtn) loadMoreBtn.style.display = 'inline-flex';
+            }
+        }
+
+        // Initialize with first 6 articles visible
+        updateVisibility();
+
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function() {
+                visibleCount += BATCH_SIZE;
+                updateVisibility();
+            });
+        }
+
+        // Live search filtering
+        var searchInput = document.querySelector('.cmgalaxy-search-wrap input');
         function filterPosts(query) {
             query = (query || '').toLowerCase().trim();
-            var items = document.querySelectorAll('.elementor-widget-elementskit-blog-posts .post-item');
-            items.forEach(function(item) {
+            if (!query) {
+                if (loadMoreWrap) loadMoreWrap.style.display = '';
+                updateVisibility();
+                return;
+            }
+
+            // Search query active: search all articles and hide the load more button
+            if (loadMoreWrap) loadMoreWrap.style.display = 'none';
+            postItems.forEach(function(item) {
                 var titleEl = item.querySelector('.entry-title');
                 var text = titleEl ? titleEl.textContent.toLowerCase() : '';
-                if (!query || text.indexOf(query) !== -1) {
+                if (text.indexOf(query) !== -1) {
                     item.style.display = '';
                 } else {
                     item.style.display = 'none';
@@ -7349,11 +7418,13 @@ function cmg_blog_instant_search_script() {
             });
         }
 
-        searchInput.addEventListener('input', function() {
-            filterPosts(this.value);
-        });
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                filterPosts(this.value);
+            });
+        }
 
-        // Quick tags
+        // Quick search tags
         document.querySelectorAll('.elementor-widget-text-editor').forEach(function(editor) {
             if (editor.textContent && editor.textContent.indexOf('Recent searches') !== -1) {
                 var html = editor.innerHTML;
@@ -7364,8 +7435,10 @@ function cmg_blog_instant_search_script() {
                 editor.innerHTML = html;
                 editor.querySelectorAll('.cmg-search-tag').forEach(function(span) {
                     span.addEventListener('click', function() {
-                        searchInput.value = this.textContent.trim();
-                        filterPosts(searchInput.value);
+                        if (searchInput) {
+                            searchInput.value = this.textContent.trim();
+                            filterPosts(searchInput.value);
+                        }
                     });
                 });
             }

@@ -410,4 +410,79 @@ img[src*=".svg"] {
 .elementor-widget-html input {
     min-height: unset !important;
     line-height: normal !important;
-}
+}
+
+/* =========================================================
+   CMGALAXY LOAD MORE ARTICLES BUTTON & ANIMATIONS
+   ========================================================= */
+
+.cmg-load-more-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px auto 30px auto;
+    width: 100%;
+    clear: both;
+}
+
+.cmg-load-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 38px;
+    font-family: 'Onest', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2547;
+    background: #ffffff;
+    border: 1.5px solid #e0e5f2;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+}
+
+.cmg-load-more-btn:hover {
+    background: #f7f9fd;
+    border-color: #3b79ff;
+    color: #3b79ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(59, 121, 255, 0.16);
+}
+
+.cmg-load-more-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.25s ease;
+}
+
+.cmg-load-more-btn:hover svg {
+    transform: translateY(2px);
+}
+
+.cmg-load-more-count {
+    margin-top: 14px;
+    font-family: 'Onest', sans-serif;
+    font-size: 14px;
+    color: #718096;
+}
+
+/* Smooth reveal animation for newly loaded cards */
+.cmg-post-reveal {
+    animation: cmgFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cmgFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
