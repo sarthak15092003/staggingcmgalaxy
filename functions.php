@@ -6151,31 +6151,37 @@ class CMG_SVG_Protector {
     private static $last_raw_svg = null;
 
     public static function init() {
-        // 1. Ensure SVG mime types and file types are always recognized
-        add_filter('upload_mimes', [__CLASS__, 'allow_svg_mimes'], 99);
-        add_filter('wp_check_filetype_and_ext', [__CLASS__, 'check_filetype_and_ext'], 99, 4);
+        // 1. Ensure SVG mime types and file types are always recognized at highest priority
+        add_filter('upload_mimes', [__CLASS__, 'allow_svg_mimes'], PHP_INT_MAX);
+        add_filter('wp_check_filetype_and_ext', [__CLASS__, 'check_filetype_and_ext'], PHP_INT_MAX, 4);
 
-        // 2. Enable unfiltered SVG uploads in Elementor
+        // 2. Enable unfiltered SVG uploads across Elementor, Gutenkit, and Bodhi SVG Support
         add_filter('pre_option_elementor_unfiltered_files_upload', '__return_true');
         add_filter('elementor/files/svg/allow_unfiltered_upload', '__return_true');
         add_filter('elementor/files/svg/sanitizer/is_safe', '__return_true');
         add_filter('elementor/files/svg/validate', '__return_true');
+        add_filter('pre_option_gutenkit_unfiltered_files_upload', '__return_true');
+        add_filter('gutenkit/libs/unfiltered_file_support/allow_unfiltered_upload', '__return_true');
+        add_filter('bodhi_svgs_disable_sanitization', '__return_true');
+        add_filter('bodhi_svgs_advanced_mode', '__return_true');
 
-        // 3. Prefilter (Priority 1): Capture untouched raw SVG content before any sanitizer runs
+        // 3. Prefilter (Priority 1): Capture untouched raw SVG content and neutralize other plugins' prefilters
         add_filter('wp_handle_upload_prefilter', [__CLASS__, 'on_upload_prefilter'], 1);
+        add_filter('wp_handle_sideload_prefilter', [__CLASS__, 'on_upload_prefilter'], 1);
 
-        // 4. Prefilter Cleanup (Priority 999999): Clear any "could not be sanitized" errors set by Elementor/plugins
-        add_filter('wp_handle_upload_prefilter', [__CLASS__, 'on_upload_prefilter_cleanup'], 999999);
+        // 4. Prefilter Cleanup (Highest Priority): Ensure error is 0 and pristine file is preserved
+        add_filter('wp_handle_upload_prefilter', [__CLASS__, 'on_upload_prefilter_cleanup'], PHP_INT_MAX);
+        add_filter('wp_handle_sideload_prefilter', [__CLASS__, 'on_upload_prefilter_cleanup'], PHP_INT_MAX);
 
-        // 5. Post-upload (Priority 9999): Restore original content, guarantee viewBox & xmlns
+        // 5. Post-upload: Restore original content, guarantee viewBox & xmlns
         add_filter('wp_handle_upload', [__CLASS__, 'on_upload_complete'], 9999);
+        add_filter('wp_handle_sideload', [__CLASS__, 'on_upload_complete'], 9999);
 
-        // 6. Dynamically unhook aggressive sanitizers (Elementor, SVG Support, Safe SVG)
+        // 6. Dynamically unhook aggressive sanitizers (Gutenkit, Elementor, SVG Support, Safe SVG)
         add_action('admin_init', [__CLASS__, 'remove_plugin_sanitizers'], 999);
         add_action('wp_loaded', [__CLASS__, 'remove_plugin_sanitizers'], 999);
 
         // 7. Whitelist SVG tags for plugins that support filtering
-        add_filter('bodhi_svgs_disable_sanitization', '__return_true');
         add_filter('svg_allowed_tags', [__CLASS__, 'whitelist_tags']);
         add_filter('svg_allowed_attributes', [__CLASS__, 'whitelist_attributes']);
         add_filter('elementor/files/svg/allowed_elements', [__CLASS__, 'whitelist_tags']);
@@ -6207,10 +6213,9 @@ class CMG_SVG_Protector {
 
     public static function remove_plugin_sanitizers() {
         global $wp_filter;
-        if (isset($wp_filter['wp_handle_upload_prefilter'])) {
-            $hook = $wp_filter['wp_handle_upload_prefilter'];
-            if (is_object($hook) && isset($hook->callbacks)) {
-                foreach ($hook->callbacks as $priority => $callbacks) {
+        foreach (['wp_handle_upload_prefilter', 'wp_handle_sideload_prefilter'] as $hook_name) {
+            if (isset($wp_filter[$hook_name]) && is_object($wp_filter[$hook_name]) && isset($wp_filter[$hook_name]->callbacks)) {
+                foreach ($wp_filter[$hook_name]->callbacks as $priority => $callbacks) {
                     foreach ($callbacks as $id => $cb) {
                         $callable = $cb['function'] ?? null;
                         $callable_name = '';
@@ -6225,8 +6230,11 @@ class CMG_SVG_Protector {
                             if (stripos($callable_name, 'bodhi') !== false ||
                                 stripos($callable_name, 'sanitize') !== false ||
                                 stripos($callable_name, 'svg_handler') !== false ||
-                                stripos($callable_name, 'check_svg') !== false) {
-                                unset($hook->callbacks[$priority][$id]);
+                                stripos($callable_name, 'check_svg') !== false ||
+                                stripos($callable_name, 'gutenkit') !== false ||
+                                stripos($callable_name, 'check_files_formate') !== false ||
+                                stripos($callable_name, 'elementor') !== false) {
+                                unset($wp_filter[$hook_name]->callbacks[$priority][$id]);
                             }
                         }
                     }
@@ -6236,18 +6244,33 @@ class CMG_SVG_Protector {
     }
 
     public static function on_upload_prefilter($file) {
-        self::remove_plugin_sanitizers();
-
         if (empty($file['name']) || empty($file['tmp_name'])) {
             return $file;
         }
 
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        if ($ext === 'svg' && file_exists($file['tmp_name'])) {
-            $raw_content = file_get_contents($file['tmp_name']);
-            if (!empty($raw_content)) {
-                self::$raw_svg_cache[$file['name']] = $raw_content;
-                self::$last_raw_svg = $raw_content;
+        if ($ext === 'svg' || $ext === 'svgz') {
+            // Save pristine raw content before any plugin touches it
+            if (file_exists($file['tmp_name'])) {
+                $raw_content = file_get_contents($file['tmp_name']);
+                if (!empty($raw_content)) {
+                    self::$raw_svg_cache[$file['name']] = $raw_content;
+                    self::$last_raw_svg = $raw_content;
+                }
+            }
+
+            // Immediately clear any other callbacks on the upload prefilter
+            global $wp_filter;
+            foreach (['wp_handle_upload_prefilter', 'wp_handle_sideload_prefilter'] as $hook_name) {
+                if (isset($wp_filter[$hook_name]) && is_object($wp_filter[$hook_name])) {
+                    foreach ($wp_filter[$hook_name]->callbacks as $priority => $callbacks) {
+                        foreach ($callbacks as $id => $cb) {
+                            if (strpos((string)$id, 'CMG_SVG_Protector') === false) {
+                                unset($wp_filter[$hook_name]->callbacks[$priority][$id]);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -6256,13 +6279,12 @@ class CMG_SVG_Protector {
 
     public static function on_upload_prefilter_cleanup($file) {
         $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
-        if ($ext === 'svg') {
-            // If any sanitizer set an error ("could not be sanitized"), clear it so upload proceeds
-            if (!empty($file['error'])) {
-                unset($file['error']);
-            }
+        if ($ext === 'svg' || $ext === 'svgz') {
+            // Clear any error set by plugins
+            $file['error'] = 0;
+            unset($file['error']);
 
-            // If the sanitizer damaged or emptied the temp file, restore our pristine copy
+            // If anything emptied or damaged the temp file, restore our pristine copy
             if (!empty(self::$last_raw_svg) && !empty($file['tmp_name'])) {
                 if (!file_exists($file['tmp_name']) || filesize($file['tmp_name']) === 0) {
                     file_put_contents($file['tmp_name'], self::$last_raw_svg);
@@ -7143,91 +7165,7 @@ add_action( 'rest_api_init', function() {
         'callback'            => 'cmg_import_articles_handler',
         'permission_callback' => '__return_true',
     ] );
-
-    register_rest_route( 'cmg/v1', '/debug-svg', [
-        'methods'             => [ 'GET', 'POST' ],
-        'callback'            => 'cmg_debug_svg_handler',
-        'permission_callback' => '__return_true',
-    ] );
 } );
-
-function cmg_debug_svg_handler( WP_REST_Request $request ) {
-    $secret = 'cmg_import_2026';
-    if ( $request->get_param( 'key' ) !== $secret ) {
-        return new WP_REST_Response( [ 'error' => 'Unauthorized' ], 403 );
-    }
-
-    try {
-        global $wp_filter;
-
-        $hooks_info = [];
-        foreach ( [ 'wp_handle_upload_prefilter', 'wp_handle_sideload_prefilter', 'wp_check_filetype_and_ext', 'upload_mimes' ] as $hook_name ) {
-            $hooks_info[ $hook_name ] = [];
-            if ( isset( $wp_filter[ $hook_name ] ) && is_object( $wp_filter[ $hook_name ] ) ) {
-                foreach ( $wp_filter[ $hook_name ]->callbacks as $pri => $cbs ) {
-                    foreach ( $cbs as $id => $cb ) {
-                        $fn = $cb['function'] ?? null;
-                        $name = '';
-                        if ( is_string( $fn ) ) {
-                            $name = $fn;
-                        } elseif ( is_array( $fn ) ) {
-                            $c = is_object( $fn[0] ) ? get_class( $fn[0] ) : (string)$fn[0];
-                            $m = (string)($fn[1] ?? '');
-                            $name = $c . '::' . $m;
-                        }
-                        $hooks_info[ $hook_name ][] = [ 'priority' => $pri, 'name' => $name, 'id' => $id ];
-                    }
-                }
-            }
-        }
-
-        // Inspect Elementor method
-        $elementor_code = '';
-        if ( class_exists( 'Elementor\Core\Files\Uploads_Manager' ) && method_exists( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' ) ) {
-            $ref = new ReflectionMethod( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' );
-            $file = $ref->getFileName();
-            $start = $ref->getStartLine();
-            $end = $ref->getEndLine();
-            $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
-            $elementor_code = implode( '', $lines );
-        }
-
-        // Inspect Gutenkit
-        $gutenkit_code = '';
-        if ( class_exists( 'Gutenkit\Libs\UnfilteredFileSupport' ) && method_exists( 'Gutenkit\Libs\UnfilteredFileSupport', 'check_files_formate' ) ) {
-            $ref = new ReflectionMethod( 'Gutenkit\Libs\UnfilteredFileSupport', 'check_files_formate' );
-            $file = $ref->getFileName();
-            $start = $ref->getStartLine();
-            $end = $ref->getEndLine();
-            $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
-            $gutenkit_code = implode( '', $lines );
-        }
-
-        // Inspect Bodhi
-        $bodhi_code = '';
-        if ( function_exists( 'bodhi_svgs_upload_check' ) ) {
-            $ref = new ReflectionFunction( 'bodhi_svgs_upload_check' );
-            $file = $ref->getFileName();
-            $start = $ref->getStartLine();
-            $end = $ref->getEndLine();
-            $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
-            $bodhi_code = implode( '', $lines );
-        }
-
-        return new WP_REST_Response( [
-            'gutenkit_code'  => $gutenkit_code,
-            'bodhi_code'     => $bodhi_code,
-            'elementor_code' => $elementor_code,
-            'hooks'          => $hooks_info,
-        ], 200 );
-    } catch ( Throwable $e ) {
-        return new WP_REST_Response( [
-            'error' => $e->getMessage(),
-            'file'  => $e->getFile(),
-            'line'  => $e->getLine(),
-        ], 500 );
-    }
-}
 
 function cmg_find_post_by_slug( $slug ) {
     $posts = get_posts( [
