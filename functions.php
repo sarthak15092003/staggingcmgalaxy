@@ -7180,29 +7180,37 @@ function cmg_debug_svg_handler( WP_REST_Request $request ) {
         }
     }
 
-    // Try a test SVG upload
-    require_once ABSPATH . 'wp-admin/includes/file.php';
-    require_once ABSPATH . 'wp-admin/includes/media.php';
-    require_once ABSPATH . 'wp-admin/includes/image.php';
+    // Inspect Elementor method
+    $elementor_code = '';
+    if ( class_exists( 'Elementor\Core\Files\Uploads_Manager' ) && method_exists( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' ) ) {
+        $ref = new ReflectionMethod( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' );
+        $file = $ref->getFileName();
+        $start = $ref->getStartLine();
+        $end = $ref->getEndLine();
+        $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
+        $elementor_code = implode( '', $lines );
+    }
 
+    // Test prefilter simulation
     $test_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red"/></svg>';
     $tmp = wp_tempnam( 'test.svg' );
     file_put_contents( $tmp, $test_svg );
 
     $file_array = [
-        'name'     => 'test_debug_' . time() . '.svg',
+        'name'     => 'test_sim_' . time() . '.svg',
         'tmp_name' => $tmp,
         'type'     => 'image/svg+xml',
         'error'    => 0,
         'size'     => strlen( $test_svg ),
     ];
 
-    $upload_result = wp_handle_sideload( $file_array, [ 'test_form' => false ] );
+    $prefiltered = apply_filters( 'wp_handle_upload_prefilter', $file_array );
 
     return new WP_REST_Response( [
-        'active_plugins' => get_option( 'active_plugins' ),
+        'bodhi_settings' => get_option( 'bodhi_svgs_settings' ),
+        'elementor_code' => $elementor_code,
+        'prefilter_res'  => $prefiltered,
         'hooks'          => $hooks_info,
-        'upload_result'  => $upload_result,
     ], 200 );
 }
 
