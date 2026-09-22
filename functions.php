@@ -182,12 +182,12 @@ if ( ! function_exists( 'hello_elementor_scripts_styles' ) ) {
 			null
 		);
 
-		// Enqueue Font Awesome for custom HTML icons
+		// Enqueue Font Awesome for custom HTML icons (using v4 for backward compatibility with 'fa' classes)
 		wp_enqueue_style(
 			'font-awesome',
-			'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+			'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
 			[],
-			'6.4.0'
+			'4.7.0'
 		);
 	}
 }
