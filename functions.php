@@ -7184,16 +7184,25 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
 
     if ( ! empty( $items ) && is_array( $items ) ) {
         foreach ( $items as $item ) {
-            $slug = sanitize_title( $item['slug'] ?? '' );
-            if ( empty( $slug ) ) continue;
-
-            $post = cmg_find_post_by_slug( $slug );
+            $post = null;
+            if ( ! empty( $item['id'] ) ) {
+                $post = get_post( intval( $item['id'] ) );
+            }
+            if ( ! $post ) {
+                $slug = sanitize_title( $item['slug'] ?? '' );
+                if ( empty( $slug ) ) continue;
+                $post = cmg_find_post_by_slug( $slug );
+            }
             if ( ! $post ) continue;
 
             $update_data = [
                 'ID'          => $post->ID,
                 'post_author' => 1,
             ];
+
+            if ( ! empty( $item['title'] ) ) {
+                $update_data['post_title'] = wp_strip_all_tags( $item['title'] );
+            }
 
             if ( ! empty( $item['post_date'] ) ) {
                 $update_data['post_date']     = $item['post_date'];
