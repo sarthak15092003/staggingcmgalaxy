@@ -7239,12 +7239,12 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
                 foreach ( $items as &$it ) {
                     if ( isset( $it['widgetType'] ) && $it['widgetType'] === 'elementskit-blog-posts' ) {
                         $widget_settings = $it['settings'] ?? [];
-                        // Set posts count / per page to 30 so all articles are displayed
-                        $it['settings']['ekit_blog_posts_posts_per_page'] = '30';
-                        $it['settings']['posts_per_page'] = 30;
-                        $it['settings']['post_count'] = 30;
-                        $it['settings']['ekit_blog_posts_order'] = 'desc';
+                        // Set posts count to 20 so all articles are displayed
+                        $it['settings']['ekit_blog_posts_num'] = 20;
                         $it['settings']['ekit_blog_posts_order_by'] = 'date';
+                        $it['settings']['ekit_blog_posts_sort'] = 'desc';
+                        $it['settings']['ekit_blog_posts_meta'] = 'yes';
+                        $it['settings']['ekit_blog_posts_meta_select'] = [ 'date', 'author' ];
                         $updated = true;
                     }
                     if ( ! empty( $it['elements'] ) ) {
@@ -7263,26 +7263,24 @@ function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
         }
     }
 
-    // Inspect control names from ElementsKit Blog Posts widget file
-    $controls = [];
-    $matched_code = [];
-    $widget_file = WP_PLUGIN_DIR . '/elementskit-lite/widgets/blog-posts/blog-posts.php';
-    if ( file_exists( $widget_file ) ) {
-        $code = file_get_contents( $widget_file );
-        preg_match_all( "/add_control\(\s*['\"]([^'\"]+)['\"]/i", $code, $m );
-        $controls = $m[1] ?? [];
-        preg_match_all( "/(\\\$this->add_control\(\s*['\"][^'\"]*posts?[^'\"]*['\"][^;]+;)/is", $code, $cm );
-        $matched_code = $cm[0] ?? [];
-    }
-
     return new WP_REST_Response( [
         'success'               => true,
         'updated_articles'      => count( $results ),
         'articles'              => $results,
-        'controls'              => $controls,
-        'matched_code'          => $matched_code,
         'prior_widget_settings' => $widget_settings,
     ], 200 );
+}
+
+/**
+ * Ensure Blog Posts widget displays all articles arranged by date DESC (latest first)
+ */
+add_filter( 'elementskit/widgets/blog_posts/query_args', 'cmg_override_blog_query_args', 999 );
+add_filter( 'elementskit_blog_posts_query_args', 'cmg_override_blog_query_args', 999 );
+function cmg_override_blog_query_args( $args ) {
+    $args['posts_per_page'] = 20;
+    $args['orderby'] = 'date';
+    $args['order'] = 'DESC';
+    return $args;
 }
 
 function cmg_find_post_by_slug( $slug ) {
