@@ -7157,61 +7157,53 @@ function cmg_debug_svg_handler( WP_REST_Request $request ) {
         return new WP_REST_Response( [ 'error' => 'Unauthorized' ], 403 );
     }
 
-    global $wp_filter;
+    try {
+        global $wp_filter;
 
-    $hooks_info = [];
-    foreach ( [ 'wp_handle_upload_prefilter', 'wp_handle_sideload_prefilter', 'wp_check_filetype_and_ext', 'upload_mimes' ] as $hook_name ) {
-        $hooks_info[ $hook_name ] = [];
-        if ( isset( $wp_filter[ $hook_name ] ) && is_object( $wp_filter[ $hook_name ] ) ) {
-            foreach ( $wp_filter[ $hook_name ]->callbacks as $pri => $cbs ) {
-                foreach ( $cbs as $id => $cb ) {
-                    $fn = $cb['function'] ?? null;
-                    $name = '';
-                    if ( is_string( $fn ) ) {
-                        $name = $fn;
-                    } elseif ( is_array( $fn ) ) {
-                        $c = is_object( $fn[0] ) ? get_class( $fn[0] ) : (string)$fn[0];
-                        $m = (string)($fn[1] ?? '');
-                        $name = $c . '::' . $m;
+        $hooks_info = [];
+        foreach ( [ 'wp_handle_upload_prefilter', 'wp_handle_sideload_prefilter', 'wp_check_filetype_and_ext', 'upload_mimes' ] as $hook_name ) {
+            $hooks_info[ $hook_name ] = [];
+            if ( isset( $wp_filter[ $hook_name ] ) && is_object( $wp_filter[ $hook_name ] ) ) {
+                foreach ( $wp_filter[ $hook_name ]->callbacks as $pri => $cbs ) {
+                    foreach ( $cbs as $id => $cb ) {
+                        $fn = $cb['function'] ?? null;
+                        $name = '';
+                        if ( is_string( $fn ) ) {
+                            $name = $fn;
+                        } elseif ( is_array( $fn ) ) {
+                            $c = is_object( $fn[0] ) ? get_class( $fn[0] ) : (string)$fn[0];
+                            $m = (string)($fn[1] ?? '');
+                            $name = $c . '::' . $m;
+                        }
+                        $hooks_info[ $hook_name ][] = [ 'priority' => $pri, 'name' => $name, 'id' => $id ];
                     }
-                    $hooks_info[ $hook_name ][] = [ 'priority' => $pri, 'name' => $name, 'id' => $id ];
                 }
             }
         }
+
+        // Inspect Elementor method
+        $elementor_code = '';
+        if ( class_exists( 'Elementor\Core\Files\Uploads_Manager' ) && method_exists( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' ) ) {
+            $ref = new ReflectionMethod( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' );
+            $file = $ref->getFileName();
+            $start = $ref->getStartLine();
+            $end = $ref->getEndLine();
+            $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
+            $elementor_code = implode( '', $lines );
+        }
+
+        return new WP_REST_Response( [
+            'bodhi_settings' => get_option( 'bodhi_svgs_settings' ),
+            'elementor_code' => $elementor_code,
+            'hooks'          => $hooks_info,
+        ], 200 );
+    } catch ( Throwable $e ) {
+        return new WP_REST_Response( [
+            'error' => $e->getMessage(),
+            'file'  => $e->getFile(),
+            'line'  => $e->getLine(),
+        ], 500 );
     }
-
-    // Inspect Elementor method
-    $elementor_code = '';
-    if ( class_exists( 'Elementor\Core\Files\Uploads_Manager' ) && method_exists( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' ) ) {
-        $ref = new ReflectionMethod( 'Elementor\Core\Files\Uploads_Manager', 'handle_elementor_wp_media_upload' );
-        $file = $ref->getFileName();
-        $start = $ref->getStartLine();
-        $end = $ref->getEndLine();
-        $lines = array_slice( file( $file ), $start - 1, $end - $start + 1 );
-        $elementor_code = implode( '', $lines );
-    }
-
-    // Test prefilter simulation
-    $test_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red"/></svg>';
-    $tmp = wp_tempnam( 'test.svg' );
-    file_put_contents( $tmp, $test_svg );
-
-    $file_array = [
-        'name'     => 'test_sim_' . time() . '.svg',
-        'tmp_name' => $tmp,
-        'type'     => 'image/svg+xml',
-        'error'    => 0,
-        'size'     => strlen( $test_svg ),
-    ];
-
-    $prefiltered = apply_filters( 'wp_handle_upload_prefilter', $file_array );
-
-    return new WP_REST_Response( [
-        'bodhi_settings' => get_option( 'bodhi_svgs_settings' ),
-        'elementor_code' => $elementor_code,
-        'prefilter_res'  => $prefiltered,
-        'hooks'          => $hooks_info,
-    ], 200 );
 }
 
 function cmg_find_post_by_slug( $slug ) {
