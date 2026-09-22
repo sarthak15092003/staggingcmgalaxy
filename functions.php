@@ -7165,7 +7165,111 @@ add_action( 'rest_api_init', function() {
         'callback'            => 'cmg_import_articles_handler',
         'permission_callback' => '__return_true',
     ] );
+
+    register_rest_route( 'cmg/v1', '/update-articles-meta', [
+        'methods'             => [ 'GET', 'POST' ],
+        'callback'            => 'cmg_update_articles_meta_handler',
+        'permission_callback' => '__return_true',
+    ] );
 } );
+
+function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
+    $secret = 'cmg_import_2026';
+    if ( $request->get_param( 'key' ) !== $secret ) {
+        return new WP_REST_Response( [ 'error' => 'Unauthorized' ], 403 );
+    }
+
+    $items = $request->get_json_params();
+    $results = [];
+
+    if ( ! empty( $items ) && is_array( $items ) ) {
+        foreach ( $items as $item ) {
+            $slug = sanitize_title( $item['slug'] ?? '' );
+            if ( empty( $slug ) ) continue;
+
+            $post = cmg_find_post_by_slug( $slug );
+            if ( ! $post ) continue;
+
+            $update_data = [
+                'ID' => $post->ID,
+            ];
+
+            if ( ! empty( $item['post_date'] ) ) {
+                $update_data['post_date']     = $item['post_date'];
+                $update_data['post_date_gmt'] = get_gmt_from_date( $item['post_date'] );
+            }
+
+            if ( ! empty( $item['meta_description'] ) ) {
+                $update_data['post_excerpt'] = sanitize_textarea_field( $item['meta_description'] );
+            }
+
+            wp_update_post( $update_data );
+
+            if ( ! empty( $item['meta_description'] ) ) {
+                update_post_meta( $post->ID, '_yoast_wpseo_metadesc', sanitize_textarea_field( $item['meta_description'] ) );
+            }
+
+            if ( ! empty( $item['author'] ) ) {
+                update_post_meta( $post->ID, 'cmg_author_name', sanitize_text_field( $item['author'] ) );
+            }
+
+            if ( ! empty( $item['reading_time'] ) ) {
+                update_post_meta( $post->ID, 'cmg_reading_time', sanitize_text_field( $item['reading_time'] ) );
+            }
+
+            $results[] = [
+                'id'        => $post->ID,
+                'slug'      => $slug,
+                'post_date' => $item['post_date'] ?? '',
+                'author'    => $item['author'] ?? '',
+            ];
+        }
+    }
+
+    // Inspect & update Elementor Blog Page (ID 1339)
+    $page_id = 1339;
+    $raw_meta = get_post_meta( $page_id, '_elementor_data', true );
+    $widget_settings = null;
+
+    if ( ! empty( $raw_meta ) ) {
+        $elements = json_decode( $raw_meta, true );
+        if ( is_array( $elements ) ) {
+            $updated = false;
+            $updater = function( &$items ) use ( &$updater, &$updated, &$widget_settings ) {
+                foreach ( $items as &$it ) {
+                    if ( isset( $it['widgetType'] ) && $it['widgetType'] === 'elementskit-blog-posts' ) {
+                        $widget_settings = $it['settings'] ?? [];
+                        // Set posts count / per page to 30 so all articles are displayed
+                        $it['settings']['ekit_blog_posts_posts_per_page'] = '30';
+                        $it['settings']['posts_per_page'] = 30;
+                        $it['settings']['post_count'] = 30;
+                        $it['settings']['ekit_blog_posts_order'] = 'desc';
+                        $it['settings']['ekit_blog_posts_order_by'] = 'date';
+                        $updated = true;
+                    }
+                    if ( ! empty( $it['elements'] ) ) {
+                        $updater( $it['elements'] );
+                    }
+                }
+            };
+            $updater( $elements );
+
+            if ( $updated ) {
+                update_post_meta( $page_id, '_elementor_data', wp_slash( json_encode( $elements ) ) );
+                if ( class_exists( '\Elementor\Plugin' ) ) {
+                    \Elementor\Plugin::$instance->files_manager->clear_cache();
+                }
+            }
+        }
+    }
+
+    return new WP_REST_Response( [
+        'success'               => true,
+        'updated_articles'      => count( $results ),
+        'articles'              => $results,
+        'prior_widget_settings' => $widget_settings,
+    ], 200 );
+}
 
 function cmg_find_post_by_slug( $slug ) {
     $posts = get_posts( [
