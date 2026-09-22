@@ -485,4 +485,33 @@ img[src*=".svg"] {
         transform: translateY(0);
     }
 }
+
+/* =========================================================
+   DISABLE HOVER IMAGE MOVING / TILTING / SCALING
+   ========================================================= */
+
+.ekit-wid-con .elementskit-post-image-card:hover .elementskit-entry-thumb > img,
+.ekit-wid-con .elementskit-blog-block-post:hover .elementskit-entry-thumb > img,
+.elementskit-post-image-card:hover .elementskit-entry-thumb img,
+.elementskit-post-image-card .elementskit-entry-thumb img,
+.elementskit-entry-thumb img,
+.post-item:hover .elementskit-entry-thumb img,
+.post-item .elementskit-entry-thumb img {
+    -webkit-transform: none !important;
+    -ms-transform: none !important;
+    transform: none !important;
+    -webkit-transition: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+}
+
+/* Ensure the card itself does not move or jump */
+.ekit-wid-con .elementskit-post-image-card:hover,
+.elementskit-post-image-card:hover,
+.post-item:hover {
+    -webkit-transform: none !important;
+    -ms-transform: none !important;
+    transform: none !important;
+}
+
 
