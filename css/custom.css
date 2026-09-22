@@ -514,4 +514,21 @@ img[src*=".svg"] {
     transform: none !important;
 }
 
+/* =========================================================
+   HIDE EXCERPT/CONTENT IN BLOG POST CARDS (PREVENT DUPLICATE TITLE & GAP)
+   ========================================================= */
+
+.ekit-wid-con .elementskit-post-image-card .elementskit-post-body > p,
+.ekit-wid-con .elementskit-post-body > p,
+.elementor-widget-elementskit-blog-posts .elementskit-post-body > p,
+.elementor-widget-elementskit-blog-posts .elementskit-entry-content {
+    display: none !important;
+    visibility: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+
 
