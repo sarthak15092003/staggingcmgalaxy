@@ -157,11 +157,14 @@ img[src*=".svg"] {
     /* Mobile CSS */
     .cta,
     .cta1 {
-        font-size: 14px !important;
-
+        font-size: 16px !important;
         border-radius: 58px;
         display: block !important;
-
+        width: calc(100% - 32px) !important;
+        margin-left: 16px !important;
+        margin-right: 16px !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
     }
 }
 
@@ -606,4 +609,4 @@ img[src*=".svg"] {
 
 
 
-
+
