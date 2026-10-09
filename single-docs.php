@@ -59,11 +59,8 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                         
                         <!-- Author & Meta Box -->
                         <div class="doc-author-meta-box">
-                            <div class="author-avatar">
-                                <img src="https://docs.cmgalaxy.com/wp-content/uploads/2026/06/cropped-Group-1000004539-300x300-1.png" alt="CMGalaxy Logo" />
-                            </div>
                             <div class="author-info">
-                                Written by <strong style="color: #334155;"><?php echo get_the_author(); ?></strong> &bull; Updated <?php echo get_the_modified_date('M j, Y'); ?>
+                                Written by <strong style="color: #334155; font-weight: 600;"><?php echo get_the_author(); ?></strong> &bull; Updated <?php echo get_the_modified_date('M j, Y'); ?>
                             </div>
                         </div>
 

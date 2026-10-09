@@ -611,22 +611,15 @@ body.page-template-page-all-categories,
 .doc-author-meta-box {
     display: flex;
     align-items: center;
-    gap: 10px;
     margin-bottom: 24px;
     padding-bottom: 16px;
     border-bottom: 1px solid #e5e7eb;
 }
 
-.doc-author-meta-box .author-avatar img {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    object-fit: contain;
-}
-
 .doc-author-meta-box .author-info {
     font-size: 14px;
     color: #64748b;
+    line-height: 1.5;
 }
 
 .doc-article-content {
