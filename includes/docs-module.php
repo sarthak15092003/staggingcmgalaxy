@@ -128,9 +128,16 @@ function cmg_enqueue_docs_assets() {
 
     if ($is_docs_page) {
         wp_enqueue_style(
+            'cmg-docs-google-fonts',
+            'https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&family=Instrument+Sans:wght@400;500;600;700&display=swap',
+            array(),
+            null
+        );
+
+        wp_enqueue_style(
             'cmg-docs-style',
             get_template_directory_uri() . '/css/docs-style.css',
-            array(),
+            array('cmg-docs-google-fonts'),
             filemtime(get_template_directory() . '/css/docs-style.css')
         );
 
