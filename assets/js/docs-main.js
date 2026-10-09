@@ -49,6 +49,7 @@
             
             if ($headings.length > 0) {
                 var tocListHtml = '<ul class="nav flex-column">';
+                var emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2300}-\u{23FF}\u{200D}\u{FE0F}]/gu;
                 
                 $headings.each(function(idx) {
                     var $h = $(this);
@@ -58,10 +59,15 @@
                         $h.attr('id', hId);
                     }
                     var hTag = this.tagName.toLowerCase();
-                    var hText = $h.text().trim();
+                    var rawText = $h.text().trim();
+                    var cleanText = rawText.replace(emojiRegex, '').replace(/\s+/g, ' ').replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '').trim();
+                    
+                    if (!cleanText) {
+                        cleanText = rawText;
+                    }
                     
                     tocListHtml += '<li class="nav-item toc-' + hTag + '">';
-                    tocListHtml += '<a class="nav-link" href="#' + hId + '">' + hText + '</a>';
+                    tocListHtml += '<a class="nav-link" href="#' + hId + '">' + cleanText + '</a>';
                     tocListHtml += '</li>';
                 });
                 

@@ -232,6 +232,7 @@ function cmg_docs_strip_article_images($content) {
     if (is_singular('docs') || (is_single() && get_post_type() === 'docs')) {
         $content = preg_replace('/<figure\b[^>]*>.*?<\/figure>/is', '', $content);
         $content = preg_replace('/<img\b[^>]*\/?>/is', '', $content);
+        $content = preg_replace('/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{1F600}-\x{1F64F}\x{1F680}-\x{1F6FF}\x{1F1E0}-\x{1F1FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{2300}-\x{23FF}\x{200D}\x{FE0F}]/u', '', $content);
     }
     return $content;
 }
