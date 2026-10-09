@@ -67,13 +67,6 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                             </div>
                         </div>
 
-                        <!-- Featured Image if exists -->
-                        <?php if (has_post_thumbnail()) : ?>
-                            <div class="doc-featured-image" style="margin-bottom: 24px;">
-                                <?php the_post_thumbnail('large', array('style' => 'border-radius: 8px; max-width: 100%; height: auto;')); ?>
-                            </div>
-                        <?php endif; ?>
-
                         <!-- Doc Body Content -->
                         <div class="doc-article-content">
                             <?php the_content(); ?>

@@ -12,6 +12,9 @@ $post_type_name = post_type_exists('docs') ? 'docs' : 'post';
 
 // Get current post's terms or current archive term
 $current_categories = array();
+$top_cat_slug = '';
+$back_url = home_url('/docs/');
+
 if ($is_single_doc) {
     $terms = get_the_terms($current_post_id, 'doc_category');
     if (!$terms || is_wp_error($terms)) {
@@ -21,6 +24,18 @@ if ($is_single_doc) {
         foreach ($terms as $t) {
             $current_categories[] = $t->slug;
         }
+        $top_cat = $terms[0];
+        while ($top_cat->parent) {
+            $parent_term = get_term($top_cat->parent, $top_cat->taxonomy);
+            if ($parent_term && !is_wp_error($parent_term)) {
+                $top_cat = $parent_term;
+            } else {
+                break;
+            }
+        }
+        $top_cat_slug = $top_cat->slug;
+        $term_link = get_term_link($top_cat->term_id, $top_cat->taxonomy);
+        $back_url = is_wp_error($term_link) ? home_url('/docs/') : $term_link;
     }
 } elseif (is_tax('doc_category') || is_category()) {
     $queried_term = get_queried_object();
@@ -80,6 +95,9 @@ $terms_query = get_terms(array(
 $sidebar_sections = array();
 if (!empty($terms_query) && !is_wp_error($terms_query)) {
     foreach ($terms_query as $term) {
+        if (strtolower($term->slug) === 'uncategorized' || strtolower($term->name) === 'uncategorized') {
+            continue;
+        }
         $icon = isset($custom_icons[$term->name]) ? $custom_icons[$term->name] : 'https://docs.cmgalaxy.com/wp-content/uploads/2026/07/category-2.png';
         $sidebar_sections[] = array(
             'slug'     => $term->slug,
@@ -92,23 +110,27 @@ if (!empty($terms_query) && !is_wp_error($terms_query)) {
 }
 
 $sidebar_instance_id = uniqid('docs_sb_');
-$docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link('docs') : home_url('/docs/');
 ?>
 
 <div class="modern-sidebar" id="<?php echo esc_attr($sidebar_instance_id); ?>">
     <div class="sidebar-content">
         
         <?php if ($is_single_doc) : ?>
-            <a href="<?php echo esc_url($docs_home_url); ?>" class="sidebar-back-btn">
+            <a href="<?php echo esc_url($back_url); ?>" class="sidebar-back-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
                     <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
                 </svg>
-                <span>Back to All Docs</span>
+                <span>Back to categories</span>
             </a>
         <?php endif; ?>
 
         <?php foreach ($sidebar_sections as $sec) :
-            $is_active_cat = in_array($sec['slug'], $current_categories);
+            // In single doc view, ONLY show the category of the current doc
+            if ($is_single_doc && !empty($top_cat_slug) && $sec['slug'] !== $top_cat_slug) {
+                continue;
+            }
+
+            $is_active_cat = in_array($sec['slug'], $current_categories) || ($is_single_doc && $sec['slug'] === $top_cat_slug);
             $cat_term_id = $sec['term_id'];
             $sec_tax = $sec['taxonomy'];
 
@@ -214,7 +236,7 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                             <?php endforeach; ?>
                         <?php endif; ?>
 
-                        <?php if ($has_posts && !$has_subcats) : ?>
+                        <?php if ($has_posts) : ?>
                             <?php foreach ($direct_posts as $dp) :
                                 $is_cur = ($current_post_id == $dp->ID);
                             ?>
