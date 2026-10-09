@@ -182,3 +182,8 @@ function cmg_submit_doc_feedback() {
 }
 add_action('wp_ajax_cm_submit_feedback', 'cmg_submit_doc_feedback');
 add_action('wp_ajax_nopriv_cm_submit_feedback', 'cmg_submit_doc_feedback');
+
+/**
+ * 5. Load Docs Importer & Sync Tool
+ */
+require_once get_template_directory() . '/includes/docs-importer.php';
