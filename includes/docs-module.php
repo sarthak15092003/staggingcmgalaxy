@@ -108,6 +108,8 @@ add_action('init', 'cmg_register_docs_cpt', 0);
  * 2. Enqueue Docs Styles & Scripts
  */
 function cmg_enqueue_docs_assets() {
+    global $post;
+    
     $is_docs_page = is_singular('docs') || 
                     is_post_type_archive('docs') || 
                     is_tax('doc_category') || 
@@ -115,6 +117,14 @@ function cmg_enqueue_docs_assets() {
                     is_page_template('page-templates/template-docs-home.php') ||
                     is_page_template('page-templates/template-docs-category.php') ||
                     is_page_template('page-all-categories.php');
+
+    // Also check if page slug is docs or kb
+    if (!$is_docs_page && is_page()) {
+        $slug = $post ? $post->post_name : '';
+        if (in_array($slug, array('docs', 'kb', 'knowledge-base', 'documentation', 'all-categories'))) {
+            $is_docs_page = true;
+        }
+    }
 
     if ($is_docs_page) {
         wp_enqueue_style(
@@ -141,22 +151,47 @@ function cmg_enqueue_docs_assets() {
 add_action('wp_enqueue_scripts', 'cmg_enqueue_docs_assets', 20);
 
 /**
- * 3. Template Selection Filter
+ * 3. Robust Template Selection Filter (Prevents Page Mismatch)
  */
 function cmg_docs_template_include($template) {
+    global $post;
+
+    // 1. Single Doc
     if (is_singular('docs')) {
         $single_file = locate_template('single-docs.php');
         if ($single_file) return $single_file;
     }
     
+    // 2. Docs Post Type Archive (/docs/)
     if (is_post_type_archive('docs')) {
         $archive_file = locate_template('archive-docs.php');
         if ($archive_file) return $archive_file;
     }
 
+    // 3. Doc Category Taxonomy (/docs/category/...)
     if (is_tax('doc_category')) {
         $tax_file = locate_template('taxonomy-doc_category.php');
         if ($tax_file) return $tax_file;
+    }
+
+    // 4. Regular WordPress Page Mappings (Prevents mismatch if user created a standard page)
+    if (is_page() && $post) {
+        // If user explicitly chose a template, let WordPress handle it
+        $page_template = get_page_template_slug($post->ID);
+        if ($page_template) {
+            return $template;
+        }
+
+        // Auto-match common slugs if no custom template was chosen
+        if (in_array($post->post_name, array('docs', 'kb', 'knowledge-base', 'documentation'))) {
+            $home_template = locate_template('page-templates/template-docs-home.php');
+            if ($home_template) return $home_template;
+        }
+
+        if ($post->post_name === 'all-categories') {
+            $all_cats = locate_template('page-all-categories.php');
+            if ($all_cats) return $all_cats;
+        }
     }
 
     return $template;
