@@ -31,7 +31,7 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
             </div>
 
             <!-- Main Doc Content Column -->
-            <div class="docs-col-content">
+            <div class="docs-col-content category-main-col has-toc-sidebar">
                 
                 <!-- Breadcrumbs -->
                 <nav aria-label="breadcrumb">
@@ -149,7 +149,7 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
             </div>
 
             <!-- Right TOC Column (Sticky) -->
-            <div class="docs-col-toc">
+            <div class="docs-col-toc category-right-sidebar-col doc-sidebar">
                 <div class="doc-toc-wrap">
                     <div class="doc-toc-title">On this page</div>
                     <nav id="docy-toc"></nav>

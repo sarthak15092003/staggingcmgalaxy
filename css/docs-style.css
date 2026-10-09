@@ -436,29 +436,96 @@
 }
 
 /* ==========================================================================
-   SINGLE DOC DETAIL PAGE
+   LAYOUT GRID & GAP FIXES (EXACT DOCY PROPORTIONS: 20% - 60% - 20%)
    ========================================================================== */
+.docs-main-wrapper .docs-container,
+.docs-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
 .docs-layout-row {
-    display: flex;
-    gap: 32px;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
     align-items: flex-start;
 }
 
-.docs-col-sidebar {
-    flex: 0 0 260px;
-    max-width: 260px;
+/* 1. Left Sidebar Column: 20% */
+.docs-col-sidebar,
+.category-left-sidebar-col {
+    flex: 0 0 20% !important;
+    max-width: 20% !important;
+    width: 20% !important;
+    padding-right: 24px !important;
+    padding-left: 0 !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    position: sticky !important;
+    top: 90px !important;
+    max-height: calc(100vh - 110px) !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
 }
 
-.docs-col-content {
-    flex: 1;
-    min-width: 0;
+/* 2. Main Content Column: 60% with TOC, 80% without TOC */
+.docs-col-content,
+.category-main-col {
+    flex: 0 0 60% !important;
+    max-width: 60% !important;
+    width: 60% !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
 }
 
-.docs-col-toc {
-    flex: 0 0 220px;
-    max-width: 220px;
-    position: sticky;
-    top: 90px;
+.category-main-col.no-toc,
+.docs-col-content.no-toc {
+    flex: 0 0 80% !important;
+    max-width: 80% !important;
+    width: 80% !important;
+}
+
+/* 3. Right TOC Column: 20% */
+.docs-col-toc,
+.category-right-sidebar-col,
+.doc-sidebar {
+    flex: 0 0 20% !important;
+    max-width: 20% !important;
+    width: 20% !important;
+    padding-left: 20px !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+    position: sticky !important;
+    top: 90px !important;
+    max-height: calc(100vh - 120px) !important;
+    overflow-y: auto !important;
+}
+
+@media (max-width: 1024px) {
+    .docs-col-sidebar,
+    .category-left-sidebar-col,
+    .docs-col-content,
+    .category-main-col,
+    .docs-col-toc {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        position: static !important;
+    }
+    .docs-col-toc {
+        display: none !important;
+    }
 }
 
 /* Breadcrumbs */
