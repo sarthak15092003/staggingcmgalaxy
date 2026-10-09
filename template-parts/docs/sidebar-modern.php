@@ -220,13 +220,13 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                     </div>
 
                                     <?php if ($has_sub_posts) : ?>
-                                        <div class="sub-subcategories" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 12px; border-left: 2px solid #e2e8f0; margin-left: 12px;">
+                                        <div class="sub-subcategories" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; border-left: 2px solid #e2e8f0; margin-left: 24px;">
                                             <?php foreach ($sub_posts as $sp) :
                                                 $is_cur = ($current_post_id == $sp->ID);
                                             ?>
-                                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 4px 0;">
-                                                    <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>">
-                                                        <?php echo esc_html($sp->post_title); ?>
+                                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 16px;">
+                                                    <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" title="<?php echo esc_attr($sp->post_title); ?>">
+                                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($sp->post_title); ?></span>
                                                     </a>
                                                 </div>
                                             <?php endforeach; ?>
@@ -240,9 +240,9 @@ $sidebar_instance_id = uniqid('docs_sb_');
                             <?php foreach ($direct_posts as $dp) :
                                 $is_cur = ($current_post_id == $dp->ID);
                             ?>
-                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>">
-                                    <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>">
-                                        <?php echo esc_html($dp->post_title); ?>
+                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 36px;">
+                                    <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>" title="<?php echo esc_attr($dp->post_title); ?>">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($dp->post_title); ?></span>
                                     </a>
                                 </div>
                             <?php endforeach; ?>

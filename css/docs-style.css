@@ -349,13 +349,13 @@ body.page-template-page-all-categories,
 }
 
 .sidebar-section {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .section-header {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -367,13 +367,13 @@ body.page-template-page-all-categories,
 }
 
 .section-header.active {
-    background: #eff6ff;
+    background: #eff6ff !important;
 }
 
 .section-icon {
     width: 22px;
     height: 22px;
-    margin-right: 10px;
+    margin-right: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -387,7 +387,7 @@ body.page-template-page-all-categories,
 }
 
 .section-title {
-    font-size: 14px;
+    font-size: 14.5px;
     font-weight: 500;
     color: #334155;
     flex: 1;
@@ -395,57 +395,65 @@ body.page-template-page-all-categories,
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.section-header:hover .section-title {
+    color: #1e293b;
 }
 
 .section-header.active .section-title {
-    color: #3b82f6;
-    font-weight: 600;
+    color: #1e40af !important;
+    font-weight: 600 !important;
 }
 
 .expand-icon {
     color: #94a3b8;
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, color 0.2s ease;
     display: flex;
     align-items: center;
+    margin-left: 8px;
 }
 
-.expand-icon.expanded,
 .section-header.active .expand-icon {
+    color: #2563eb !important;
     transform: rotate(90deg);
 }
 
 .sidebar-subcat-post-item {
     position: relative;
-    padding: 6px 0 6px 24px;
+    padding: 7px 8px 7px 36px;
 }
 
 .sidebar-subcat-post-item a {
-    color: #64748b;
+    color: #4b5563;
     font-size: 13.5px;
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    line-height: 1.4;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.45;
     transition: color 0.15s ease;
 }
 
 .sidebar-subcat-post-item a:hover {
-    color: #3b82f6;
+    color: #2563eb;
 }
 
 .sidebar-subcat-post-item.active-article a {
-    color: #3b82f6 !important;
+    color: #2563eb !important;
     font-weight: 600 !important;
 }
 
 .sidebar-subcat-post-item.active-article::before {
     content: '';
     position: absolute;
-    left: 12px;
+    left: 24px;
     top: 0;
     bottom: 0;
     width: 2px;
-    background: #3b82f6;
+    background: #2563eb;
     border-radius: 2px;
 }
 
