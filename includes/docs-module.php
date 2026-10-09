@@ -239,6 +239,71 @@ function cmg_docs_strip_article_images($content) {
 add_filter('the_content', 'cmg_docs_strip_article_images', 5);
 
 /**
- * 6. Load Docs Importer & Sync Tool
+ * 6. Set Clean Page Title "Docs" on Archive & Home
+ */
+function cmg_docs_document_title_parts($title_parts) {
+    global $post;
+    if (is_post_type_archive('docs') || 
+        is_page_template('page-templates/template-docs-home.php') ||
+        (is_page() && $post && in_array($post->post_name, array('docs', 'kb', 'knowledge-base', 'documentation')))) {
+        $title_parts['title'] = 'Docs';
+    }
+    return $title_parts;
+}
+add_filter('document_title_parts', 'cmg_docs_document_title_parts', 99);
+
+add_filter('post_type_archive_title', function($title, $post_type) {
+    if ($post_type === 'docs') {
+        return 'Docs';
+    }
+    return $title;
+}, 99, 2);
+
+add_filter('get_the_archive_title', function($title) {
+    if (is_post_type_archive('docs')) {
+        return 'Docs';
+    }
+    return $title;
+}, 99);
+
+add_filter('get_the_archive_title_prefix', function($prefix) {
+    if (is_post_type_archive('docs') || is_tax('doc_category') || is_tax('doc_tag')) {
+        return '';
+    }
+    return $prefix;
+}, 99);
+
+add_filter('wp_title', function($title, $sep = '', $seplocation = '') {
+    global $post;
+    if (is_post_type_archive('docs') || 
+        is_page_template('page-templates/template-docs-home.php') ||
+        (is_page() && $post && in_array($post->post_name, array('docs', 'kb', 'knowledge-base', 'documentation')))) {
+        return 'Docs ' . ($sep ? $sep . ' ' : '');
+    }
+    return $title;
+}, 99, 3);
+
+add_filter('wpseo_title', function($title) {
+    global $post;
+    if (is_post_type_archive('docs') || 
+        is_page_template('page-templates/template-docs-home.php') ||
+        (is_page() && $post && in_array($post->post_name, array('docs', 'kb', 'knowledge-base', 'documentation')))) {
+        return 'Docs - ' . get_bloginfo('name');
+    }
+    return $title;
+}, 99);
+
+add_filter('rank_math/frontend/title', function($title) {
+    global $post;
+    if (is_post_type_archive('docs') || 
+        is_page_template('page-templates/template-docs-home.php') ||
+        (is_page() && $post && in_array($post->post_name, array('docs', 'kb', 'knowledge-base', 'documentation')))) {
+        return 'Docs - ' . get_bloginfo('name');
+    }
+    return $title;
+}, 99);
+
+/**
+ * 7. Load Docs Importer & Sync Tool
  */
 require_once get_template_directory() . '/includes/docs-importer.php';
