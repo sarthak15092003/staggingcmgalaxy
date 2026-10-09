@@ -93,19 +93,21 @@ $direct_articles = new WP_Query([
     <?php endif; ?>
 
     <?php if ($direct_articles->have_posts()) : ?>
-        <div class="tw-cat-articles-card" style="margin-top: 24px;">
-            <div class="tw-subcategory-header" style="background: #ffffff;">
-                <h3 class="tw-subcategory-title">
-                    <span>Articles in this Topic</span>
-                    <span class="tw-subcategory-count">(<?php echo intval($direct_articles->found_posts); ?> articles)</span>
-                </h3>
-            </div>
-            <div class="tw-subcategory-articles" style="display: block; border-top: 1px solid #e5e7eb;">
+        <div class="tw-cat-articles-card">
+            <?php if (!empty($subcategories) && !is_wp_error($subcategories)) : ?>
+                <div class="tw-subcategory-header" style="background: #ffffff; cursor: default;">
+                    <h3 class="tw-subcategory-title">
+                        <span>Other Articles</span>
+                        <span class="tw-subcategory-count">(<?php echo intval($direct_articles->found_posts); ?> articles)</span>
+                    </h3>
+                </div>
+            <?php endif; ?>
+            <div class="tw-subcategory-articles" style="display: block;">
                 <?php while ($direct_articles->have_posts()) : $direct_articles->the_post(); ?>
                     <a href="<?php the_permalink(); ?>" class="tw-article-row">
                         <div class="tw-article-content">
                             <div class="tw-article-title"><?php the_title(); ?></div>
-                            <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
+                            <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '...')); ?></p>
                         </div>
                         <div class="tw-article-arrow">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
