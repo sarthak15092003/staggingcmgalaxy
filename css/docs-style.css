@@ -525,8 +525,8 @@ body.page-template-page-all-categories,
     max-width: 100% !important;
     padding-left: 30px !important;
     padding-right: 30px !important;
-    margin: 0 auto;
-    box-sizing: border-box;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
 }
 
 .docs-layout-row {
@@ -536,7 +536,7 @@ body.page-template-page-all-categories,
     margin: 0 !important;
     padding: 0 !important;
     gap: 0 !important;
-    align-items: flex-start;
+    align-items: flex-start !important;
 }
 
 /* 1. Left Sidebar Column: 20% */
@@ -547,6 +547,8 @@ body.page-template-page-all-categories,
     width: 20% !important;
     padding-right: 24px !important;
     padding-left: 0 !important;
+    padding-top: 24px !important;
+    padding-bottom: 60px !important;
     box-sizing: border-box !important;
     background: #ffffff !important;
     position: sticky !important;
@@ -562,14 +564,18 @@ body.page-template-page-all-categories,
     flex: 0 0 60% !important;
     max-width: 60% !important;
     width: 60% !important;
+    border-left: 1px solid #e2e8f0 !important;
     padding-left: 32px !important;
     padding-right: 32px !important;
+    padding-top: 24px !important;
+    padding-bottom: 80px !important;
     box-sizing: border-box !important;
     min-width: 0 !important;
 }
 
 .category-main-col.no-toc,
-.docs-col-content.no-toc {
+.docs-col-content.no-toc,
+.category-main-col:not(.has-toc-sidebar) {
     flex: 0 0 80% !important;
     max-width: 80% !important;
     width: 80% !important;
@@ -582,8 +588,11 @@ body.page-template-page-all-categories,
     flex: 0 0 20% !important;
     max-width: 20% !important;
     width: 20% !important;
-    padding-left: 20px !important;
+    border-left: 1px solid #e2e8f0 !important;
+    padding-left: 24px !important;
     padding-right: 0 !important;
+    padding-top: 24px !important;
+    padding-bottom: 60px !important;
     box-sizing: border-box !important;
     position: sticky !important;
     top: 90px !important;
@@ -600,10 +609,13 @@ body.page-template-page-all-categories,
         flex: 0 0 100% !important;
         max-width: 100% !important;
         width: 100% !important;
+        border-left: none !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
         position: static !important;
     }
+    .docs-col-sidebar,
+    .category-left-sidebar-col,
     .docs-col-toc {
         display: none !important;
     }
