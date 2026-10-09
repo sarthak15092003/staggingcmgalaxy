@@ -66,7 +66,12 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
 
                         <!-- Doc Body Content -->
                         <div class="doc-article-content">
-                            <?php the_content(); ?>
+                            <?php 
+                            $doc_content = get_the_content();
+                            $doc_content = preg_replace('/<figure\b[^>]*>.*?<\/figure>/is', '', $doc_content);
+                            $doc_content = preg_replace('/<img\b[^>]*\/?>/is', '', $doc_content);
+                            echo apply_filters('the_content', $doc_content);
+                            ?>
                         </div>
 
                         <!-- Tags -->

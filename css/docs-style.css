@@ -768,12 +768,10 @@ body.page-template-page-all-categories,
     color: #1d4ed8;
 }
 
-.doc-article-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin: 20px 0;
-    border: 1px solid #e5e7eb;
+.doc-article-content img,
+.doc-article-content figure,
+.doc-article-content .wp-block-image {
+    display: none !important;
 }
 
 .doc-article-content table {

@@ -226,6 +226,18 @@ add_action('wp_ajax_cm_submit_feedback', 'cmg_submit_doc_feedback');
 add_action('wp_ajax_nopriv_cm_submit_feedback', 'cmg_submit_doc_feedback');
 
 /**
- * 5. Load Docs Importer & Sync Tool
+ * 5. Strip unwanted illustration/staging images from doc articles
+ */
+function cmg_docs_strip_article_images($content) {
+    if (is_singular('docs') || (is_single() && get_post_type() === 'docs')) {
+        $content = preg_replace('/<figure\b[^>]*>.*?<\/figure>/is', '', $content);
+        $content = preg_replace('/<img\b[^>]*\/?>/is', '', $content);
+    }
+    return $content;
+}
+add_filter('the_content', 'cmg_docs_strip_article_images', 5);
+
+/**
+ * 6. Load Docs Importer & Sync Tool
  */
 require_once get_template_directory() . '/includes/docs-importer.php';
