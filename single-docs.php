@@ -69,8 +69,24 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                         <!-- Doc Body Content -->
                         <div class="doc-article-content">
                             <?php 
-                            $is_restricted_post = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID()) && !is_user_logged_in();
+                            $is_preview_gate = (isset($_GET['preview_gate']) && $_GET['preview_gate'] === '1') || (isset($_GET['gated']) && $_GET['gated'] === '1');
+                            $is_post_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
+                            $is_restricted_post = $is_post_gated && (!is_user_logged_in() || $is_preview_gate);
 
+                            // Admin preview notification banner
+                            if ($is_preview_gate && current_user_can('edit_posts')) : ?>
+                                <div class="cmg-admin-preview-banner" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 18px; margin-bottom: 24px; font-size: 14px; color: #1e40af; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                    <span>🔒 <strong>Admin Preview Active:</strong> You are currently previewing the Gated Paywall Gate as a non-logged-in visitor.</span>
+                                    <a href="<?php echo esc_url(remove_query_arg(array('preview_gate', 'gated'))); ?>" style="background: #2563eb; color: #ffffff; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">Exit Preview</a>
+                                </div>
+                            <?php elseif ($is_post_gated && is_user_logged_in() && current_user_can('edit_posts')) : ?>
+                                <div class="cmg-admin-gated-indicator" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px; font-size: 13.5px; color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                                    <span>🔒 <strong>Gated Article:</strong> This article is restricted with the CMGalaxy Paywall for non-logged-in visitors.</span>
+                                    <a href="<?php echo esc_url(add_query_arg('preview_gate', '1')); ?>" style="background: #d97706; color: #ffffff; padding: 5px 12px; border-radius: 6px; text-decoration: none; font-size: 12.5px; font-weight: 600;">Preview Paywall &rarr;</a>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php 
                             if ($is_restricted_post) {
                                 if (function_exists('cmg_render_paywall_gate')) {
                                     echo cmg_render_paywall_gate(get_the_ID());

@@ -22,6 +22,9 @@ $subcategories = get_terms([
     'parent'     => $current_cat_id,
     'hide_empty' => false,
 ]);
+if (!empty($subcategories) && !is_wp_error($subcategories) && function_exists('cmgalaxy_sort_terms_by_order')) {
+    usort($subcategories, 'cmgalaxy_sort_terms_by_order');
+}
 
 $direct_articles = new WP_Query([
     'post_type'      => ['docs', 'post'],
@@ -34,7 +37,7 @@ $direct_articles = new WP_Query([
         ]
     ],
     'posts_per_page' => -1,
-    'orderby'        => ['menu_order' => 'ASC', 'title' => 'ASC'],
+    'orderby'        => ['menu_order' => 'ASC', 'ID' => 'ASC'],
 ]);
 ?>
 
@@ -52,7 +55,7 @@ $direct_articles = new WP_Query([
                     ]
                 ],
                 'posts_per_page' => -1,
-                'orderby'        => ['menu_order' => 'ASC', 'title' => 'ASC'],
+                'orderby'        => ['menu_order' => 'ASC', 'ID' => 'ASC'],
             ]);
             $count = $sub_articles->found_posts;
         ?>
@@ -71,10 +74,22 @@ $direct_articles = new WP_Query([
 
                 <div class="tw-subcategory-articles" style="display: block; border-top: 1px solid #e5e7eb;">
                     <?php if ($sub_articles->have_posts()) : ?>
-                        <?php while ($sub_articles->have_posts()) : $sub_articles->the_post(); ?>
+                        <?php while ($sub_articles->have_posts()) : $sub_articles->the_post(); 
+                            $is_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
+                        ?>
                             <a href="<?php the_permalink(); ?>" class="tw-article-row">
                                 <div class="tw-article-content">
-                                    <div class="tw-article-title"><?php the_title(); ?></div>
+                                    <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
+                                        <span><?php the_title(); ?></span>
+                                        <?php if ($is_gated): ?>
+                                            <span class="cmg-gated-lock-icon" title="Gated / Members Only">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                </svg>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                     <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
                                 </div>
                                 <div class="tw-article-arrow">
@@ -103,10 +118,22 @@ $direct_articles = new WP_Query([
                 </div>
             <?php endif; ?>
             <div class="tw-subcategory-articles" style="display: block;">
-                <?php while ($direct_articles->have_posts()) : $direct_articles->the_post(); ?>
+                <?php while ($direct_articles->have_posts()) : $direct_articles->the_post(); 
+                    $is_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
+                ?>
                     <a href="<?php the_permalink(); ?>" class="tw-article-row">
                         <div class="tw-article-content">
-                            <div class="tw-article-title"><?php the_title(); ?></div>
+                            <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
+                                <span><?php the_title(); ?></span>
+                                <?php if ($is_gated): ?>
+                                    <span class="cmg-gated-lock-icon" title="Gated / Members Only">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
                             <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '...')); ?></p>
                         </div>
                         <div class="tw-article-arrow">

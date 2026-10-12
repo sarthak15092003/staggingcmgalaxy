@@ -410,6 +410,30 @@ function cmg_is_post_restricted_to_logged_in($post_id = null) {
         return false;
     }
 
+    // Direct preview toggle via URL parameter (supports ?preview_gate=1 or ?gated=1)
+    if (isset($_GET['preview_gate']) && $_GET['preview_gate'] === '1') {
+        return true;
+    }
+    if (isset($_GET['gated']) && $_GET['gated'] === '1') {
+        return true;
+    }
+
+    // Check direct gated post meta
+    $is_gated = get_post_meta($post_id, '_cmg_is_gated', true);
+    if ($is_gated === '1' || $is_gated === 1 || $is_gated === 'yes' || $is_gated === true) {
+        return true;
+    }
+
+    // Default known gated articles from live docs (e.g. How to Sign Up)
+    $post_obj = get_post($post_id);
+    if ($post_obj && (
+        $post_obj->post_name === 'how-to-sign-up-for-cmgalaxy-step-by-step-account-registration' ||
+        $post_obj->post_name === 'how-to-sign-up-for-cmgalaxy-step-by-step-account-registratio' ||
+        strpos($post_obj->post_name, 'how-to-sign-up-for-cmgalaxy') !== false
+    )) {
+        return true;
+    }
+
     $rbcr_logged_in_only = get_post_meta($post_id, '_rbcr_logged_in_only', true);
     if ($rbcr_logged_in_only === '1' || $rbcr_logged_in_only === 1 || $rbcr_logged_in_only === true) {
         return true;
@@ -550,7 +574,11 @@ function cmg_render_paywall_gate($post_id = null) {
 }
 
 add_filter('the_content', function($content) {
-    if (is_admin() || !is_singular() || is_user_logged_in()) {
+    if (is_admin() || !is_singular()) {
+        return $content;
+    }
+    $is_preview = (isset($_GET['preview_gate']) && $_GET['preview_gate'] === '1') || (isset($_GET['gated']) && $_GET['gated'] === '1');
+    if (is_user_logged_in() && !$is_preview) {
         return $content;
     }
     if (cmg_is_post_restricted_to_logged_in(get_the_ID())) {
@@ -736,3 +764,535 @@ add_action( 'wp_ajax_cmgalaxy_update_category_order', 'cmgalaxy_update_category_
  * 8. Load Docs Importer & Sync Tool
  */
 require_once get_template_directory() . '/includes/docs-importer.php';
+
+/**
+ * 9. Article Ordering System (Matching Docy)
+ */
+
+// Enable page-attributes (Order field) for docs and posts
+add_action('init', function() {
+    add_post_type_support('docs', 'page-attributes');
+    add_post_type_support('post', 'page-attributes');
+});
+
+// Set default menu_order = 9999 for newly created posts so they don't displace explicitly ordered items
+function docy_set_new_post_menu_order( $data, $postarr ) {
+    if ( isset($data['post_type']) && in_array($data['post_type'], array('docs', 'post')) ) {
+        if ( !isset( $postarr['ID'] ) || $postarr['ID'] == 0 ) {
+            $data['menu_order'] = 9999;
+        }
+    }
+    return $data;
+}
+add_filter( 'wp_insert_post_data', 'docy_set_new_post_menu_order', 10, 2 );
+
+// Force docs query order by menu_order date ASC (exact Docy logic)
+function docy_docs_custom_order( $query ) {
+    if ( is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+    $post_type = $query->get( 'post_type' );
+    $is_docs = false;
+    if ( $post_type === 'docs' || ( is_array( $post_type ) && in_array( 'docs', $post_type ) ) ) {
+        $is_docs = true;
+    } elseif ( $query->get('post_type') == '' && ( $query->is_tax('doc_category') || $query->is_tax('doc_tag') || $query->is_tax('doc_dir') || $query->is_post_type_archive('docs') ) ) {
+        $is_docs = true;
+    }
+
+    if ( $is_docs ) {
+        $query->set( 'order', 'ASC' );
+        $query->set( 'orderby', 'menu_order date' );
+        $query->set( 'posts_per_page', -1 );
+        $query->set( 'nopaging', true );
+    }
+
+    // Disable pagination and show all posts on category archives (Docy feature)
+    if ( $query->is_tax('doc_category') || $query->is_category() ) {
+        $query->set( 'posts_per_page', -1 );
+        $query->set( 'nopaging', true );
+    }
+}
+add_action( 'pre_get_posts', 'docy_docs_custom_order', 99 );
+
+/**
+ * 10. WP Admin Meta Box: CMGalaxy Access & Paywall (Gated Content)
+ */
+add_action('add_meta_boxes', function() {
+    foreach (array('docs', 'post') as $pt) {
+        add_meta_box(
+            'cmg_gated_access_metabox',
+            __('🔒 CMGalaxy Access & Paywall (Gated Content)', 'hello-elementor'),
+            'cmg_render_gated_access_metabox',
+            $pt,
+            'side',
+            'high'
+        );
+    }
+});
+
+function cmg_render_gated_access_metabox($post) {
+    wp_nonce_field('cmg_save_gated_access', 'cmg_gated_nonce');
+    $is_gated = get_post_meta($post->ID, '_cmg_is_gated', true);
+    if ($is_gated === '' && strpos($post->post_name, 'how-to-sign-up-for-cmgalaxy') !== false) {
+        $is_gated = '1';
+    }
+    $menu_order = $post->menu_order;
+    $preview_url = add_query_arg('preview_gate', '1', get_permalink($post->ID));
+    ?>
+    <div style="padding: 6px 0;">
+        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-weight: 600; color: #1e293b; margin-bottom: 8px;">
+            <input type="checkbox" name="cmg_is_gated" value="1" <?php checked($is_gated, '1'); ?> style="margin-top: 3px;">
+            <span>Restrict to Logged-in Customers (Gated Paywall)</span>
+        </label>
+        <p style="font-size: 12px; color: #64748b; margin: 0 0 12px 24px; line-height: 1.4;">
+            When checked, visitors see a 3-block teaser with a blurred background and the <strong>"Access everything. Become a customer today!"</strong> modal upgrade card.
+        </p>
+
+        <div style="border-top: 1px solid #f1f5f9; padding-top: 10px; margin-top: 10px;">
+            <label for="cmg_menu_order" style="display: block; font-weight: 600; font-size: 12px; color: #334155; margin-bottom: 4px;">Article Order (Lower numbers appear first):</label>
+            <input type="number" id="cmg_menu_order" name="cmg_menu_order" value="<?php echo esc_attr($menu_order); ?>" style="width: 100%; max-width: 100px;" placeholder="0">
+        </div>
+
+        <?php if ($post->ID && $post->post_status === 'publish') : ?>
+        <div style="border-top: 1px solid #f1f5f9; padding-top: 10px; margin-top: 12px;">
+            <a href="<?php echo esc_url($preview_url); ?>" target="_blank" class="button button-secondary" style="width: 100%; text-align: center; display: block; font-size: 12px;">
+                👁️ Preview Paywall as Visitor &rarr;
+            </a>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php
+}
+
+add_action('save_post', function($post_id) {
+    if (!isset($_POST['cmg_gated_nonce']) || !wp_verify_nonce($_POST['cmg_gated_nonce'], 'cmg_save_gated_access')) {
+        return;
+    }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    $is_gated = isset($_POST['cmg_is_gated']) ? '1' : '0';
+    update_post_meta($post_id, '_cmg_is_gated', $is_gated);
+
+    if (isset($_POST['cmg_menu_order'])) {
+        $order = intval($_POST['cmg_menu_order']);
+        global $wpdb;
+        $wpdb->update($wpdb->posts, array('menu_order' => $order), array('ID' => $post_id));
+    }
+});
+
+/**
+ * 11. Admin Columns for Docs List Table
+ */
+add_filter('manage_docs_posts_columns', function($columns) {
+    $new_cols = array();
+    foreach ($columns as $k => $v) {
+        $new_cols[$k] = $v;
+        if ($k === 'title') {
+            $new_cols['cmg_access'] = __('Access', 'hello-elementor');
+            $new_cols['cmg_order'] = __('Order', 'hello-elementor');
+        }
+    }
+    return $new_cols;
+});
+
+add_action('manage_docs_posts_custom_column', function($column, $post_id) {
+    if ($column === 'cmg_access') {
+        $is_gated = cmg_is_post_restricted_to_logged_in($post_id);
+        if ($is_gated) {
+            $preview = add_query_arg('preview_gate', '1', get_permalink($post_id));
+            echo '<span style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">🔒 Gated</span> ';
+            echo '<a href="' . esc_url($preview) . '" target="_blank" style="font-size: 11px; color: #2563eb; text-decoration: none; margin-left: 4px;" title="Preview Paywall">Preview</a>';
+        } else {
+            echo '<span style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600;">🌐 Free</span>';
+        }
+    } elseif ($column === 'cmg_order') {
+        $post = get_post($post_id);
+        echo '<strong>' . intval($post->menu_order) . '</strong>';
+    }
+}, 10, 2);
+
+add_filter('manage_edit-docs_sortable_columns', function($sortable) {
+    $sortable['cmg_order'] = 'menu_order';
+    return $sortable;
+});
+
+// Quick Edit fields for Docs
+add_action('quick_edit_custom_box', function($column_name, $post_type) {
+    if ($post_type !== 'docs' || $column_name !== 'cmg_access') {
+        return;
+    }
+    ?>
+    <fieldset class="inline-edit-col-right">
+        <div class="inline-edit-col">
+            <label class="alignleft" style="margin-bottom: 6px;">
+                <input type="checkbox" name="cmg_quick_is_gated" value="1">
+                <span class="checkbox-title"><strong>🔒 Restrict to Logged-in (Gated Paywall)</strong></span>
+            </label>
+        </div>
+    </fieldset>
+    <?php
+}, 10, 2);
+
+// Save Quick Edit
+add_action('save_post_docs', function($post_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    if (isset($_POST['_inline_edit'])) {
+        $is_gated = isset($_POST['cmg_quick_is_gated']) ? '1' : '0';
+        update_post_meta($post_id, '_cmg_is_gated', $is_gated);
+    }
+});
+
+/**
+ * 12. WP Admin Submenu: Article Order & Gated Access Manager
+ */
+function cmg_docs_order_manager_admin_menu() {
+    add_submenu_page(
+        'edit.php?post_type=docs',
+        __('Article Order & Access', 'hello-elementor'),
+        __('Article Order & Access', 'hello-elementor'),
+        'manage_options',
+        'cmgalaxy-docs-order-manager',
+        'cmg_render_docs_order_manager_page'
+    );
+}
+add_action('admin_menu', 'cmg_docs_order_manager_admin_menu');
+
+function cmg_render_docs_order_manager_page() {
+    global $wpdb;
+    
+    // Get all doc categories
+    $categories = get_terms(array(
+        'taxonomy'   => array('doc_category', 'category'),
+        'hide_empty' => false,
+        'orderby'    => 'name',
+        'order'      => 'ASC'
+    ));
+
+    $selected_cat_id = isset($_GET['cat_id']) ? intval($_GET['cat_id']) : 0;
+    if (!$selected_cat_id && !empty($categories) && !is_wp_error($categories)) {
+        // Default to Getting started or Onboarding if found
+        foreach ($categories as $cat) {
+            if ($cat->slug === 'getting-started' || $cat->slug === 'onboarding') {
+                $selected_cat_id = $cat->term_id;
+                break;
+            }
+        }
+        if (!$selected_cat_id) {
+            $selected_cat_id = $categories[0]->term_id;
+        }
+    }
+
+    // Fetch posts in this category ordered by menu_order ASC, ID ASC (Docy exact order)
+    $articles = array();
+    if ($selected_cat_id) {
+        $articles = $wpdb->get_results($wpdb->prepare("
+            SELECT p.ID, p.post_title, p.post_name, p.menu_order, p.post_status
+            FROM {$wpdb->posts} p
+            INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+            INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+            WHERE tt.term_id = %d
+            AND p.post_type IN ('docs', 'post')
+            AND p.post_status = 'publish'
+            ORDER BY p.menu_order ASC, p.ID ASC
+        ", $selected_cat_id));
+    }
+    ?>
+    <div class="wrap" style="max-width: 1100px; margin-top: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="background: #ffffff; padding: 28px 32px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0;">Article Order & Gated Access Manager</h1>
+                    <p style="color: #64748b; font-size: 14.5px; margin: 0;">
+                        Manage exact sidebar article ordering and customer paywall gating matching live Docy.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" id="cmg-sync-live-docy-btn" class="button button-primary" style="background: #2563eb; border-color: #2563eb; padding: 6px 18px; font-size: 13.5px; font-weight: 600; border-radius: 6px; cursor: pointer;">
+                        ⚡ 1-Click Sync Order with Live Docy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Selector Filter -->
+            <form method="get" action="" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; background: #f8fafc; padding: 14px 18px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <input type="hidden" name="post_type" value="docs">
+                <input type="hidden" name="page" value="cmgalaxy-docs-order-manager">
+                
+                <label for="cat_id" style="font-weight: 600; font-size: 14px; color: #334155;">Select Category:</label>
+                <select name="cat_id" id="cat_id" onchange="this.form.submit()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; min-width: 260px;">
+                    <?php if (!empty($categories) && !is_wp_error($categories)) : ?>
+                        <?php foreach ($categories as $cat) : ?>
+                            <option value="<?php echo esc_attr($cat->term_id); ?>" <?php selected($selected_cat_id, $cat->term_id); ?>>
+                                <?php echo esc_html($cat->name); ?> (<?php echo intval($cat->count); ?> articles)
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </form>
+
+            <div id="cmg-manager-notification" style="display: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500;"></div>
+
+            <!-- Articles Ordering Table -->
+            <form id="cmg-order-form">
+                <?php wp_nonce_field('cmg_bulk_order_nonce', 'order_nonce'); ?>
+                <table class="wp-list-table widefat fixed striped posts" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: none;">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px; text-align: center; font-weight: 600; color: #475569;">#</th>
+                            <th style="width: 90px; font-weight: 600; color: #475569;">Order</th>
+                            <th style="font-weight: 600; color: #475569;">Article Title</th>
+                            <th style="width: 170px; text-align: center; font-weight: 600; color: #475569;">Paywall Gate</th>
+                            <th style="width: 140px; text-align: center; font-weight: 600; color: #475569;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cmg-articles-tbody">
+                        <?php if (!empty($articles)) : ?>
+                            <?php foreach ($articles as $index => $art) : 
+                                $is_gated = cmg_is_post_restricted_to_logged_in($art->ID);
+                                $preview_url = add_query_arg('preview_gate', '1', get_permalink($art->ID));
+                                $edit_url = get_edit_post_link($art->ID);
+                            ?>
+                                <tr data-post-id="<?php echo esc_attr($art->ID); ?>">
+                                    <td style="text-align: center; color: #94a3b8; font-weight: 600;">
+                                        <?php echo intval($index + 1); ?>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="cmg-order-input" name="order[<?php echo esc_attr($art->ID); ?>]" value="<?php echo esc_attr($art->menu_order); ?>" style="width: 70px; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; text-align: center; font-weight: 600;">
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600; color: #0f172a; font-size: 14px;">
+                                            <a href="<?php echo esc_url($edit_url); ?>" style="color: #0f172a; text-decoration: none;">
+                                                <?php echo esc_html($art->post_title); ?>
+                                            </a>
+                                        </div>
+                                        <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+                                            slug: <?php echo esc_html($art->post_name); ?>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: <?php echo $is_gated ? '#dc2626' : '#64748b'; ?>;">
+                                            <input type="checkbox" class="cmg-gated-checkbox" name="gated[<?php echo esc_attr($art->ID); ?>]" value="1" <?php checked($is_gated, true); ?>>
+                                            <span><?php echo $is_gated ? '🔒 Gated' : 'Free'; ?></span>
+                                        </label>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <a href="<?php echo esc_url($preview_url); ?>" target="_blank" class="button button-small" style="font-size: 11.5px; border-radius: 4px;" title="Preview Paywall Modal">
+                                            👁️ Preview
+                                        </a>
+                                        <a href="<?php echo esc_url($edit_url); ?>" class="button button-small" style="font-size: 11.5px; border-radius: 4px; margin-left: 4px;">
+                                            Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 32px; color: #64748b;">
+                                    No articles found in this category.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+
+                <?php if (!empty($articles)) : ?>
+                    <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+                        <button type="button" id="cmg-auto-number-btn" class="button" style="font-size: 13px;">
+                            Auto-Assign (10, 20, 30...)
+                        </button>
+                        <button type="button" id="cmg-save-orders-btn" class="button button-primary" style="background: #10b981; border-color: #10b981; font-weight: 600; padding: 6px 24px; font-size: 14px; border-radius: 6px;">
+                            💾 Save Order & Access Settings
+                        </button>
+                    </div>
+                <?php endif; ?>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+    jQuery(document).ready(function($) {
+        // Auto-assign numbers 10, 20, 30...
+        $('#cmg-auto-number-btn').on('click', function(e) {
+            e.preventDefault();
+            var step = 10;
+            var num = 10;
+            $('#cmg-articles-tbody tr').each(function() {
+                $(this).find('.cmg-order-input').val(num);
+                num += step;
+            });
+        });
+
+        // 1-Click Sync with Live Docy
+        $('#cmg-sync-live-docy-btn').on('click', function(e) {
+            e.preventDefault();
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Syncing with Live Docy...');
+
+            $.post(ajaxurl, {
+                action: 'cmg_sync_live_docy_order',
+                _ajax_nonce: '<?php echo wp_create_nonce("cmg_sync_docy_nonce"); ?>'
+            }, function(response) {
+                $btn.prop('disabled', false).text('⚡ 1-Click Sync Order with Live Docy');
+                var $note = $('#cmg-manager-notification');
+                if (response.success) {
+                    $note.css({'background': '#ecfdf5', 'color': '#065f46', 'border': '1px solid #a7f3d0'}).text(response.data.message).show();
+                    setTimeout(function() { location.reload(); }, 1200);
+                } else {
+                    $note.css({'background': '#fef2f2', 'color': '#991b1b', 'border': '1px solid #fecaca'}).text(response.data.message || 'Error syncing').show();
+                }
+            }).fail(function() {
+                $btn.prop('disabled', false).text('⚡ 1-Click Sync Order with Live Docy');
+                alert('Connection error occurred.');
+            });
+        });
+
+        // Save Orders and Gated Status
+        $('#cmg-save-orders-btn').on('click', function(e) {
+            e.preventDefault();
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Saving...');
+
+            var orders = {};
+            var gated = {};
+            $('#cmg-articles-tbody tr').each(function() {
+                var pid = $(this).data('post-id');
+                var ord = $(this).find('.cmg-order-input').val();
+                var isGated = $(this).find('.cmg-gated-checkbox').is(':checked') ? 1 : 0;
+                orders[pid] = ord;
+                gated[pid] = isGated;
+            });
+
+            $.post(ajaxurl, {
+                action: 'cmg_save_bulk_docs_order',
+                orders: orders,
+                gated: gated,
+                _ajax_nonce: '<?php echo wp_create_nonce("cmg_save_order_nonce"); ?>'
+            }, function(response) {
+                $btn.prop('disabled', false).text('💾 Save Order & Access Settings');
+                var $note = $('#cmg-manager-notification');
+                if (response.success) {
+                    $note.css({'background': '#ecfdf5', 'color': '#065f46', 'border': '1px solid #a7f3d0'}).text(response.data.message).show();
+                    setTimeout(function() { $note.fadeOut(); }, 3000);
+                } else {
+                    $note.css({'background': '#fef2f2', 'color': '#991b1b', 'border': '1px solid #fecaca'}).text(response.data.message || 'Error saving').show();
+                }
+            }).fail(function() {
+                $btn.prop('disabled', false).text('💾 Save Order & Access Settings');
+                alert('Connection error occurred.');
+            });
+        });
+    });
+    </script>
+    <?php
+}
+
+// AJAX: Save bulk orders & gated status
+add_action('wp_ajax_cmg_save_bulk_docs_order', function() {
+    check_ajax_referer('cmg_save_order_nonce');
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Permission denied.'));
+    }
+
+    $orders = isset($_POST['orders']) && is_array($_POST['orders']) ? $_POST['orders'] : array();
+    $gated  = isset($_POST['gated']) && is_array($_POST['gated']) ? $_POST['gated'] : array();
+
+    global $wpdb;
+    foreach ($orders as $post_id => $order_val) {
+        $pid = intval($post_id);
+        $ord = intval($order_val);
+        $wpdb->update($wpdb->posts, array('menu_order' => $ord), array('ID' => $pid));
+
+        $is_gated = isset($gated[$post_id]) && $gated[$post_id] == 1 ? '1' : '0';
+        update_post_meta($pid, '_cmg_is_gated', $is_gated);
+    }
+
+    wp_send_json_success(array('message' => 'Successfully updated article order and gated paywall access!'));
+});
+
+/**
+ * 13. Auto-seed & Sync with Live Docy Sequence
+ */
+function cmg_seed_live_article_order_and_gating() {
+    // Exact sequential order of Onboarding articles matching live Docy:
+    $onboarding_order = array(
+        'how-to-sign-up-for-cmgalaxy-step-by-step-account-registration' => array('order' => 10, 'gated' => 1),
+        'how-to-sign-up-for-cmgalaxy-step-by-step-account-registratio'  => array('order' => 10, 'gated' => 1),
+        'how-to-verify-your-email-in-cmgalaxy-after-sign-up'            => array('order' => 20, 'gated' => 0),
+        'how-to-log-in-to-your-cmgalaxy-account'                       => array('order' => 30, 'gated' => 0),
+        'how-to-complete-brand-setup-in-cmgalaxy-initial-account-configuration' => array('order' => 40, 'gated' => 0),
+        'how-to-complete-brand-setup-in-cmgalaxy-initial-account-conf' => array('order' => 40, 'gated' => 0),
+        'how-to-choose-the-correct-currency-and-timezone-in-cmgalaxy'  => array('order' => 50, 'gated' => 0),
+        'how-to-set-up-an-e-commerce-account-type-in-cmgalaxy'         => array('order' => 60, 'gated' => 0),
+        'how-to-set-up-a-lead-generation-account-type-in-cmgalaxy'     => array('order' => 70, 'gated' => 0),
+        'how-to-connect-google-ads-to-cmgalaxy'                        => array('order' => 80, 'gated' => 0),
+        'how-to-fix-google-ads-integration-errors-in-cmgalaxy'         => array('order' => 90, 'gated' => 0),
+        'how-to-connect-meta-facebook-ads-to-cmgalaxy'                 => array('order' => 100, 'gated' => 0),
+        'how-to-fix-meta-facebook-integration-errors-in-cmgalaxy'      => array('order' => 110, 'gated' => 0),
+        'how-to-select-the-correct-ad-account-during-cmgalaxy-setup'   => array('order' => 120, 'gated' => 0),
+        'what-happens-after-data-integration-in-cmgalaxy'              => array('order' => 130, 'gated' => 0),
+        'understanding-your-first-cmgalaxy-dashboard-after-onboarding' => array('order' => 140, 'gated' => 0),
+        'how-to-validate-and-filter-imported-data-in-cmgalaxy'         => array('order' => 150, 'gated' => 0),
+        'how-to-reset-your-cmgalaxy-password-forgot-password'          => array('order' => 160, 'gated' => 0),
+        'common-cmgalaxy-onboarding-issues-and-how-to-fix-them'        => array('order' => 170, 'gated' => 0),
+        'how-to-contact-cmgalaxy-support-during-onboarding'             => array('order' => 180, 'gated' => 0),
+    );
+
+    // UTM Parameters Guidelines in exact Docy sequence:
+    $utm_order = array(
+        'google-ads-utm-parameters'   => array('order' => 10, 'gated' => 0),
+        'linkedin-ads-utm-parameters' => array('order' => 20, 'gated' => 0),
+        'meta-ads-utm-parameters'     => array('order' => 30, 'gated' => 0),
+    );
+
+    $all_known = array_merge($onboarding_order, $utm_order);
+    global $wpdb;
+    $updated_count = 0;
+
+    foreach ($all_known as $slug => $meta) {
+        $posts = $wpdb->get_results($wpdb->prepare("
+            SELECT ID, post_name 
+            FROM {$wpdb->posts} 
+            WHERE (post_name = %s OR post_name LIKE %s)
+            AND post_type IN ('docs', 'post')
+        ", $slug, '%' . $slug . '%'));
+
+        if (!empty($posts)) {
+            foreach ($posts as $p) {
+                $wpdb->update($wpdb->posts, array('menu_order' => $meta['order']), array('ID' => $p->ID));
+                if ($meta['gated'] == 1) {
+                    update_post_meta($p->ID, '_cmg_is_gated', '1');
+                }
+                $updated_count++;
+            }
+        }
+    }
+
+    return $updated_count;
+}
+
+// Auto-seed once on admin load
+add_action('admin_init', function() {
+    if (!get_option('_cmg_docs_live_order_seeded_v3')) {
+        cmg_seed_live_article_order_and_gating();
+        update_option('_cmg_docs_live_order_seeded_v3', 1);
+    }
+});
+
+// AJAX Handler for 1-Click Sync with Live Docy
+add_action('wp_ajax_cmg_sync_live_docy_order', function() {
+    check_ajax_referer('cmg_sync_docy_nonce');
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Permission denied.'));
+    }
+
+    $count = cmg_seed_live_article_order_and_gating();
+    wp_send_json_success(array('message' => 'Successfully aligned ' . $count . ' articles to live Docy order and set paywall gating!'));
+});

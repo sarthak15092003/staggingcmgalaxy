@@ -272,6 +272,23 @@ $sidebar_instance_id = uniqid('docs_sb_');
                         // 2. Subcategories list
                         if (!empty($subcats)) {
                             foreach ($subcats as $sub) {
+                                // Fetch sub-subcategories natively (Level 3 matching Docy)
+                                $sub_subcats_raw = get_terms(array(
+                                    'taxonomy'   => $sec_tax,
+                                    'parent'     => $sub->term_id,
+                                    'hide_empty' => false
+                                ));
+                                $sub_subcats = array();
+                                if (!empty($sub_subcats_raw) && !is_wp_error($sub_subcats_raw)) {
+                                    foreach ($sub_subcats_raw as $ss) {
+                                        $sub_subcats[] = $ss;
+                                    }
+                                }
+                                if (function_exists('cmgalaxy_sort_terms_by_order')) {
+                                    usort($sub_subcats, 'cmgalaxy_sort_terms_by_order');
+                                }
+                                $has_sub_subcats = !empty($sub_subcats);
+
                                 $sub_posts = $wpdb->get_results($wpdb->prepare("
                                     SELECT p.ID, p.post_title 
                                     FROM {$wpdb->posts} p
@@ -295,19 +312,30 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                     }
                                 }
 
-                                $is_sub_active = in_array($sub->slug, $current_categories) || $is_any_post_active;
+                                $is_any_sub_sub_active = false;
+                                if ($has_sub_subcats) {
+                                    foreach ($sub_subcats as $ss) {
+                                        if (in_array($ss->slug, $current_categories)) {
+                                            $is_any_sub_sub_active = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                $is_sub_active = in_array($sub->slug, $current_categories) || $is_any_post_active || $is_any_sub_sub_active;
                                 $sub_link = get_term_link($sub->term_id, $sec_tax);
                                 $sub_link = is_wp_error($sub_link) ? '#' : $sub_link;
                                 $sub_target_id = $sidebar_instance_id . '_sub_' . $sub->term_id;
-                                $subcat_expanded_class = ($is_sub_active && $has_sub_posts) ? ' expanded' : '';
+                                $has_children = $has_sub_posts || $has_sub_subcats;
+                                $subcat_expanded_class = ($is_sub_active && $has_children) ? ' expanded' : '';
                             ?>
                                 <div class="cmgalaxy-subcat-wrapper" data-term-id="<?php echo esc_attr($sub->term_id); ?>">
-                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page' : ''; ?> <?php echo $has_sub_posts ? 'expandable-subcat' : ''; ?><?php echo $subcat_expanded_class; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="display:flex; align-items:center; padding: 7px 0 7px 16px; cursor:pointer;">
+                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page' : ''; ?> <?php echo $has_children ? 'expandable-subcat' : ''; ?><?php echo $subcat_expanded_class; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="display:flex; align-items:center; padding: 7px 0 7px 16px; cursor:pointer;">
                                         <a href="<?php echo esc_url($sub_link); ?>" class="subsection-title" style="color: #475569; font-size: 13.5px; text-decoration: none; flex: 1;">
                                             <?php echo esc_html($sub->name); ?>
                                         </a>
-                                        <?php if ($has_sub_posts) : ?>
-                                            <span class="expand-icon-subcat <?php echo ($is_sub_active && $has_sub_posts) ? 'expanded' : ''; ?>" aria-label="Toggle Subcategory">
+                                        <?php if ($has_children) : ?>
+                                            <span class="expand-icon-subcat <?php echo ($is_sub_active && $has_children) ? 'expanded' : ''; ?>" aria-label="Toggle Subcategory">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <polyline points="9 18 15 12 9 6"></polyline>
                                                 </svg>
@@ -315,20 +343,81 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                         <?php endif; ?>
                                     </div>
 
-                                    <?php if ($has_sub_posts) : ?>
+                                    <?php if ($has_children) : ?>
                                         <div class="sub-subcategories" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; border-left: 2px solid #e2e8f0; margin-left: 24px;">
-                                            <?php foreach ($sub_posts as $sp) :
-                                                $is_cur = ($current_post_id == $sp->ID);
-                                            ?>
-                                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 16px; position: relative;">
-                                                    <?php if ($is_cur): ?>
-                                                        <div class="active-indicator-bar" style="position: absolute; left: -2px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
-                                                    <?php endif; ?>
-                                                    <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" title="<?php echo esc_attr($sp->post_title); ?>">
-                                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($sp->post_title); ?></span>
-                                                    </a>
-                                                </div>
-                                            <?php endforeach; ?>
+                                            
+                                            <?php 
+                                            // Render Sub-subcategories (Level 3)
+                                            if ($has_sub_subcats) {
+                                                foreach ($sub_subcats as $ss) {
+                                                    $is_ss_active = in_array($ss->slug, $current_categories);
+                                                    $ss_posts = $wpdb->get_results($wpdb->prepare("
+                                                        SELECT p.ID, p.post_title 
+                                                        FROM {$wpdb->posts} p
+                                                        INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                                                        INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                                                        WHERE tt.term_id = %d
+                                                        AND tt.taxonomy = %s
+                                                        AND p.post_type IN ('docs', 'post')
+                                                        AND p.post_status = 'publish'
+                                                        ORDER BY p.menu_order ASC, p.ID ASC
+                                                    ", $ss->term_id, $sec_tax));
+                                                    $ss_link = get_term_link($ss->term_id, $sec_tax);
+                                                    $ss_link = is_wp_error($ss_link) ? '#' : $ss_link;
+                                                    ?>
+                                                    <div class="sidebar-sub-subcat-group" style="padding: 4px 0 4px 10px;">
+                                                        <a href="<?php echo esc_url($ss_link); ?>" style="color: #64748b; font-size: 13px; font-weight: 600; text-decoration: none; display: block; padding: 4px 8px;">
+                                                            📁 <?php echo esc_html($ss->name); ?>
+                                                        </a>
+                                                        <?php if (!empty($ss_posts)): ?>
+                                                            <div style="border-left: 1px solid #cbd5e1; margin-left: 12px;">
+                                                                <?php foreach ($ss_posts as $ssp): 
+                                                                    $is_cur = ($current_post_id == $ssp->ID);
+                                                                    $is_ssp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($ssp->ID);
+                                                                ?>
+                                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 5px 8px 5px 14px; position: relative;">
+                                                                        <?php if ($is_cur): ?>
+                                                                            <div class="active-indicator-bar" style="position: absolute; left: -2px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                                                        <?php endif; ?>
+                                                                        <a href="<?php echo esc_url(get_permalink($ssp->ID)); ?>" title="<?php echo esc_attr($ssp->post_title); ?>" style="display:flex; align-items:center;">
+                                                                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($ssp->post_title); ?></span>
+                                                                            <?php if ($is_ssp_gated): ?>
+                                                                                <svg class="cmg-gated-lock-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="Gated / Members Only">
+                                                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                                                </svg>
+                                                                            <?php endif; ?>
+                                                                        </a>
+                                                                    </div>
+                                                                <?php endforeach; ?>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php }
+                                            }
+
+                                            // Direct posts of this subcategory
+                                            if ($has_sub_posts) {
+                                                foreach ($sub_posts as $sp) :
+                                                    $is_cur = ($current_post_id == $sp->ID);
+                                                    $is_sp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($sp->ID);
+                                                ?>
+                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 16px; position: relative;">
+                                                        <?php if ($is_cur): ?>
+                                                            <div class="active-indicator-bar" style="position: absolute; left: -2px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                                        <?php endif; ?>
+                                                        <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" title="<?php echo esc_attr($sp->post_title); ?>" style="display:flex; align-items:center;">
+                                                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($sp->post_title); ?></span>
+                                                            <?php if ($is_sp_gated): ?>
+                                                                <svg class="cmg-gated-lock-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="Gated / Members Only">
+                                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                                </svg>
+                                                            <?php endif; ?>
+                                                        </a>
+                                                    </div>
+                                                <?php endforeach; 
+                                            } ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -339,13 +428,20 @@ $sidebar_instance_id = uniqid('docs_sb_');
                         if ($has_main_direct_posts && $has_subcats) {
                             foreach ($main_direct_posts as $dp) {
                                 $is_cur = ($current_post_id == $dp->ID);
+                                $is_dp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($dp->ID);
                             ?>
                                 <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 36px; position: relative;">
                                     <?php if ($is_cur): ?>
                                         <div class="active-indicator-bar" style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
                                     <?php endif; ?>
-                                    <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>" title="<?php echo esc_attr($dp->post_title); ?>">
-                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($dp->post_title); ?></span>
+                                    <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>" title="<?php echo esc_attr($dp->post_title); ?>" style="display:flex; align-items:center;">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($dp->post_title); ?></span>
+                                        <?php if ($is_dp_gated): ?>
+                                            <svg class="cmg-gated-lock-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="Gated / Members Only">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                        <?php endif; ?>
                                     </a>
                                 </div>
                             <?php }

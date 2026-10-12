@@ -36,7 +36,17 @@ while ( have_posts() ) :
 				?>
 
 				<div class="page-content cmg-blog-content" style="flex: 1 1 0%; min-width: 0; max-width: 880px; font-size: 18px; line-height: 1.75; color: #374151; box-sizing: border-box;">
-					<?php the_content(); ?>
+					<?php 
+					$is_preview_gate = (isset($_GET['preview_gate']) && $_GET['preview_gate'] === '1') || (isset($_GET['gated']) && $_GET['gated'] === '1');
+					$is_post_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
+					$is_restricted_post = $is_post_gated && (!is_user_logged_in() || $is_preview_gate);
+
+					if ($is_restricted_post && function_exists('cmg_render_paywall_gate')) {
+						echo cmg_render_paywall_gate(get_the_ID());
+					} else {
+						the_content();
+					}
+					?>
 
 					<?php wp_link_pages(); ?>
 

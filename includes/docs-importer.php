@@ -342,18 +342,24 @@ function cmg_ajax_docs_sync_posts_batch() {
             $existing = get_page_by_path($slug, OBJECT, 'post');
         }
 
+        $remote_order = isset($p['menu_order']) ? intval($p['menu_order']) : 0;
+
         if ($existing) {
             $post_id = $existing->ID;
-            wp_update_post(array(
+            $update_args = array(
                 'ID'           => $post_id,
                 'post_title'   => $title,
                 'post_content' => $content,
                 'post_excerpt' => $excerpt,
                 'post_type'    => 'docs',
                 'post_status'  => 'publish'
-            ));
+            );
+            if ($remote_order > 0) {
+                $update_args['menu_order'] = $remote_order;
+            }
+            wp_update_post($update_args);
         } else {
-            $post_id = wp_insert_post(array(
+            $insert_args = array(
                 'post_title'   => $title,
                 'post_name'    => $slug,
                 'post_content' => $content,
@@ -361,7 +367,18 @@ function cmg_ajax_docs_sync_posts_batch() {
                 'post_type'    => 'docs',
                 'post_status'  => 'publish',
                 'post_date'    => $date,
-            ));
+            );
+            if ($remote_order > 0) {
+                $insert_args['menu_order'] = $remote_order;
+            }
+            $post_id = wp_insert_post($insert_args);
+        }
+
+        // Auto-flag known gated articles
+        if (!is_wp_error($post_id)) {
+            if (strpos($slug, 'how-to-sign-up-for-cmgalaxy') !== false) {
+                update_post_meta($post_id, '_cmg_is_gated', '1');
+            }
         }
 
         if (!empty($assigned_term_ids) && !is_wp_error($post_id)) {
