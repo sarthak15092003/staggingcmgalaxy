@@ -116,30 +116,7 @@
             }
         }
 
-        // 4. Docs Feedback Handler
-        $(document).on('click', '.cm-btn-vote', function() {
-            var $btn = $(this);
-            var voteType = $btn.data('vote');
-            var postId = $btn.data('post-id');
-            
-            $('.cm-btn-vote').removeClass('active');
-            $btn.addClass('active');
-
-            // Send feedback
-            if (typeof cmg_docs_ajax !== 'undefined') {
-                $.post(cmg_docs_ajax.ajax_url, {
-                    action: 'cm_submit_feedback',
-                    post_id: postId,
-                    vote: voteType,
-                    nonce: cmg_docs_ajax.nonce
-                }, function(res) {
-                    $('.cm-feedback-top').html('<p style="color: #10b981; font-weight: 500; margin: 0;">Thank you for your feedback!</p>');
-                });
-            } else {
-                $('.cm-feedback-top').html('<p style="color: #10b981; font-weight: 500; margin: 0;">Thank you for your feedback!</p>');
-            }
-        });
-
+        // 4. Docs Feedback Handler is managed interactively in the single-docs template (with reason prompts and DB capture)
     });
 
 })(jQuery);

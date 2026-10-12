@@ -67,11 +67,21 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                         <!-- Doc Body Content -->
                         <div class="doc-article-content">
                             <?php 
-                            $doc_content = get_the_content();
-                            $doc_content = preg_replace('/<figure\b[^>]*>.*?<\/figure>/is', '', $doc_content);
-                            $doc_content = preg_replace('/<img\b[^>]*\/?>/is', '', $doc_content);
-                            $doc_content = preg_replace('/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{1F600}-\x{1F64F}\x{1F680}-\x{1F6FF}\x{1F1E0}-\x{1F1FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{2300}-\x{23FF}\x{200D}\x{FE0F}]/u', '', $doc_content);
-                            echo apply_filters('the_content', $doc_content);
+                            $is_restricted_post = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID()) && !is_user_logged_in();
+
+                            if ($is_restricted_post) {
+                                if (function_exists('cmg_render_paywall_gate')) {
+                                    echo cmg_render_paywall_gate(get_the_ID());
+                                } else {
+                                    get_template_part('template-parts/docs/modal-upgrade');
+                                }
+                            } else {
+                                $doc_content = get_the_content();
+                                $doc_content = preg_replace('/<figure\b[^>]*>.*?<\/figure>/is', '', $doc_content);
+                                $doc_content = preg_replace('/<img\b[^>]*\/?>/is', '', $doc_content);
+                                $doc_content = preg_replace('/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{1F600}-\x{1F64F}\x{1F680}-\x{1F6FF}\x{1F1E0}-\x{1F1FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{2300}-\x{23FF}\x{200D}\x{FE0F}]/u', '', $doc_content);
+                                echo apply_filters('the_content', $doc_content);
+                            }
                             ?>
                         </div>
 
@@ -90,26 +100,289 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                             </div>
                         <?php endif; ?>
 
-                        <!-- Feedback Box -->
+                        <!-- Like / Dislike Feedback Box (Imported from Docy) -->
                         <div class="cm-feedback-wrapper">
                             <div class="cm-feedback-top">
-                                <h4 class="cm-feedback-title">Did this answer your question?</h4>
+                                <h4 class="cm-feedback-title">Was this page helpful?</h4>
                                 <div class="cm-feedback-buttons">
-                                    <button type="button" class="cm-btn-vote" data-vote="like" data-post-id="<?php the_ID(); ?>">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-                                        </svg>
-                                        Yes
+                                    <button class="cm-btn-vote" id="cm-vote-yes">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                                        Like
                                     </button>
-                                    <button type="button" class="cm-btn-vote" data-vote="dislike" data-post-id="<?php the_ID(); ?>">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
-                                        </svg>
-                                        No
+                                    <button class="cm-btn-vote" id="cm-vote-no">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                                        Dislike
                                     </button>
                                 </div>
                             </div>
+
+                            <div class="cm-feedback-login-prompt" id="cm-feedback-login-prompt" style="display: none; padding: 18px 16px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; margin-top: 16px;">
+                                <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.5;">
+                                    Please <a href="<?php echo esc_url( add_query_arg('redirect_to', urlencode(get_permalink()), home_url('/signin/')) ); ?>" style="color: #3b82f6; font-weight: 600; text-decoration: underline;">Sign In</a> or <a href="<?php echo esc_url( 'https://cmgalaxy.com/book-a-demo' ); ?>" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; font-weight: 600; text-decoration: underline;">Sign Up</a> to leave your feedback.
+                                </p>
+                            </div>
+                            
+                            <div class="cm-feedback-form-area" id="cm-feedback-form" style="display: none;">
+                                <h3 class="cm-feedback-form-title" id="cm-feedback-title" style="margin-top: 0px;">How can we improve our product?</h3>
+                                
+                                <div class="cm-feedback-options" id="cm-options-yes" style="display: none;">
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_yes" class="cm-feedback-radio" value="The guide worked as expected">
+                                        The guide worked as expected
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_yes" class="cm-feedback-radio" value="It was easy to find the information I needed">
+                                        It was easy to find the information I needed
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_yes" class="cm-feedback-radio" value="It was easy to understand the product and features">
+                                        It was easy to understand the product and features
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_yes" class="cm-feedback-radio" value="The documentation is up to date">
+                                        The documentation is up to date
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_yes" class="cm-feedback-radio" value="Something else">
+                                        Something else
+                                    </label>
+                                </div>
+
+                                <div class="cm-feedback-options" id="cm-options-no" style="display: none;">
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_no" class="cm-feedback-radio" value="Help me get started faster">
+                                        Help me get started faster
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_no" class="cm-feedback-radio" value="Make it easier to find what I'm looking for">
+                                        Make it easier to find what I'm looking for
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_no" class="cm-feedback-radio" value="Make it easy to understand the product and features">
+                                        Make it easy to understand the product and features
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_no" class="cm-feedback-radio" value="Update this documentation">
+                                        Update this documentation
+                                    </label>
+                                    <label class="cm-feedback-option">
+                                        <input type="radio" name="cm_feedback_reason_no" class="cm-feedback-radio" value="Something else">
+                                        Something else
+                                    </label>
+                                </div>
+
+                                <div class="cm-feedback-custom-text-wrap" id="cm-custom-text-wrap" style="display: none; margin-top: 14px; margin-bottom: 14px;">
+                                    <textarea id="cm-feedback-custom-text" placeholder="Please specify your feedback..." style="width: 100%; min-height: 80px; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-family: inherit; box-sizing: border-box; resize: vertical; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3B82F6'" onblur="this.style.borderColor='#d1d5db'"></textarea>
+                                </div>
+
+                                <div class="cm-feedback-actions">
+                                    <button type="button" class="cm-btn-cancel" id="cm-feedback-cancel">Cancel</button>
+                                    <button type="button" class="cm-btn-submit" id="cm-feedback-submit">Submit feedback</button>
+                                </div>
+                            </div>
+
+                            <div class="cm-feedback-success-area" id="cm-feedback-success" style="display: none; padding: 20px 16px; text-align: center; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; margin-top: 16px;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 8px; display: inline-block;">
+                                    <circle cx="12" cy="12" r="10" fill="#22C55E"/>
+                                    <path d="M8 12L11 15L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <div id="cm-feedback-success-text" style="color: #15803d; font-weight: 600; font-size: 15px; line-height: 1.4;">Thank you for your feedback!</div>
+                            </div>
                         </div>
+
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const isLoggedIn = <?php echo is_user_logged_in() ? 'true' : 'false'; ?>;
+                            const btnYes = document.getElementById('cm-vote-yes');
+                            const btnNo = document.getElementById('cm-vote-no');
+                            const formArea = document.getElementById('cm-feedback-form');
+                            const loginPrompt = document.getElementById('cm-feedback-login-prompt');
+                            const btnCancel = document.getElementById('cm-feedback-cancel');
+                            const btnSubmit = document.getElementById('cm-feedback-submit');
+                            const title = document.getElementById('cm-feedback-title');
+                            const optionsYes = document.getElementById('cm-options-yes');
+                            const optionsNo = document.getElementById('cm-options-no');
+                            const customWrap = document.getElementById('cm-custom-text-wrap');
+                            const customTextarea = document.getElementById('cm-feedback-custom-text');
+                            const successArea = document.getElementById('cm-feedback-success');
+                            const successText = document.getElementById('cm-feedback-success-text');
+                            
+                            function updateSubmitButtonState() {
+                                if (!btnSubmit) return;
+                                const selected = document.querySelector('.cm-feedback-radio:checked');
+                                if (!selected) {
+                                    btnSubmit.classList.remove('active');
+                                    btnSubmit.disabled = true;
+                                    return;
+                                }
+
+                                if (selected.value === 'Something else') {
+                                    const textVal = customTextarea ? customTextarea.value.trim() : '';
+                                    if (textVal.length > 0) {
+                                        btnSubmit.classList.add('active');
+                                        btnSubmit.disabled = false;
+                                    } else {
+                                        btnSubmit.classList.remove('active');
+                                        btnSubmit.disabled = true;
+                                    }
+                                } else {
+                                    btnSubmit.classList.add('active');
+                                    btnSubmit.disabled = false;
+                                }
+                            }
+
+                            function resetCustomText() {
+                                if (customWrap) customWrap.style.display = 'none';
+                                if (customTextarea) customTextarea.value = '';
+                                updateSubmitButtonState();
+                            }
+
+                            function hideSuccess() {
+                                if (successArea) successArea.style.display = 'none';
+                            }
+                            
+                            function showForm(vote) {
+                                hideSuccess();
+
+                                if (vote === 'like' || vote === 'yes') {
+                                    btnYes.classList.add('active');
+                                    btnNo.classList.remove('active');
+                                } else {
+                                    btnNo.classList.add('active');
+                                    btnYes.classList.remove('active');
+                                }
+
+                                if (!isLoggedIn) {
+                                    if (formArea) formArea.style.display = 'none';
+                                    if (loginPrompt) loginPrompt.style.display = 'block';
+                                    return;
+                                }
+
+                                if (loginPrompt) loginPrompt.style.display = 'none';
+                                if (formArea) formArea.style.display = 'block';
+                                
+                                document.querySelectorAll('.cm-feedback-radio').forEach(r => r.checked = false);
+                                resetCustomText();
+                                updateSubmitButtonState();
+                                
+                                if (vote === 'like' || vote === 'yes') {
+                                    title.innerText = 'Great! What worked best for you?';
+                                    optionsYes.style.display = 'flex';
+                                    optionsNo.style.display = 'none';
+                                } else {
+                                    title.innerText = 'How can we improve our product?';
+                                    optionsNo.style.display = 'flex';
+                                    optionsYes.style.display = 'none';
+                                }
+                            }
+
+                            document.querySelectorAll('.cm-feedback-radio').forEach(radio => {
+                                radio.addEventListener('change', function() {
+                                    if (this.checked && this.value === 'Something else') {
+                                        if (customWrap) customWrap.style.display = 'block';
+                                        if (customTextarea) customTextarea.focus();
+                                    } else {
+                                        if (customWrap) customWrap.style.display = 'none';
+                                    }
+                                    updateSubmitButtonState();
+                                });
+                            });
+
+                            if (customTextarea) {
+                                customTextarea.addEventListener('input', updateSubmitButtonState);
+                                customTextarea.addEventListener('keyup', updateSubmitButtonState);
+                            }
+                            
+                            if (btnYes) btnYes.addEventListener('click', () => showForm('like'));
+                            if (btnNo) btnNo.addEventListener('click', () => showForm('dislike'));
+                            
+                            if (btnCancel) {
+                                btnCancel.addEventListener('click', () => {
+                                    if (formArea) formArea.style.display = 'none';
+                                    if (loginPrompt) loginPrompt.style.display = 'none';
+                                    btnYes.classList.remove('active');
+                                    btnNo.classList.remove('active');
+                                    document.querySelectorAll('.cm-feedback-radio').forEach(r => r.checked = false);
+                                    resetCustomText();
+                                    updateSubmitButtonState();
+                                    hideSuccess();
+                                });
+                            }
+                            
+                            if (btnSubmit) {
+                                btnSubmit.addEventListener('click', () => {
+                                    const selected = document.querySelector('.cm-feedback-radio:checked');
+                                    if (!selected) {
+                                        return;
+                                    }
+                                    if (selected.value === 'Something else' && customTextarea && !customTextarea.value.trim()) {
+                                        customTextarea.focus();
+                                        return;
+                                    }
+                                    
+                                    const vote = btnYes.classList.contains('active') ? 'like' : 'dislike';
+                                    let reason = selected.value;
+                                    if (reason === 'Something else' && customTextarea) {
+                                        const customVal = customTextarea.value.trim();
+                                        if (customVal) {
+                                            reason = 'Something else: ' + customVal;
+                                        }
+                                    }
+                                    const postId = <?php echo get_the_ID(); ?>;
+                                    const postTitle = <?php echo json_encode(get_the_title()); ?>;
+                                    const userId = <?php echo get_current_user_id(); ?>;
+                                    const userName = <?php $cu = wp_get_current_user(); echo json_encode( $cu->exists() ? ( $cu->display_name ? $cu->display_name : $cu->user_login ) : '' ); ?>;
+                                    const userEmail = <?php $cu = wp_get_current_user(); echo json_encode( $cu->exists() ? $cu->user_email : '' ); ?>;
+                                    
+                                    const formData = new FormData();
+                                    formData.append('action', 'cm_submit_feedback');
+                                    formData.append('post_id', postId);
+                                    formData.append('post_title', postTitle);
+                                    formData.append('user_id', userId);
+                                    formData.append('user_name', userName);
+                                    formData.append('user_email', userEmail);
+                                    formData.append('vote', vote);
+                                    formData.append('reason', reason);
+                                    
+                                    // Disable submit button while saving
+                                    const originalText = btnSubmit.innerText;
+                                    btnSubmit.innerText = 'Saving...';
+                                    btnSubmit.disabled = true;
+
+                                    fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
+                                        method: 'POST',
+                                        body: formData
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if(data.success) {
+                                            const thankMsg = (vote === 'dislike' || vote === 'no')
+                                                ? 'Thank you for your feedback! We will get back to you.'
+                                                : 'Thank you for your feedback!';
+                                                
+                                            if (formArea) formArea.style.display = 'none';
+                                            if (successText) successText.innerText = thankMsg;
+                                            if (successArea) successArea.style.display = 'block';
+                                        } else {
+                                            alert(data.data || 'Something went wrong. Please try again.');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        alert('Error saving feedback.');
+                                        console.error(error);
+                                    })
+                                    .finally(() => {
+                                        btnSubmit.innerText = originalText;
+                                        btnSubmit.disabled = false;
+                                        btnYes.classList.remove('active');
+                                        btnNo.classList.remove('active');
+                                        document.querySelectorAll('.cm-feedback-radio').forEach(r => r.checked = false);
+                                        resetCustomText();
+                                    });
+                                });
+                            }
+                        });
+                        </script>
 
                         <!-- Related Articles -->
                         <?php
