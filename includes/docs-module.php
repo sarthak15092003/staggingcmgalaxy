@@ -666,6 +666,73 @@ add_filter('rank_math/frontend/title', function($title) {
 }, 99);
 
 /**
- * 7. Load Docs Importer & Sync Tool
+ * 7. Category & Article Ordering System (Matching Docy)
+ */
+function cmgalaxy_sort_terms_by_order( $a, $b ) {
+    if (!is_object($a) || !isset($a->term_id) || !is_object($b) || !isset($b->term_id)) {
+        return 0;
+    }
+
+    $order_a = get_term_meta( $a->term_id, '_cmgalaxy_sidebar_order', true );
+    $order_b = get_term_meta( $b->term_id, '_cmgalaxy_sidebar_order', true );
+    
+    $val_a = ($order_a !== '') ? intval($order_a) : 9999;
+    $val_b = ($order_b !== '') ? intval($order_b) : 9999;
+    
+    if ( $val_a == $val_b ) {
+        return $a->term_id - $b->term_id;
+    }
+    return ( $val_a < $val_b ) ? -1 : 1;
+}
+
+// Save sidebar order field in admin category edit
+function cmgalaxy_category_edit_order_field( $term ) {
+    $order = get_term_meta( $term->term_id, '_cmgalaxy_sidebar_order', true );
+    ?>
+    <tr class="form-field">
+        <th scope="row"><label for="cmgalaxy_sidebar_order"><?php _e( 'Sidebar Order', 'hello-elementor' ); ?></label></th>
+        <td>
+            <input type="number" name="cmgalaxy_sidebar_order" id="cmgalaxy_sidebar_order" value="<?php echo esc_attr( $order ); ?>">
+            <p class="description"><?php _e( 'Enter a number to order categories in the modern sidebar. Lower numbers appear first. (e.g. 10, 20, 30)', 'hello-elementor' ); ?></p>
+        </td>
+    </tr>
+    <?php
+}
+add_action( 'category_edit_form_fields', 'cmgalaxy_category_edit_order_field' );
+add_action( 'doc_category_edit_form_fields', 'cmgalaxy_category_edit_order_field' );
+
+function cmgalaxy_save_category_order( $term_id ) {
+    if ( isset( $_POST['cmgalaxy_sidebar_order'] ) ) {
+        update_term_meta( $term_id, '_cmgalaxy_sidebar_order', sanitize_text_field( $_POST['cmgalaxy_sidebar_order'] ) );
+    }
+}
+add_action( 'created_category', 'cmgalaxy_save_category_order' );
+add_action( 'edited_category', 'cmgalaxy_save_category_order' );
+add_action( 'created_doc_category', 'cmgalaxy_save_category_order' );
+add_action( 'edited_doc_category', 'cmgalaxy_save_category_order' );
+
+// AJAX handler for drag and drop category sorting
+function cmgalaxy_update_category_order_callback() {
+    if ( ! current_user_can( 'manage_categories' ) ) {
+        wp_send_json_error( 'Permission denied' );
+    }
+
+    if ( isset( $_POST['ordered_ids'] ) ) {
+        $ordered_ids = json_decode( stripslashes( $_POST['ordered_ids'] ), true );
+        if ( is_array( $ordered_ids ) ) {
+            $order = 10;
+            foreach ( $ordered_ids as $term_id ) {
+                update_term_meta( intval( $term_id ), '_cmgalaxy_sidebar_order', $order );
+                $order += 10;
+            }
+            wp_send_json_success( 'Order updated' );
+        }
+    }
+    wp_send_json_error( 'Invalid data' );
+}
+add_action( 'wp_ajax_cmgalaxy_update_category_order', 'cmgalaxy_update_category_order_callback' );
+
+/**
+ * 8. Load Docs Importer & Sync Tool
  */
 require_once get_template_directory() . '/includes/docs-importer.php';
