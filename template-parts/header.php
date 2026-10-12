@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+if ( function_exists( 'cmgalaxy_is_docs_page' ) && cmgalaxy_is_docs_page() ) {
+	get_template_part( 'template-parts/docs/header-docy' );
+	return;
+}
+
 $site_name = get_bloginfo( 'name' );
 $tagline   = get_bloginfo( 'description', 'display' );
 $header_nav_menu = wp_nav_menu( [

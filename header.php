@@ -31,7 +31,9 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
 <?php } ?>
 
 <?php
-if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_location( 'header' ) ) {
+if ( function_exists( 'cmgalaxy_is_docs_page' ) && cmgalaxy_is_docs_page() ) {
+	get_template_part( 'template-parts/docs/header-docy' );
+} elseif ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_location( 'header' ) ) {
 	if ( hello_elementor_display_header_footer() ) {
 		if ( did_action( 'elementor/loaded' ) && hello_header_footer_experiment_active() ) {
 			get_template_part( 'template-parts/dynamic-header' );

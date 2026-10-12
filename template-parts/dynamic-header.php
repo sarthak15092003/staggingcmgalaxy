@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+if ( function_exists( 'cmgalaxy_is_docs_page' ) && cmgalaxy_is_docs_page() ) {
+	get_template_part( 'template-parts/docs/header-docy' );
+	return;
+}
+
 if ( ! hello_get_header_display() ) {
 	return;
 }

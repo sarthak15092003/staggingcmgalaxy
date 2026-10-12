@@ -105,28 +105,57 @@ function cmg_register_docs_cpt() {
 add_action('init', 'cmg_register_docs_cpt', 0);
 
 /**
- * 2. Enqueue Docs Styles & Scripts
+ * Helper to determine if current request is a Documentation or Knowledge Base page.
+ *
+ * @return bool
  */
-function cmg_enqueue_docs_assets() {
+function cmgalaxy_is_docs_page() {
     global $post;
-    
-    $is_docs_page = is_singular('docs') || 
-                    is_post_type_archive('docs') || 
-                    is_tax('doc_category') || 
-                    is_tax('doc_tag') ||
-                    is_page_template('page-templates/template-docs-home.php') ||
-                    is_page_template('page-templates/template-docs-category.php') ||
-                    is_page_template('page-all-categories.php');
 
-    // Also check if page slug is docs or kb
-    if (!$is_docs_page && is_page()) {
+    if ( is_admin() ) {
+        return false;
+    }
+
+    // 1. Post type 'docs' or docs archives / taxonomies
+    if ( is_singular('docs') || 
+         is_post_type_archive('docs') || 
+         is_tax('doc_category') || 
+         is_tax('doc_tag') || 
+         is_tax('doc_dir') ) {
+        return true;
+    }
+
+    // 2. Specific Page Templates
+    if ( is_page_template('page-templates/template-docs-home.php') ||
+         is_page_template('page-templates/template-docs-category.php') ||
+         is_page_template('page-all-categories.php') ) {
+        return true;
+    }
+
+    // 3. Known Documentation Pages by Slug
+    if ( is_page() ) {
         $slug = $post ? $post->post_name : '';
-        if (in_array($slug, array('docs', 'kb', 'knowledge-base', 'documentation', 'all-categories'))) {
-            $is_docs_page = true;
+        if ( in_array($slug, array('docs', 'kb', 'knowledge-base', 'documentation', 'all-categories', 'getting-started', 'onboarding')) ) {
+            return true;
         }
     }
 
-    if ($is_docs_page) {
+    // 4. Docs category under standard category if applicable
+    if ( is_category() ) {
+        $cat = get_queried_object();
+        if ( $cat && in_array( $cat->slug, array( 'getting-started', 'onboarding', 'utm-parameters-guidelines', 'documentation' ) ) ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * 2. Enqueue Docs Styles & Scripts
+ */
+function cmg_enqueue_docs_assets() {
+    if ( cmgalaxy_is_docs_page() ) {
         wp_enqueue_style(
             'cmg-docs-google-fonts',
             'https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&family=Instrument+Sans:wght@400;500;600;700&display=swap',
@@ -1330,3 +1359,56 @@ add_action('wp_ajax_cmg_sync_live_docy_order', function() {
     $count = cmg_seed_live_article_order_and_gating();
     wp_send_json_success(array('message' => 'Successfully aligned ' . $count . ' articles to live Docy order and set paywall gating!'));
 });
+
+/**
+ * Handle live search suggestions from the header (Matching Docy layout)
+ */
+function lex_live_search_handler() {
+    $q = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
+
+    if (strlen($q) < 2) {
+        wp_send_json_success(array('results' => array()));
+    }
+
+    $args = array(
+        's'                      => $q,
+        'post_type'              => array('docs', 'post'),
+        'posts_per_page'         => 6,
+        'orderby'                => 'relevance',
+        'no_found_rows'          => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => true,
+    );
+
+    $query = new WP_Query($args);
+    $results = array();
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+
+            $category_name = '';
+            $terms = get_the_terms(get_the_ID(), 'doc_category');
+            if (!empty($terms) && !is_wp_error($terms)) {
+                $category_name = $terms[0]->name;
+            } else {
+                $cats = get_the_category();
+                if (!empty($cats) && !is_wp_error($cats)) {
+                    $category_name = $cats[0]->name;
+                }
+            }
+
+            $results[] = array(
+                'title'    => get_the_title(),
+                'url'      => get_permalink(),
+                'type'     => get_post_type(),
+                'category' => $category_name ? $category_name : __('Documentation', 'hello-elementor')
+            );
+        }
+        wp_reset_postdata();
+    }
+
+    wp_send_json_success(array('results' => $results));
+}
+add_action('wp_ajax_lex_live_search', 'lex_live_search_handler');
+add_action('wp_ajax_nopriv_lex_live_search', 'lex_live_search_handler');

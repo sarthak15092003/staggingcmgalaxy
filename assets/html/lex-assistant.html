@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lex Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #3A7DFF;
+            --text-dark: #1F2937;
+            --text-gray: #484a61;
+            /* Updated from #6B7280 */
+            --bg-light: #F8FAFC;
+            --border-color: #E2E8F0;
+        }
+
+        p,
+        li,
+        strong {
+            color: #484a61;
+        }
+
+        .message h1,
+        .message h1 strong,
+        .message h1 span {
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            color: #1f2937 !important;
+        }
+
+        .message h2,
+        .message h2 strong,
+        .message h2 span {
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            color: #1f2937 !important;
+        }
+
+        .message h3,
+        .message h3 strong,
+        .message h3 span {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: #1f2937 !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body,
+        html {
+            height: 100%;
+            background-color: #ffffff;
+            overflow: hidden;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        #lex-loading-cover {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            z-index: 9999;
+            transition: opacity 0.2s ease;
+        }
+
+        .assistant-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: #fff;
+            min-height: 64px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #484a61;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6B7280;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: #F3F4F6;
+            color: #3A7DFF;
+        }
+
+        .icon-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        body.is-expanded .lex-expand-icon {
+            display: none !important;
+        }
+
+        body.is-expanded .lex-minimize-icon {
+            display: block !important;
+        }
+
+        /* --- Chat UI Patterns --- */
+        .header-back-btn {
+            display: none;
+            margin-right: 8px;
+        }
+
+        .assistant-container.is-chatting .header-back-btn {
+            display: flex;
+        }
+
+        .message {
+            max-width: 100%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+            animation: fadeIn 0.35s ease-out;
+            border: 1px solid transparent;
+        }
+
+        .message ul,
+        .message ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .message li {
+            margin-bottom: 4px;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: #F8FAFC;
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+            border-color: #F1F5F9;
+        }
+
+        .history-btn-container {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .history-pill {
+            background: #fff;
+            border: 1.5px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-pill:hover {
+            background: #f0f7ff;
+            transform: translateY(-1px);
+        }
+
+        .header-new-chat-btn {
+            display: none;
+        }
+
+        .assistant-container.is-chatting .header-new-chat-btn {
+            display: flex;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: #3A7DFF14;
+            color: #161C52;
+            border-bottom-right-radius: 4px;
+            position: relative;
+        }
+
+        .resend-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            color: var(--primary-blue);
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            cursor: pointer;
+            padding: 0;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            z-index: 10;
+        }
+
+        .resend-btn:hover {
+            background: rgba(58, 125, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .result-card {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 12px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 8px 24px rgba(58, 125, 255, 0.12);
+            transform: translateY(-3px);
+        }
+
+        .result-card::after {
+            content: '→';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-blue);
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .result-card:hover::after {
+            opacity: 1;
+            right: 12px;
+        }
+
+        .result-type {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .result-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .result-excerpt {
+            font-size: 13px;
+            color: #64748B;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* --- Main Content --- */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10px;
+            padding-bottom: 130px;
+            /* Leave space for floating input */
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .lex-logo-section {
+            position: relative;
+            margin-bottom: 15px;
+            /* Reduced from 24px */
+        }
+
+        .lex-logo-circle {
+            width: 60px;
+            /* Reduced from 80px */
+            height: 60px;
+            /* Reduced from 80px */
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(58, 125, 255, 0.1);
+            border: 1px solid #F1F5F9;
+        }
+
+        .lex-logo-img {
+            width: 35px;
+            /* Reduced from 45px */
+            height: auto;
+        }
+
+        .greeting-section {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 20px auto;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .greeting-title {
+            font-size: 24px;
+            /* Reduced from 32px */
+            font-weight: 600;
+            margin-bottom: 8px;
+            /* Reduced from 12px */
+        }
+
+        .greeting-title span {
+            font-weight: 800;
+        }
+
+        .greeting-subtitle {
+            font-size: 16px;
+            color: var(--text-gray);
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+
+
+        /* --- Suggested Prompts --- */
+        .suggested-section {
+            align-self: center;
+            max-width: 900px;
+            width: 100%;
+            padding: 0 40px;
+            margin-top: 20px;
+        }
+
+        .suggested-label {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 16px;
+        }
+
+        .prompt-item {
+            font-size: 15px;
+            color: var(--text-dark);
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .prompt-tag {
+            font-weight: 700;
+            color: #94A3B8;
+        }
+
+        /* --- Chat Input --- */
+        .chat-input-container {
+            position: absolute;
+            bottom: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 48px);
+            max-width: 900px;
+            background: #ffffff;
+            /* Solid white */
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            z-index: 1000;
+        }
+
+        .add-context-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .add-context-btn:hover {
+            background: var(--bg-light);
+            color: var(--primary-blue);
+        }
+
+        .image-preview-container {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            background: #F0F7FF;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #BFDBFE;
+        }
+
+        .image-preview-container.active {
+            display: flex;
+        }
+
+        .image-preview-thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #93C5FD;
+        }
+
+        .image-preview-info {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        .image-preview-info span {
+            font-weight: 600;
+            color: var(--primary-blue);
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .image-preview-remove {
+            cursor: pointer;
+            color: #94A3B8;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .image-preview-remove:hover {
+            color: #EF4444;
+        }
+
+        .message img.context-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 8px;
+            display: block;
+            border: 1px solid #E2E8F0;
+        }
+
+        .input-box {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            padding: 4px 0;
+            resize: none;
+            min-height: 48px;
+            max-height: 200px;
+            line-height: 1.5;
+            font-family: inherit;
+            overflow-y: auto;
+        }
+
+        .input-box::placeholder {
+            color: var(--text-gray);
+        }
+
+        .chat-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .send-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* --- Chat Messages --- */
+        .chat-messages {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .message {
+            max-width: 100%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: #3A7DFF14;
+            color: #161C52;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: #F1F5F9;
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* --- Result Cards --- */
+        .result-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .result-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(58, 125, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .result-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .result-excerpt {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        .resend-btn {
+            position: absolute;
+            right: 12px;
+            bottom: -15px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            color: #64748B;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transition: all 0.2s;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .message.user:hover .resend-btn {
+            opacity: 1;
+            bottom: -10px;
+            pointer-events: auto;
+        }
+
+        .resend-btn:hover {
+            color: var(--primary-blue);
+            background: #F8FAFC;
+            border-color: var(--primary-blue);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background: #F1F5F9;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #94A3B8;
+            border-radius: 50%;
+            animation: dotWave 1.4s infinite linear;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes dotWave {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-4px);
+            }
+        }
+
+        /* Hide initial content when chatting */
+        .assistant-container.is-chatting .lex-logo-section,
+        .assistant-container.is-chatting .greeting-section,
+        .assistant-container.is-chatting .suggested-section {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="lex-loading-cover"></div>
+    <div class="assistant-container" id="assistant-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="header-main-info" style="display: flex; align-items: center; gap: 12px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0.221893 11.4087C3.6994 11.6055 6.9089 13.3398 8.97921 16.1408L9.23264 16.4837"
+                            stroke="#00DCF3" stroke-width="4.06022" />
+                        <path d="M11.7164 0.326772C11.6601 6.57175 6.46103 11.6359 0.219924 11.409" stroke="#3A7DFF"
+                            stroke-width="4.06022" />
+                        <path d="M23.3842 12.1973C19.9067 12.0004 16.6972 10.2661 14.6269 7.46512L14.3735 7.12225"
+                            stroke="#74ED90" stroke-width="4.06022" />
+                        <path d="M11.8897 23.2792C11.946 17.0342 17.1451 11.9701 23.3862 12.197" stroke="#36D462"
+                            stroke-width="4.06022" />
+                        <path
+                            d="M20.5684 0.48291C20.5751 0.48291 20.5819 0.48291 20.5888 0.48291C20.5893 0.48816 20.5897 0.49341 20.5902 0.49882C20.633 0.982349 20.7784 1.43993 21.0942 1.91742C21.0983 1.92309 21.0983 1.92309 21.1024 1.92887C21.1451 1.98828 21.19 2.04533 21.2372 2.1012C21.2423 2.10734 21.2474 2.11348 21.2526 2.11963C21.3064 2.18362 21.3642 2.24391 21.4232 2.30317C21.4269 2.30693 21.4307 2.3107 21.4345 2.31458C21.4553 2.33527 21.4765 2.35506 21.4987 2.37419C21.5098 2.38378 21.5206 2.39372 21.5313 2.40367C21.5571 2.4269 21.5841 2.44818 21.6114 2.4694C21.6238 2.47902 21.6361 2.4888 21.6483 2.49875C22.0082 2.79337 22.4596 2.97899 23.1924 3.08647C23.1924 3.09321 23.1924 3.09994 23.1924 3.10689C23.1883 3.10722 23.1842 3.10755 23.1801 3.10789C22.769 3.14201 22.3806 3.25207 21.6047 3.7297C21.5993 3.73425 21.5938 3.73881 21.5884 3.74336C21.554 3.77214 21.5204 3.8016 21.4873 3.8318C21.4807 3.8377 21.4807 3.8377 21.4739 3.84372C21.4403 3.874 21.408 3.90547 21.3759 3.93741C21.3719 3.94147 21.3678 3.94553 21.3636 3.94972C21.3391 3.97426 21.3159 3.99952 21.2933 4.02579C21.2859 4.034 21.2784 4.04219 21.271 4.05036C21.2468 4.07717 21.2239 4.10478 21.2014 4.13299C21.1988 4.13623 21.1962 4.13947 21.1936 4.1428C20.8919 4.52162 20.6947 4.97295 20.5888 5.71044C20.5821 5.71044 20.5753 5.71044 20.5684 5.71044C20.5679 5.70519 20.5675 5.69994 20.567 5.69453C20.5333 5.31389 20.4382 4.95583 20.2672 4.61287C20.2651 4.6086 20.263 4.60434 20.2608 4.59994C20.1756 4.43025 20.0683 4.26771 19.9456 4.12278C19.941 4.11734 19.9365 4.1119 19.9319 4.10645C19.9031 4.07211 19.8737 4.03848 19.8435 4.00537C19.8376 3.99876 19.8376 3.99876 19.8316 3.99201C19.8013 3.95838 19.7698 3.92606 19.7379 3.89402C19.7338 3.88993 19.7298 3.88584 19.7256 3.88163C19.701 3.85716 19.6758 3.83397 19.6495 3.81138C19.6413 3.80395 19.6331 3.79651 19.6249 3.78904C19.5981 3.76491 19.5705 3.74195 19.5423 3.71949C19.5391 3.7169 19.5358 3.71432 19.5325 3.71165C19.1479 3.40534 18.6899 3.20688 17.9648 3.10689C17.9648 3.10015 17.9648 3.09341 17.9648 3.08647C17.9701 3.08601 17.9753 3.08555 17.9807 3.08508C18.1571 3.0694 18.3295 3.04549 18.5009 2.99968C18.5068 2.99809 18.5128 2.9965 18.519 2.99486C18.8936 2.89377 19.2555 2.71522 19.5525 2.46366C19.5579 2.4591 19.5634 2.45455 19.5688 2.45C19.6032 2.42121 19.6368 2.39176 19.6699 2.36156C19.6743 2.35762 19.6787 2.35368 19.6833 2.34963C19.7169 2.31936 19.7492 2.28789 19.7813 2.25595C19.7874 2.24985 19.7874 2.24985 19.7937 2.24363C19.8153 2.22189 19.8362 2.19973 19.8563 2.17645C19.8658 2.16538 19.8757 2.15468 19.8856 2.14395C19.9088 2.11822 19.9301 2.09124 19.9513 2.06385C19.961 2.05144 19.9707 2.03918 19.9807 2.02704C20.1051 1.87508 20.2044 1.70428 20.2927 1.52944C20.2958 1.52343 20.2958 1.52343 20.2989 1.5173C20.4597 1.19707 20.5418 0.83861 20.5684 0.48291Z"
+                            fill="#3A7DFF" />
+                    </svg>
+                    <span class="header-title">Docs Assistant</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-actions">
+                    <button class="icon-btn" id="lex-expand-toggle"
+                        onclick="window.parent.postMessage('expand-lex', '*')">
+                        <svg class="lex-expand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="lex-minimize-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                            <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button class="icon-btn header-new-chat-btn" onclick="clearChat()" title="Clear Chat History">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button class="icon-btn" onclick="window.parent.postMessage('close-lex', '*')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content" id="chat-content">
+            <div class="lex-logo-section">
+                <div class="lex-logo-circle">
+                    <img src="../img/lexlogo.svg" alt="Lex" class="lex-logo-img">
+                </div>
+            </div>
+
+            <div class="greeting-section">
+                <h1 class="greeting-title">Hello, I'm <span>Lex</span></h1>
+                <p class="greeting-subtitle">Your AI Advertising Assistant. To Provide You With Personalized Insights,
+                    I'll Need Access To Your Advertising Accounts.</p>
+                <div class="history-btn-container" id="history-btn-container" style="display: none;">
+                    <button class="history-pill" onclick="loadMessages(true)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        View Chat History
+                    </button>
+                </div>
+            </div>
+
+
+
+            <div class="suggested-section">
+                <div class="suggested-label">Suggested prompts:</div>
+                <div class="prompt-item" onclick="handleQuickSearch('How to onboard on the platform')">
+                    <span class="prompt-tag">Onboarding</span> How do I get started with onboarding?
+                </div>
+                <div class="prompt-item" onclick="handleQuickSearch('UTM Parameters Guidelines')">
+                    <span class="prompt-tag">UTM</span> What are UTM Parameters and how to use them?
+                </div>
+                <div class="prompt-item" onclick="handleQuickSearch('Account Setup')">
+                    <span class="prompt-tag">Setup</span> How do I set up my account?
+                </div>
+                <div class="prompt-item" onclick="handleQuickSearch('Getting Started')">
+                    <span class="prompt-tag">Guide</span> Show me the Getting Started guide.
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chat-messages"></div>
+
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="typing-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </main>
+
+        <div class="chat-input-container">
+            <!-- Hidden file input -->
+            <input type="file" id="context-file-input" accept="image/*" style="display:none;">
+
+            <!-- Image preview strip -->
+            <div class="image-preview-container" id="image-preview-container">
+                <img src="" alt="Preview" class="image-preview-thumb" id="image-preview-thumb">
+                <div class="image-preview-info">
+                    Screenshot attached
+                    <span id="image-preview-name"></span>
+                </div>
+                <button class="image-preview-remove" onclick="removeContextImage()" title="Remove image">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <textarea class="input-box" id="user-input" placeholder="Ask me anything... (Type / for commands)"
+                rows="2"></textarea>
+
+            <div class="chat-footer">
+                <div class="footer-left">
+                    <div class="add-context-btn" title="Attach Screenshot"
+                        onclick="document.getElementById('context-file-input').click()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        <span>Add Context</span>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <button class="send-btn" id="send-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="#fff" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const assistantContainer = document.getElementById('assistant-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const chatContent = document.getElementById('chat-content');
+        const contextFileInput = document.getElementById('context-file-input');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreviewThumb = document.getElementById('image-preview-thumb');
+        const imagePreviewName = document.getElementById('image-preview-name');
+
+        let attachedImageDataUrl = null;
+        let attachedImageName = '';
+        let currentSearchController = null;
+        let isThinking = false;
+
+        // Handle file selection
+        contextFileInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                attachedImageDataUrl = e.target.result;
+                attachedImageName = file.name;
+                imagePreviewThumb.src = attachedImageDataUrl;
+                imagePreviewName.textContent = file.name;
+                imagePreviewContainer.classList.add('active');
+            };
+            reader.readAsDataURL(file);
+            // Reset so we can select the same file again
+            contextFileInput.value = '';
+        });
+
+        function removeContextImage() {
+            attachedImageDataUrl = null;
+            attachedImageName = '';
+            imagePreviewThumb.src = '';
+            imagePreviewContainer.classList.remove('active');
+        }
+
+        // Dynamically get AJAX URL from query param or fallback
+        const urlParams = new URLSearchParams(window.location.search);
+        const AJAX_URL = urlParams.get('ajax_url') || (window.location.origin + '/knowlege/wp-admin/admin-ajax.php');
+
+        function saveMessages() {
+            const messages = [];
+            chatMessages.querySelectorAll('.message').forEach(msg => {
+                messages.push({
+                    content: msg.innerHTML,
+                    isUser: msg.classList.contains('user')
+                });
+            });
+            localStorage.setItem('lex_chat_history', JSON.stringify(messages));
+            localStorage.setItem('lex_is_chatting', assistantContainer.classList.contains('is-chatting') ? 'true' : 'false');
+        }
+
+        function loadMessages(showImmediately = false) {
+            const savedHistory = localStorage.getItem('lex_chat_history');
+            const wasChatting = localStorage.getItem('lex_is_chatting');
+
+            if (savedHistory) {
+                const messages = JSON.parse(savedHistory);
+                if (messages.length > 0) {
+                    if (wasChatting === 'true' || showImmediately) {
+                        assistantContainer.classList.add('is-chatting');
+                    }
+
+                    // Restore visibility (may have been hidden by backToDashboard)
+                    chatMessages.style.display = '';
+
+                    // Clear existing to avoid duplicates if re-loading
+                    chatMessages.innerHTML = '';
+
+                    messages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message ${msg.isUser ? 'user' : 'bot'}`;
+                        messageDiv.innerHTML = msg.content;
+                        chatMessages.appendChild(messageDiv);
+                    });
+
+                    // Show history button if we are NOT currently chatting
+                    updateHistoryButton();
+
+                    scrollToBottom();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function updateHistoryButton() {
+            const savedHistory = localStorage.getItem('lex_chat_history');
+            const historyContainer = document.getElementById('history-btn-container');
+            const isChatting = assistantContainer.classList.contains('is-chatting');
+
+            if (savedHistory && !isChatting) {
+                const messages = JSON.parse(savedHistory);
+                // Only show if more than just the default welcome message
+                if (messages.length > 1) {
+                    historyContainer.style.display = 'flex';
+                } else {
+                    historyContainer.style.display = 'none';
+                }
+            } else {
+                historyContainer.style.display = 'none';
+            }
+        }
+
+        function backToDashboard() {
+            assistantContainer.classList.remove('is-chatting');
+            localStorage.setItem('lex_is_chatting', 'false');
+            // Hide the messages from view (don't delete them)
+            chatMessages.style.display = 'none';
+            updateHistoryButton();
+        }
+
+        function clearChat() {
+            chatMessages.innerHTML = '';
+            chatMessages.style.display = '';
+            localStorage.removeItem('lex_chat_history');
+            localStorage.removeItem('lex_is_chatting');
+            hideTyping();
+
+            // Re-show welcome message
+            addMessage("Hello! How can I help you today?");
+            saveMessages();
+            backToDashboard();
+        }
+
+        function addMessage(content, isUser = false) {
+            if (isUser) {
+                assistantContainer.classList.add('is-chatting');
+            }
+            // Always make chat messages visible when adding any message
+            chatMessages.style.display = '';
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+
+            if (typeof content === 'string') {
+                messageDiv.innerHTML = `<p>${content}</p>`;
+            } else {
+                messageDiv.appendChild(content);
+            }
+
+            // ADD SMART RESEND BUTTON TO USER MESSAGES
+            if (isUser) {
+                const queryText = (typeof content === 'string') ? content : content.innerText;
+
+                // Only add if it's a real query (not empty)
+                if (queryText.trim()) {
+                    const resendBtn = document.createElement('button');
+                    resendBtn.className = 'resend-btn';
+                    resendBtn.innerHTML = `
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                        </svg>
+                        Resend
+                    `;
+                    resendBtn.onclick = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        userInput.value = queryText;
+                        sendMessage();
+                    };
+                    messageDiv.appendChild(resendBtn);
+                }
+            }
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            saveMessages();
+            return messageDiv;
+        }
+
+        function scrollToBottom() {
+            // Wait for DOM to update
+            setTimeout(() => {
+                chatContent.scrollTo({
+                    top: chatContent.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
+        }
+
+        function showTyping() {
+            typingIndicator.style.display = 'block';
+            isThinking = true;
+            sendBtn.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="6" y="4" width="4" height="16" fill="#fff" rx="1"/>
+                    <rect x="14" y="4" width="4" height="16" fill="#fff" rx="1"/>
+                </svg>
+            `;
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            typingIndicator.style.display = 'none';
+            isThinking = false;
+            sendBtn.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="#fff" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            `;
+        }
+
+        async function performSearch(query) {
+            const hasImage = !!attachedImageDataUrl;
+            const imageToSend = attachedImageDataUrl;
+            const imageNameToSend = attachedImageName;
+
+            if (!query.trim() && !hasImage) return;
+
+            // Build the user message element
+            const userMsgEl = document.createElement('div');
+            if (query.trim()) {
+                userMsgEl.innerHTML = `<p>${query}</p>`;
+            }
+            if (hasImage) {
+                const img = document.createElement('img');
+                img.src = imageToSend;
+                img.className = 'context-image';
+                img.alt = 'Screenshot';
+                userMsgEl.appendChild(img);
+            }
+
+            const userMsgDiv = addMessage(userMsgEl, true);
+            userInput.value = '';
+            userInput.style.height = 'auto'; // Reset height
+            removeContextImage();
+            showTyping();
+
+            // If no text query, prompt user to describe the image
+            if (!query.trim() && hasImage) {
+                hideTyping();
+                addMessage(`I can see your screenshot! Please type a question about it and I'll search for related articles, e.g. "How do I set up this feature?"`);
+                return;
+            }
+
+            try {
+                if (currentSearchController) {
+                    currentSearchController.abort();
+                }
+                currentSearchController = new AbortController();
+
+                const formData = new FormData();
+                formData.append('action', 'lex_chat_query');
+                formData.append('query', query);
+                if (hasImage) {
+                    formData.append('has_image', '1');
+                    formData.append('image_name', imageNameToSend);
+                }
+
+                const response = await fetch(AJAX_URL, {
+                    method: 'POST',
+                    body: formData,
+                    signal: currentSearchController.signal
+                });
+
+                const data = await response.json();
+                hideTyping();
+
+                if (data.success) {
+                    const botResponse = document.createElement('div');
+                    const textP = document.createElement('div');
+                    textP.style.marginBottom = '12px';
+                    textP.style.lineHeight = '1.6';
+
+                    // Simple Markdown formatting for headings, bold, lists and newlines
+                    let rawMsg = data.data.message || "";
+
+                    // Headings (e.g. ### Heading)
+                    let formatted = rawMsg.replace(/^(#{1,3})\s+(.*)$/gm, function (match, hashes, content) {
+                        return '<h' + hashes.length + '>' + content + '</h' + hashes.length + '>';
+                    });
+
+                    // Bold (e.g. **text**)
+                    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                    // Group blocks of lines starting with * or - into <ul><li>...</li></ul>
+                    formatted = formatted.replace(/(?:^|\n)[\*\-]\s+(.*)/g, function (match, content) {
+                        return '<li>' + content + '</li>';
+                    });
+
+                    // Wrap sequences of <li>...</li> in <ul> tags
+                    formatted = formatted.replace(/(<li>(?:.*?)<\/li>)/gs, '<ul>$1</ul>');
+
+                    // Fix double <ul> from consecutive split lines (naive group)
+                    formatted = formatted.replace(/<\/ul>\s*<ul>/g, '');
+
+                    // Convert remaining newlines to breaks
+                    formatted = formatted.replace(/\n/g, '<br>');
+
+                    textP.innerHTML = formatted;
+                    botResponse.appendChild(textP);
+
+                    if (data.data.results && data.data.results.length > 0) {
+                        data.data.results.forEach(result => {
+                            const card = document.createElement('a');
+                            card.className = 'result-card';
+                            card.href = result.url;
+                            card.target = '_parent';
+
+                            card.innerHTML = `
+                                <span class="result-type">${result.type}</span>
+                                <div class="result-title">${result.title}</div>
+                                <div class="result-excerpt">${result.excerpt}</div>
+                            `;
+                            botResponse.appendChild(card);
+                        });
+                    }
+                    addMessage(botResponse);
+                } else {
+                    addMessage("I'm sorry, I encountered an error while searching for articles.");
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.log('Search cancelled by user');
+
+                    if (userMsgDiv) {
+                        const resendBtn = document.createElement('button');
+                        resendBtn.className = 'resend-btn';
+                        resendBtn.title = 'Resend Request';
+                        resendBtn.innerHTML = `
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                <path d="M3 3v5h5"/>
+                            </svg>
+                        `;
+                        resendBtn.onclick = () => {
+                            resendBtn.remove();
+                            // Temporarily set context to bypass hasImage check if it was cancelled
+                            attachedImageDataUrl = imageToSend;
+                            attachedImageName = imageNameToSend;
+                            performSearch(query);
+                        };
+                        userMsgDiv.appendChild(resendBtn);
+                    }
+
+                    return; // hideTyping already called by event listener
+                }
+                hideTyping();
+                addMessage("I'm having trouble connecting to the database. Please try again later.");
+                console.error('Search error:', error);
+            } finally {
+                currentSearchController = null;
+            }
+        }
+
+        function handleQuickSearch(query) {
+            performSearch(query);
+        }
+
+        sendBtn.addEventListener('click', () => {
+            if (isThinking && currentSearchController) {
+                currentSearchController.abort();
+                currentSearchController = null;
+                hideTyping();
+            } else {
+                performSearch(userInput.value);
+            }
+        });
+
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                performSearch(userInput.value);
+            }
+        });
+
+        // Auto-resize textarea
+        userInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            // Always restore visibility of chatMessages to prevent blank state
+            chatMessages.style.display = '';
+
+            const hasHistory = loadMessages();
+            if (!hasHistory) {
+                addMessage("Hello! How can I help you today?");
+                assistantContainer.classList.remove('is-chatting');
+            }
+
+            // Remove white cover to reveal content (prevents black flash)
+            const cover = document.getElementById('lex-loading-cover');
+            if (cover) {
+                cover.style.opacity = '0';
+                setTimeout(() => cover.remove(), 220);
+            }
+        });
+
+        // Listen for internal commands from parent window
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'lex_start_search') {
+                const query = event.data.query;
+                if (query) {
+                    userInput.value = query;
+                    performSearch(query);
+                }
+            }
+
+            if (event.data && event.data.type === 'lex_expanded_state') {
+                if (event.data.expanded) {
+                    document.body.classList.add('is-expanded');
+                } else {
+                    document.body.classList.remove('is-expanded');
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

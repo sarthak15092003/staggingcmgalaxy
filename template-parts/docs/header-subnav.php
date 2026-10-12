@@ -10,6 +10,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+if (defined('CMG_DOCS_HEADER_RENDERED') || !empty($GLOBALS['cmg_docs_header_rendered'])) {
+    return;
+}
+
 $current_url = home_url(add_query_arg(array(), $GLOBALS['wp']->request ?? ''));
 $is_home_active = is_front_page() || is_home();
 $is_docs_active = is_singular('docs') || is_tax('doc_category') || is_tax('doc_tag') || is_post_type_archive('docs') || is_page('docs') || is_page_template('page-all-categories.php');
