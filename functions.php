@@ -7693,6 +7693,8 @@ function cmg_import_articles_handler( WP_REST_Request $request ) {
 }
 
 /* ==========================================================================
-   CMGALAXY DOCS MODULE INITIALIZATION
+   CMGALAXY DOCS MODULE & API AUTH INITIALIZATION
    ========================================================================== */
 require_once get_template_directory() . '/includes/docs-module.php';
+require_once get_template_directory() . '/includes/cmgalaxy-api-auth.php';
+

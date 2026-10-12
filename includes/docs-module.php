@@ -192,6 +192,21 @@ add_action('wp_enqueue_scripts', 'cmg_enqueue_docs_assets', 20);
 function cmg_docs_template_include($template) {
     global $post;
 
+    // 0. Direct URL routing for /signin, /sign-in, /login
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+    $path = trim(parse_url($request_uri, PHP_URL_PATH), '/');
+    if ($path === 'signin' || $path === 'sign-in' || $path === 'login') {
+        $signin_file = locate_template('page-signin.php');
+        if ($signin_file) {
+            global $wp_query;
+            if ($wp_query) {
+                $wp_query->is_404 = false;
+            }
+            status_header(200);
+            return $signin_file;
+        }
+    }
+
     // 1. Single Doc
     if (is_singular('docs')) {
         $single_file = locate_template('single-docs.php');
@@ -212,6 +227,11 @@ function cmg_docs_template_include($template) {
 
     // 4. Regular WordPress Page Mappings (Prevents mismatch if user created a standard page)
     if (is_page() && $post) {
+        if (in_array($post->post_name, array('signin', 'sign-in', 'login'))) {
+            $signin_file = locate_template('page-signin.php');
+            if ($signin_file) return $signin_file;
+        }
+
         // If user explicitly chose a template, let WordPress handle it
         $page_template = get_page_template_slug($post->ID);
         if ($page_template) {
@@ -233,6 +253,36 @@ function cmg_docs_template_include($template) {
     return $template;
 }
 add_filter('template_include', 'cmg_docs_template_include', 99);
+
+// Non-admin login redirect to requested URL or home
+add_filter('login_redirect', function($redirect_to, $request, $user) {
+    if (isset($user->roles) && is_array($user->roles)) {
+        if (!in_array('administrator', $user->roles)) {
+            return !empty($request) ? $request : home_url('/');
+        }
+    }
+    return $redirect_to;
+}, 10, 3);
+
+// Auto-create /signin page in WordPress database if not exists
+add_action('init', function() {
+    if (!get_option('_cmg_signin_page_created')) {
+        $page = get_page_by_path('signin');
+        if (!$page) {
+            $page_id = wp_insert_post(array(
+                'post_title'     => 'Sign In',
+                'post_name'      => 'signin',
+                'post_status'    => 'publish',
+                'post_type'      => 'page',
+                'comment_status' => 'closed',
+            ));
+            if ($page_id && !is_wp_error($page_id)) {
+                update_post_meta($page_id, '_wp_page_template', 'page-signin.php');
+            }
+        }
+        update_option('_cmg_signin_page_created', 1);
+    }
+});
 
 /**
  * 4. Feedback Database & AJAX Submission Handler
