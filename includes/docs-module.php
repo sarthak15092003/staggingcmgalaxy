@@ -775,16 +775,50 @@ add_action('init', function() {
     add_post_type_support('post', 'page-attributes');
 });
 
-// Set default menu_order = 9999 for newly created posts so they don't displace explicitly ordered items
+// Set default menu_order = 9999 for new posts so they appear at the bottom (exact Docy logic)
 function docy_set_new_post_menu_order( $data, $postarr ) {
     if ( isset($data['post_type']) && in_array($data['post_type'], array('docs', 'post')) ) {
-        if ( !isset( $postarr['ID'] ) || $postarr['ID'] == 0 ) {
+        // Check if the post is an auto-draft or if it's completely new
+        if ( ( isset( $data['post_status'] ) && $data['post_status'] === 'auto-draft' ) || empty( $postarr['ID'] ) ) {
             $data['menu_order'] = 9999;
+        }
+        
+        // If saving a draft for the first time, and menu_order is 0, bump it up
+        if ( isset( $postarr['ID'] ) && $postarr['ID'] > 0 && isset( $data['menu_order'] ) && $data['menu_order'] == 0 ) {
+            if ( ! isset( $_POST['action'] ) || $_POST['action'] !== 'update-menu-order' ) {
+                $data['menu_order'] = 9999;
+            }
         }
     }
     return $data;
 }
 add_filter( 'wp_insert_post_data', 'docy_set_new_post_menu_order', 10, 2 );
+
+// Support for drag & drop post ordering AJAX (e.g. Simple Page Ordering or custom admin drag-and-drop)
+add_action('wp_ajax_update-menu-order', function() {
+    if (!current_user_can('edit_posts')) {
+        wp_send_json_error('Permission denied');
+    }
+    if (isset($_POST['id'])) {
+        global $wpdb;
+        $post_id = intval($_POST['id']);
+        $next_id = isset($_POST['nextid']) ? intval($_POST['nextid']) : 0;
+        $prev_id = isset($_POST['previd']) ? intval($_POST['previd']) : 0;
+        
+        if ($next_id > 0) {
+            $next_post = get_post($next_id);
+            $new_order = $next_post ? max(0, intval($next_post->menu_order) - 1) : 0;
+        } elseif ($prev_id > 0) {
+            $prev_post = get_post($prev_id);
+            $new_order = $prev_post ? intval($prev_post->menu_order) + 1 : 10;
+        } else {
+            $new_order = 0;
+        }
+        
+        $wpdb->update($wpdb->posts, array('menu_order' => $new_order), array('ID' => $post_id));
+        wp_send_json_success();
+    }
+}, 5);
 
 // Force docs query order by menu_order date ASC (exact Docy logic)
 function docy_docs_custom_order( $query ) {

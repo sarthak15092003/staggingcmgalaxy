@@ -416,6 +416,8 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                                 ),
                                 'post__not_in'   => array(get_the_ID()),
                                 'posts_per_page' => 4,
+                                'orderby'        => array('menu_order' => 'ASC', 'ID' => 'ASC'),
+                                'order'          => 'ASC',
                             ));
 
                             if ($related_query->have_posts()) : ?>
