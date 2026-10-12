@@ -240,7 +240,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                     <a href="<?php echo esc_url($term_link); ?>" class="section-title"><?php echo esc_html($sec['title']); ?></a>
                     <?php if ($has_content) : ?>
                         <span class="expand-icon <?php echo $is_active_cat ? 'expanded' : ''; ?>">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
                             </svg>
                         </span>
@@ -259,7 +259,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                 ?>
                                 <div class="<?php echo esc_attr($post_wrapper_class); ?>" style="padding: 8px 12px 8px 36px; position: relative;">
                                     <?php if ($is_current_post): ?>
-                                        <div style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
+                                        <div class="active-indicator-bar" style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
                                     <?php endif; ?>
                                     <a href="<?php echo esc_url(get_permalink($main_post->ID)); ?>" title="<?php echo esc_attr($main_post->post_title); ?>">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($main_post->post_title); ?></span>
@@ -299,15 +299,16 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                 $sub_link = get_term_link($sub->term_id, $sec_tax);
                                 $sub_link = is_wp_error($sub_link) ? '#' : $sub_link;
                                 $sub_target_id = $sidebar_instance_id . '_sub_' . $sub->term_id;
+                                $subcat_expanded_class = ($is_sub_active && $has_sub_posts) ? ' expanded' : '';
                             ?>
                                 <div class="cmgalaxy-subcat-wrapper" data-term-id="<?php echo esc_attr($sub->term_id); ?>">
-                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page' : ''; ?> <?php echo $has_sub_posts ? 'expandable-subcat' : ''; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="display:flex; align-items:center; padding: 7px 0 7px 16px; cursor:pointer;">
+                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page' : ''; ?> <?php echo $has_sub_posts ? 'expandable-subcat' : ''; ?><?php echo $subcat_expanded_class; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="display:flex; align-items:center; padding: 7px 0 7px 16px; cursor:pointer;">
                                         <a href="<?php echo esc_url($sub_link); ?>" class="subsection-title" style="color: #475569; font-size: 13.5px; text-decoration: none; flex: 1;">
                                             <?php echo esc_html($sub->name); ?>
                                         </a>
                                         <?php if ($has_sub_posts) : ?>
-                                            <span class="expand-icon-subcat" style="color:#94a3b8; margin-left:6px; display:inline-flex; transition: transform 0.2s; <?php echo $is_sub_active ? 'transform: rotate(90deg);' : ''; ?>">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <span class="expand-icon-subcat <?php echo ($is_sub_active && $has_sub_posts) ? 'expanded' : ''; ?>" aria-label="Toggle Subcategory">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <polyline points="9 18 15 12 9 6"></polyline>
                                                 </svg>
                                             </span>
@@ -319,7 +320,10 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                             <?php foreach ($sub_posts as $sp) :
                                                 $is_cur = ($current_post_id == $sp->ID);
                                             ?>
-                                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 16px;">
+                                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 16px; position: relative;">
+                                                    <?php if ($is_cur): ?>
+                                                        <div class="active-indicator-bar" style="position: absolute; left: -2px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                                    <?php endif; ?>
                                                     <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" title="<?php echo esc_attr($sp->post_title); ?>">
                                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($sp->post_title); ?></span>
                                                     </a>
@@ -336,7 +340,10 @@ $sidebar_instance_id = uniqid('docs_sb_');
                             foreach ($main_direct_posts as $dp) {
                                 $is_cur = ($current_post_id == $dp->ID);
                             ?>
-                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 36px;">
+                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 36px; position: relative;">
+                                    <?php if ($is_cur): ?>
+                                        <div class="active-indicator-bar" style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                    <?php endif; ?>
                                     <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>" title="<?php echo esc_attr($dp->post_title); ?>">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($dp->post_title); ?></span>
                                     </a>

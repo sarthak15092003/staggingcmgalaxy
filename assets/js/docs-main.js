@@ -8,35 +8,86 @@
         
         // 1. Sidebar Category Accordion Toggles
         $(document).on('click', '.section-header.expandable', function(e) {
-            // Prevent triggering if clicked directly on category title link
-            if ($(e.target).is('a.section-title')) {
-                return;
+            var isIconClick = $(e.target).closest('.expand-icon').length > 0;
+            // If clicked on title link and NOT on the expand icon
+            if (!isIconClick && $(e.target).closest('a.section-title').length) {
+                // On single doc view, clicking category title also toggles
+                if ($('body').hasClass('single-docs') || $('body').hasClass('single-post')) {
+                    // allow toggle
+                } else {
+                    return;
+                }
             }
+            
             e.preventDefault();
             var $header = $(this);
             var targetId = $header.data('target');
             var $content = $('#' + targetId);
+            var $icon = $header.find('.expand-icon');
             
-            $header.toggleClass('active');
-            $header.find('.expand-icon').toggleClass('expanded');
-            $content.slideToggle(200);
+            var isCurrentlyOpen = $content.is(':visible');
+            if (isCurrentlyOpen) {
+                $content.slideUp(200);
+                $header.removeClass('active');
+                $icon.removeClass('expanded');
+            } else {
+                $content.slideDown(200);
+                $header.addClass('active');
+                $icon.addClass('expanded');
+            }
         });
 
         // 2. Subcategory Item Accordion Toggles
         $(document).on('click', '.subsection-item.expandable-subcat', function(e) {
-            if ($(e.target).is('a.subsection-title') || $(e.target).closest('a').length) {
-                // allow link navigation
-                return;
+            var isIconClick = $(e.target).closest('.expand-icon-subcat').length > 0;
+            // If clicked on title link and NOT on the expand icon
+            if (!isIconClick && $(e.target).closest('a.subsection-title').length) {
+                // In single doc view, clicking subcategory title toggles instead of reloading
+                if ($('body').hasClass('single-docs') || $('body').hasClass('single-post')) {
+                    // allow toggle
+                } else {
+                    return;
+                }
             }
-            e.preventDefault();
-            var targetId = $(this).data('target');
-            var $subList = $('#' + targetId);
-            var $icon = $(this).find('.expand-icon-subcat');
             
-            $subList.slideToggle(200);
-            if ($icon.length) {
-                var isExpanded = $subList.is(':visible');
-                $icon.css('transform', isExpanded ? 'rotate(270deg)' : 'rotate(180deg)');
+            e.preventDefault();
+            var $item = $(this);
+            var targetId = $item.data('target');
+            var $subList = $('#' + targetId);
+            var $icon = $item.find('.expand-icon-subcat');
+            
+            var isCurrentlyOpen = $subList.is(':visible');
+            if (isCurrentlyOpen) {
+                $subList.slideUp(200);
+                $item.removeClass('expanded');
+                $icon.removeClass('expanded');
+            } else {
+                $subList.slideDown(200);
+                $item.addClass('expanded');
+                $icon.addClass('expanded');
+            }
+        });
+
+        // Dedicated click handler for subcategory expand icon
+        $(document).on('click', '.expand-icon-subcat', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $item = $(this).closest('.subsection-item.expandable-subcat');
+            if ($item.length) {
+                var targetId = $item.data('target');
+                var $subList = $('#' + targetId);
+                var $icon = $(this);
+                
+                var isCurrentlyOpen = $subList.is(':visible');
+                if (isCurrentlyOpen) {
+                    $subList.slideUp(200);
+                    $item.removeClass('expanded');
+                    $icon.removeClass('expanded');
+                } else {
+                    $subList.slideDown(200);
+                    $item.addClass('expanded');
+                    $icon.addClass('expanded');
+                }
             }
         });
 

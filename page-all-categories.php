@@ -12,6 +12,8 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
+get_template_part('template-parts/docs/header-subnav');
+
 $taxonomy = taxonomy_exists('doc_category') ? 'doc_category' : 'category';
 $terms = get_terms(array(
     'taxonomy'   => $taxonomy,

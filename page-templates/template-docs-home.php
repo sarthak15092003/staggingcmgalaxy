@@ -12,6 +12,8 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
+get_template_part('template-parts/docs/header-subnav');
+
 // Fetch categories from doc_category first, fallback or merge with standard category
 $doc_terms = get_terms(array(
     'taxonomy'   => array('doc_category', 'category'),

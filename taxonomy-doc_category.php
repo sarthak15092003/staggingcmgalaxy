@@ -12,6 +12,8 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
+get_template_part('template-parts/docs/header-subnav');
+
 $current_term = get_queried_object();
 $current_term_id = $current_term && isset($current_term->term_id) ? $current_term->term_id : 0;
 $term_name = $current_term && isset($current_term->name) ? $current_term->name : 'Documentation';

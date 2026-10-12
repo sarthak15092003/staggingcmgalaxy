@@ -11,6 +11,8 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
+get_template_part('template-parts/docs/header-subnav');
+
 $current_doc_id = get_the_ID();
 $terms = get_the_terms($current_doc_id, 'doc_category');
 if (!$terms || is_wp_error($terms)) {
