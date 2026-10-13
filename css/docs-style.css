@@ -597,7 +597,16 @@ body.page-template-page-all-categories,
     top: 90px !important;
     max-height: calc(100vh - 110px) !important;
     overflow-y: auto !important;
-    scrollbar-width: thin;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.docs-col-sidebar::-webkit-scrollbar,
+.category-left-sidebar-col::-webkit-scrollbar,
+.modern-sidebar::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 /* 2. Main Content Column: 60% with TOC, 80% without TOC */
@@ -640,6 +649,18 @@ body.page-template-page-all-categories,
     top: 90px !important;
     max-height: calc(100vh - 120px) !important;
     overflow-y: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.docs-col-toc::-webkit-scrollbar,
+.category-right-sidebar-col::-webkit-scrollbar,
+.doc-sidebar::-webkit-scrollbar,
+.doc-toc-wrap::-webkit-scrollbar,
+#docy-toc::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 @media (max-width: 1024px) {
@@ -832,14 +853,14 @@ body.page-template-page-all-categories,
     padding: 10px 14px;
 }
 
-/* Right TOC Sticky Sidebar */
+/* Right TOC Sticky Sidebar (clean single border, hidden scrollbar) */
 .doc-toc-wrap {
-    position: sticky;
-    top: 90px;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    padding-left: 16px;
-    border-left: 2px solid #f1f5f9;
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-left: 0 !important;
+    border-left: none !important;
+    box-shadow: none !important;
 }
 
 .doc-toc-title {
@@ -851,23 +872,29 @@ body.page-template-page-all-categories,
     margin-bottom: 12px;
 }
 
+#docy-toc,
 #docy-toc ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-left: none !important;
 }
 
 #docy-toc li {
-    margin-bottom: 8px;
+    margin-bottom: 8px !important;
+    border-left: none !important;
+    list-style: none !important;
 }
 
 #docy-toc .nav-link {
-    font-size: 13.5px;
-    color: #64748b;
-    text-decoration: none;
-    display: block;
-    line-height: 1.4;
-    transition: all 0.2s ease;
+    font-size: 13.5px !important;
+    color: #64748b !important;
+    text-decoration: none !important;
+    display: block !important;
+    line-height: 1.4 !important;
+    transition: all 0.2s ease !important;
+    border-left: none !important;
+    padding: 2px 0 !important;
 }
 
 #docy-toc .nav-link:hover,
@@ -875,15 +902,16 @@ body.page-template-page-all-categories,
 #docy-toc .nav-link.active {
     color: #3b82f6 !important;
     font-weight: 600 !important;
+    border-left: none !important;
 }
 
 #docy-toc li.toc-h2 {
-    padding-left: 0;
+    padding-left: 0 !important;
 }
 
 #docy-toc li.toc-h3 {
-    padding-left: 12px;
-    font-size: 12.5px;
+    padding-left: 12px !important;
+    font-size: 12.5px !important;
 }
 
 /* Feedback & Engagement */

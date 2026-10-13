@@ -91,7 +91,7 @@ $sidebar_img_url = file_exists(get_template_directory() . '/assets/images/sideba
 
             <!-- 3. Right Sidebar Sticky CTA Column (20%) -->
             <div class="docs-col-toc category-right-sidebar-col doc-sidebar">
-                <div class="cat-3-right-sidebar" style="position: sticky; top: 90px;">
+                <div class="cat-3-right-sidebar">
                     <div class="sidebar-widget">
                         <div class="random-image-container">
                             <a href="https://cmgalaxy.com/book-a-demo" target="_blank" rel="noopener noreferrer">
