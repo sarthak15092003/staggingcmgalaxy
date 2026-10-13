@@ -169,7 +169,7 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
         <!-- Sub-Navigation Bar Row (Home and Get Started tabs matching docs.cmgalaxy.com) -->
         <div class="cmgalaxy-nav-menu">
             <ul class="cmgalaxy-main-nav">
-                <li class="nav-item <?php echo ($is_home_active && !$is_get_started_active) ? 'active' : ''; ?>">
+                <li class="nav-item <?php echo !$is_get_started_active ? 'active' : ''; ?>">
                     <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>">
