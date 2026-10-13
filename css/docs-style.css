@@ -1354,16 +1354,9 @@ body.page-template-page-all-categories,
     border-color: #1d5ed8 !important;
 }
 
-/* Gated Lock Indicator Badge */
+/* Gated Lock Indicator Badge (Hidden per design) */
 .cmg-gated-lock-icon {
-    display: inline-flex;
-    vertical-align: middle;
-    margin-left: 6px;
-    flex-shrink: 0;
-    color: #94a3b8;
+    display: none !important;
 }
 
-.tw-article-row .cmg-gated-lock-icon {
-    margin-left: 8px;
-}
 

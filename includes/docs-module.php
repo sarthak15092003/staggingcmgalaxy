@@ -116,13 +116,35 @@ function cmgalaxy_is_docs_page() {
         return false;
     }
 
-    // 1. Post type 'docs' or docs archives / taxonomies
-    if ( is_singular('docs') || 
-         is_post_type_archive('docs') || 
+    // 0. Check request URI path for docs
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+    $path = trim(parse_url($request_uri, PHP_URL_PATH), '/');
+    if ( strpos($path, 'docs') === 0 || strpos($path, '/docs') !== false ) {
+        return true;
+    }
+
+    // 1. Post type 'docs', 'doc', or docs archives / taxonomies
+    if ( is_singular(array('docs', 'doc')) || 
+         is_post_type_archive(array('docs', 'doc')) || 
          is_tax('doc_category') || 
          is_tax('doc_tag') || 
          is_tax('doc_dir') ) {
         return true;
+    }
+
+    // If single post with doc_category or category in docs
+    if ( is_single() ) {
+        if ( has_term('', 'doc_category', $post) ) {
+            return true;
+        }
+        $terms = get_the_terms($post, 'category');
+        if ( $terms && !is_wp_error($terms) ) {
+            foreach ($terms as $t) {
+                if ( in_array($t->slug, array('getting-started', 'onboarding', 'utm-parameters-guidelines', 'documentation')) ) {
+                    return true;
+                }
+            }
+        }
     }
 
     // 2. Specific Page Templates
@@ -150,6 +172,14 @@ function cmgalaxy_is_docs_page() {
 
     return false;
 }
+
+// Prevent Elementor Theme Builder from overriding header on docs pages
+add_filter('elementor/theme/need_override_location', function($need_override, $location) {
+    if ($location === 'header' && function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page()) {
+        return false;
+    }
+    return $need_override;
+}, 999, 2);
 
 /**
  * 2. Enqueue Docs Styles & Scripts

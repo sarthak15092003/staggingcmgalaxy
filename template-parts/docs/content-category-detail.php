@@ -81,14 +81,6 @@ $direct_articles = new WP_Query([
                                 <div class="tw-article-content">
                                     <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
                                         <span><?php the_title(); ?></span>
-                                        <?php if ($is_gated): ?>
-                                            <span class="cmg-gated-lock-icon" title="Gated / Members Only">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                </svg>
-                                            </span>
-                                        <?php endif; ?>
                                     </div>
                                     <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
                                 </div>
@@ -125,14 +117,6 @@ $direct_articles = new WP_Query([
                         <div class="tw-article-content">
                             <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
                                 <span><?php the_title(); ?></span>
-                                <?php if ($is_gated): ?>
-                                    <span class="cmg-gated-lock-icon" title="Gated / Members Only">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                        </svg>
-                                    </span>
-                                <?php endif; ?>
                             </div>
                             <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '...')); ?></p>
                         </div>

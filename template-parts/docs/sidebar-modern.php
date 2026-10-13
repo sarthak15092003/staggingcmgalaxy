@@ -381,12 +381,6 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                                         <?php endif; ?>
                                                                         <a href="<?php echo esc_url(get_permalink($ssp->ID)); ?>" title="<?php echo esc_attr($ssp->post_title); ?>" style="display:flex; align-items:center;">
                                                                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($ssp->post_title); ?></span>
-                                                                            <?php if ($is_ssp_gated): ?>
-                                                                                <svg class="cmg-gated-lock-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="Gated / Members Only">
-                                                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                                                </svg>
-                                                                            <?php endif; ?>
                                                                         </a>
                                                                     </div>
                                                                 <?php endforeach; ?>
@@ -408,12 +402,6 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                         <?php endif; ?>
                                                         <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" title="<?php echo esc_attr($sp->post_title); ?>" style="display:flex; align-items:center;">
                                                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($sp->post_title); ?></span>
-                                                            <?php if ($is_sp_gated): ?>
-                                                                <svg class="cmg-gated-lock-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="Gated / Members Only">
-                                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                                </svg>
-                                                            <?php endif; ?>
                                                         </a>
                                                     </div>
                                                 <?php endforeach; 
@@ -436,12 +424,6 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                     <?php endif; ?>
                                     <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>" title="<?php echo esc_attr($dp->post_title); ?>" style="display:flex; align-items:center;">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($dp->post_title); ?></span>
-                                        <?php if ($is_dp_gated): ?>
-                                            <svg class="cmg-gated-lock-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="Gated / Members Only">
-                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                            </svg>
-                                        <?php endif; ?>
                                     </a>
                                 </div>
                             <?php }
