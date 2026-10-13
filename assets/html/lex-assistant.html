@@ -55,11 +55,13 @@
 
         body,
         html {
-            height: 100%;
+            height: 100% !important;
+            max-height: 100% !important;
             background-color: #ffffff;
-            overflow: hidden;
+            overflow: hidden !important;
             color: var(--text-dark);
             font-size: 14px;
+            overscroll-behavior: none !important;
         }
 
         #lex-loading-cover {
@@ -73,9 +75,11 @@
         .assistant-container {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100% !important;
+            max-height: 100vh !important;
             width: 100%;
             position: relative;
+            overflow: hidden !important;
         }
 
         /* --- Header --- */
@@ -324,21 +328,41 @@
 
         /* --- Main Content --- */
         .content {
-            flex: 1;
+            flex: 1 1 0% !important;
+            min-height: 0 !important;
+            height: 100% !important;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             padding-top: 10px;
-            padding-bottom: 130px;
+            padding-bottom: 140px;
             /* Leave space for floating input */
-            overflow-y: auto;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            overscroll-behavior: contain !important;
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+            scrollbar-color: #cbd5e1 transparent;
         }
 
         .content::-webkit-scrollbar {
-            display: none;
+            width: 6px;
+            display: block;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+        .content::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
         .lex-logo-section {
@@ -764,7 +788,7 @@
             <div class="header-right">
                 <div class="header-actions">
                     <button class="icon-btn" id="lex-expand-toggle"
-                        onclick="window.parent.postMessage('expand-lex', '*')">
+                        onclick="requestExpandLex()" title="Expand or Collapse Drawer">
                         <svg class="lex-expand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="2"
@@ -784,7 +808,7 @@
                                 stroke-linejoin="round" />
                         </svg>
                     </button>
-                    <button class="icon-btn" onclick="window.parent.postMessage('close-lex', '*')">
+                    <button class="icon-btn" id="lex-close-btn" onclick="requestCloseLex()" title="Close Assistant">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" />
@@ -1297,6 +1321,40 @@
             }
         });
 
+        function requestCloseLex() {
+            try {
+                if (window.parent && typeof window.parent.closeLexDrawer === 'function') {
+                    window.parent.closeLexDrawer();
+                    return;
+                }
+            } catch(e) {}
+            try {
+                window.parent.postMessage('close-lex', '*');
+                window.parent.postMessage({ type: 'close-lex' }, '*');
+            } catch(e) {}
+        }
+
+        function requestExpandLex() {
+            try {
+                if (window.parent && typeof window.parent.toggleLexExpand === 'function') {
+                    window.parent.toggleLexExpand();
+                    return;
+                }
+            } catch(e) {}
+            try {
+                window.parent.postMessage('expand-lex', '*');
+                window.parent.postMessage({ type: 'expand-lex' }, '*');
+            } catch(e) {}
+        }
+
+        // Trap wheel events inside iframe content to scroll chat-content smoothly and prevent scroll chaining to parent page
+        window.addEventListener('wheel', function(e) {
+            const content = document.getElementById('chat-content');
+            if (!content) return;
+            e.preventDefault();
+            content.scrollTop += e.deltaY;
+        }, { passive: false });
+
         // Listen for internal commands from parent window
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'lex_start_search') {
@@ -1305,6 +1363,10 @@
                     userInput.value = query;
                     performSearch(query);
                 }
+            }
+
+            if (event.data && (event.data === 'expand-lex' || event.data.type === 'expand-lex')) {
+                document.body.classList.toggle('is-expanded');
             }
 
             if (event.data && event.data.type === 'lex_expanded_state') {

@@ -212,22 +212,22 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 
 <!-- Lex Assistant Drawer -->
 <div id="lex-drawer" class="lex-drawer" role="dialog" aria-modal="true" aria-label="Lex Assistant">
+    <div class="lex-drawer-overlay" id="lex-drawer-overlay"></div>
     <div class="lex-drawer-panel">
+        <button type="button" class="lex-drawer-expand" id="lex-drawer-expand" aria-label="Expand or Collapse Drawer" title="Expand or Collapse Drawer">
+            <svg class="lex-icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <svg class="lex-icon-collapse" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
         <div class="lex-drawer-body">
-            <button type="button" class="lex-drawer-expand" id="lex-drawer-expand" aria-label="Expand or Collapse Drawer">
-                <svg class="lex-icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-                <svg class="lex-icon-collapse" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-            </button>
             <div class="lex-drawer-content">
-                <iframe id="lex-assistant-frame" src="<?php echo esc_url(add_query_arg('ajax_url', admin_url('admin-ajax.php'), get_template_directory_uri() . '/assets/html/lex-assistant.html')); ?>" style="width: 100%; height: 100%; border: none;" title="Lex Assistant"></iframe>
+                <iframe id="lex-assistant-frame" src="<?php echo esc_url(add_query_arg(array('ajax_url' => admin_url('admin-ajax.php'), 'v' => filemtime(get_template_directory() . '/assets/html/lex-assistant.html')), get_template_directory_uri() . '/assets/html/lex-assistant.html')); ?>" style="width: 100%; height: 100%; border: none;" title="Lex Assistant"></iframe>
             </div>
         </div>
     </div>
-    <div class="lex-drawer-overlay" id="lex-drawer-overlay"></div>
 </div>
 
 <div id="cmgalaxy-search-backdrop" class="cmgalaxy-search-backdrop"></div>
@@ -684,12 +684,24 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
 }
 
+/* Body & HTML Scroll Lock when Lex Drawer is open */
+body.lex-drawer-open {
+    overflow: hidden !important;
+    touch-action: none !important;
+}
+
+html:has(body.lex-drawer-open) {
+    overflow: hidden !important;
+}
+
 body.lex-drawer-open .lex-side-trigger {
     opacity: 0 !important;
     visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(-50%) translateX(100%) !important;
 }
 
-/* Lex Drawer */
+/* Lex Drawer Container */
 .lex-drawer {
     display: none !important;
     position: fixed !important;
@@ -702,6 +714,18 @@ body.lex-drawer-open .lex-side-trigger {
     display: block !important;
 }
 
+/* Overlay Backdrop */
+.lex-drawer-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(15, 23, 42, 0.35) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    pointer-events: auto !important;
+    z-index: 1 !important;
+}
+
+/* Drawer Sliding Panel */
 .lex-drawer-panel {
     position: absolute !important;
     top: 0 !important;
@@ -712,8 +736,9 @@ body.lex-drawer-open .lex-side-trigger {
     display: flex !important;
     flex-direction: column !important;
     animation: lexSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
-    z-index: 999999 !important;
+    z-index: 2 !important;
     pointer-events: auto !important;
+    overflow: visible !important;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
@@ -752,15 +777,7 @@ body.lex-drawer-open .lex-side-trigger {
     to { transform: translateX(100%); }
 }
 
-.lex-drawer-overlay {
-    position: absolute !important;
-    inset: 0 !important;
-    background: rgba(15, 23, 42, 0.3) !important;
-    backdrop-filter: blur(2px) !important;
-    -webkit-backdrop-filter: blur(2px) !important;
-    pointer-events: auto !important;
-}
-
+/* Side Tab Expand/Collapse Handle */
 .lex-drawer-expand {
     position: absolute !important;
     top: 50% !important;
@@ -768,7 +785,7 @@ body.lex-drawer-open .lex-side-trigger {
     transform: translateY(-50%) !important;
     background: #ffffff !important;
     border: 1.5px solid #e0e9f9 !important;
-    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.08) !important;
     border-radius: 50% !important;
     width: 36px !important;
     height: 36px !important;
@@ -776,7 +793,8 @@ body.lex-drawer-open .lex-side-trigger {
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    z-index: 101 !important;
+    z-index: 100 !important;
+    pointer-events: auto !important;
     transition: background 0.2s ease, transform 0.25s ease, left 0.3s ease !important;
     flex-shrink: 0 !important;
 }
@@ -970,6 +988,7 @@ body.lex-drawer-open .lex-side-trigger {
                     }, 400);
                 }
             }
+            syncLexExpandedState();
         }
 
         function closeDrawer() {
@@ -1002,6 +1021,12 @@ body.lex-drawer-open .lex-side-trigger {
             }
         }
 
+        // Expose helper functions globally for iframe and parent window
+        window.openLexDrawer = openDrawer;
+        window.closeLexDrawer = closeDrawer;
+        window.toggleLexExpand = toggleLexExpand;
+        window.syncLexExpandedState = syncLexExpandedState;
+
         // Restore drawer expanded & open state if needed
         function restoreLexDrawerState() {
             var state = localStorage.getItem('lex_drawer_state');
@@ -1021,18 +1046,21 @@ body.lex-drawer-open .lex-side-trigger {
         }
         restoreLexDrawerState();
 
-        // Listen for internal events from Lex Assistant iframe
+        // Listen for internal events from Lex Assistant iframe (accept both string and object)
         window.addEventListener('message', function(event) {
-            if (event.data === 'close-lex') {
+            if (!event.data) return;
+            if (event.data === 'close-lex' || (typeof event.data === 'object' && event.data.type === 'close-lex')) {
                 closeDrawer();
             }
-            if (event.data === 'expand-lex') {
+            if (event.data === 'expand-lex' || (typeof event.data === 'object' && event.data.type === 'expand-lex')) {
                 toggleLexExpand();
             }
         });
 
-        $('#lex-drawer-expand').on('click', function(e) {
+        // Edge handle expand/collapse
+        $(document).on('click', '#lex-drawer-expand', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             toggleLexExpand();
         });
 
@@ -1051,8 +1079,23 @@ body.lex-drawer-open .lex-side-trigger {
             openDrawer(q);
         });
 
-        $('#lex-drawer-overlay').on('click', function() {
+        // Close on clicking backdrop overlay
+        $(document).on('click', '#lex-drawer-overlay', function(e) {
+            e.preventDefault();
             closeDrawer();
+        });
+
+        // Close on Escape key press
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape' && $drawer.hasClass('open')) {
+                e.preventDefault();
+                closeDrawer();
+            }
+        });
+
+        // Prevent wheel / touch scroll on overlay from scrolling background
+        $('#lex-drawer-overlay').on('wheel touchmove', function(e) {
+            e.preventDefault();
         });
 
         // User Profile Dropdown Toggle
