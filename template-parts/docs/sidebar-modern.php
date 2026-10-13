@@ -251,9 +251,12 @@ $sidebar_instance_id = uniqid('docs_sb_');
                     <div class="<?php echo esc_attr($content_class); ?> cmgalaxy-sortable-sub" id="<?php echo esc_attr($sidebar_instance_id . '_' . $sec['slug']); ?>" style="<?php echo $is_active_cat ? 'display:block;' : 'display:none;'; ?>">
                         
                         <?php 
+                        $rendered_post_ids = array();
+
                         // 1. Direct posts if no subcategories (same as Docy)
                         if ($has_main_direct_posts && !$has_subcats) {
                             foreach ($main_direct_posts as $main_post) {
+                                $rendered_post_ids[] = $main_post->ID;
                                 $is_current_post = $is_single_doc && ($current_post_id == $main_post->ID);
                                 $post_wrapper_class = 'sidebar-subcat-post-item' . ($is_current_post ? ' active-article' : '');
                                 ?>
@@ -372,6 +375,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                         <?php if (!empty($ss_posts)): ?>
                                                             <div style="margin-left: 12px;">
                                                                 <?php foreach ($ss_posts as $ssp): 
+                                                                    $rendered_post_ids[] = $ssp->ID;
                                                                     $is_cur = ($current_post_id == $ssp->ID);
                                                                     $is_ssp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($ssp->ID);
                                                                 ?>
@@ -393,6 +397,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                             // Direct posts of this subcategory
                                             if ($has_sub_posts) {
                                                 foreach ($sub_posts as $sp) :
+                                                    $rendered_post_ids[] = $sp->ID;
                                                     $is_cur = ($current_post_id == $sp->ID);
                                                     $is_sp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($sp->ID);
                                                 ?>
@@ -412,9 +417,12 @@ $sidebar_instance_id = uniqid('docs_sb_');
                             <?php }
                         }
 
-                        // 3. Fallback direct posts if both exist
+                        // 3. Fallback direct posts if both exist (excluding posts already shown in subcategories)
                         if ($has_main_direct_posts && $has_subcats) {
                             foreach ($main_direct_posts as $dp) {
+                                if (in_array($dp->ID, $rendered_post_ids)) {
+                                    continue; // Do NOT duplicate posts already in subcategories!
+                                }
                                 $is_cur = ($current_post_id == $dp->ID);
                                 $is_dp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($dp->ID);
                             ?>

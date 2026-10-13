@@ -924,17 +924,11 @@ body.page-template-page-all-categories,
     height: 0px !important;
 }
 
-/* Continuous Subtle Vertical Guide Line */
-#docy-toc::before {
-    content: "" !important;
-    width: 1.5px !important;
-    background: #e2e8f0 !important;
-    position: absolute !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    z-index: 1 !important;
-    display: block !important;
+/* Right TOC Single Clean Guide Line & Overlapping Active Indicator */
+#docy-toc::before,
+#docy-toc::after {
+    display: none !important;
+    content: none !important;
 }
 
 #docy-toc ul.nav,
@@ -942,7 +936,7 @@ body.page-template-page-all-categories,
     list-style: none !important;
     padding: 0 !important;
     margin: 0 !important;
-    border-left: none !important;
+    border-left: 1.5px solid #e2e8f0 !important; /* Single continuous clean grey guide line */
 }
 
 #docy-toc li {
@@ -958,11 +952,11 @@ body.page-template-page-all-categories,
     text-decoration: none !important;
     display: block !important;
     line-height: 1.45 !important;
-    transition: color 0.15s ease !important;
-    position: relative !important;
+    transition: color 0.15s ease, border-color 0.15s ease !important;
     padding: 6px 0 6px 16px !important;
     font-weight: 400 !important;
-    border-left: none !important;
+    border-left: 2px solid transparent !important;
+    margin-left: -1.5px !important; /* Perfectly positioned directly on top of the grey line */
 }
 
 #docy-toc .nav-link:hover {
@@ -978,25 +972,7 @@ body.page-template-page-all-categories,
     font-size: 13px !important;
 }
 
-/* Active Heading Blue Indicator Line */
-#docy-toc .nav-item.active > .nav-link::before,
-#docy-toc .nav-link.active::before,
-#docy-toc li.active > a::before,
-#docy-toc li.active > .nav-link::before,
-#docy-toc .toc-h1.active > .nav-link::before,
-#docy-toc .toc-h2.active > .nav-link::before,
-#docy-toc .toc-h3.active > .nav-link::before {
-    display: block !important;
-    content: "" !important;
-    width: 2px !important;
-    background: #2563eb !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    z-index: 3 !important;
-}
-
+/* Active Heading Blue Indicator Line - Single Line Highlighting */
 #docy-toc .nav-link.active,
 #docy-toc li.active > .nav-link,
 #docy-toc .toc-h1.active > .nav-link,
@@ -1004,7 +980,14 @@ body.page-template-page-all-categories,
 #docy-toc .toc-h3.active > .nav-link {
     color: #2563eb !important;
     font-weight: 500 !important;
-    border-left: none !important;
+    border-left: 2px solid #2563eb !important;
+}
+
+/* Absolutely suppress all pseudo-element lines so only 1 single line exists */
+#docy-toc *::before,
+#docy-toc *::after {
+    display: none !important;
+    content: none !important;
 }
 
 /* Feedback & Engagement */

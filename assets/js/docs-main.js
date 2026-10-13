@@ -92,11 +92,27 @@
         });
 
         // 3. Dynamic Table of Contents (TOC) Generator & ScrollSpy
-        var $contentArea = $('.doc-article-content, .blog_single_item, .editor-content, article').first();
+        var $contentArea = $('.doc-article-content').first();
+        if (!$contentArea.length) {
+            $contentArea = $('.blog_single_item, .editor-content, article').first();
+        }
         var $tocContainer = $('#docy-toc, #docy-tocs-mobile');
         
         if ($contentArea.length && $tocContainer.length) {
-            var $headings = $contentArea.find('h2, h3');
+            // ONLY select headings in the main article body.
+            // Explicitly filter out feedback box, related guides, or footer headings!
+            var $headings = $contentArea.find('h2, h3').filter(function() {
+                var $h = $(this);
+                if ($h.closest('.cm-feedback-wrapper, #cm-feedback-form, .related-guides, .cm-related-wrapper, footer, .tags-area').length > 0) {
+                    return false;
+                }
+                var hid = ($h.attr('id') || '').toLowerCase();
+                var htxt = $h.text().toLowerCase();
+                if (hid.indexOf('feedback') !== -1 || htxt.indexOf('improve our product') !== -1 || htxt.indexOf('related guides') !== -1) {
+                    return false;
+                }
+                return true;
+            });
             
             if ($headings.length > 0) {
                 var tocListHtml = '<ul class="nav flex-column">';
@@ -117,13 +133,28 @@
                         cleanText = rawText;
                     }
                     
-                    tocListHtml += '<li class="nav-item toc-' + hTag + '">';
-                    tocListHtml += '<a class="nav-link" href="#' + hId + '">' + cleanText + '</a>';
+                    var isActiveFirst = (idx === 0) ? ' active' : '';
+                    tocListHtml += '<li class="nav-item toc-' + hTag + isActiveFirst + '">';
+                    tocListHtml += '<a class="nav-link' + isActiveFirst + '" href="#' + hId + '">' + cleanText + '</a>';
                     tocListHtml += '</li>';
                 });
                 
                 tocListHtml += '</ul>';
                 $tocContainer.html(tocListHtml);
+
+                var isSmoothScrolling = false;
+
+                function setActiveToc(id) {
+                    if (!id) return;
+                    $tocContainer.find('.nav-link').removeClass('active');
+                    $tocContainer.find('li').removeClass('active');
+                    
+                    var $currentLink = $tocContainer.find('a[href="#' + id + '"]');
+                    if ($currentLink.length) {
+                        $currentLink.addClass('active');
+                        $currentLink.closest('li').addClass('active');
+                    }
+                }
 
                 // Smooth scroll on TOC link click
                 $(document).on('click', '#docy-toc a, #docy-tocs-mobile a', function(e) {
@@ -132,44 +163,55 @@
                         var targetEl = $(href);
                         if (targetEl.length) {
                             e.preventDefault();
-                            $tocContainer.find('.nav-link').removeClass('active');
-                            $tocContainer.find('li').removeClass('active');
-                            $(this).addClass('active');
-                            $(this).closest('li').addClass('active');
+                            var targetId = href.substring(1);
+                            setActiveToc(targetId);
+                            isSmoothScrolling = true;
+                            
                             var offsetTop = targetEl.offset().top - 100;
                             $('html, body').stop().animate({
                                 scrollTop: offsetTop
-                            }, 300);
+                            }, 300, function() {
+                                setTimeout(function() {
+                                    isSmoothScrolling = false;
+                                    setActiveToc(targetId);
+                                }, 60);
+                            });
                         }
                     }
                 });
 
                 // ScrollSpy Highlighting
                 function updateTocScrollSpy() {
-                    var scrollPos = $(window).scrollTop() + 140;
+                    if (isSmoothScrolling) return;
+                    if (!$headings.length) return;
+                    
+                    var scrollTop = $(window).scrollTop();
+                    var windowHeight = $(window).height();
+                    var docHeight = $(document).height();
+
+                    // If user is scrolled near bottom of page, activate last heading
+                    if (scrollTop + windowHeight >= docHeight - 60) {
+                        var lastId = $headings.last().attr('id');
+                        setActiveToc(lastId);
+                        return;
+                    }
+
+                    var scrollPos = scrollTop + 130;
                     var activeId = '';
                     
                     $headings.each(function() {
-                        if (scrollPos >= $(this).offset().top) {
+                        var headingTop = $(this).offset().top;
+                        if (headingTop <= scrollPos) {
                             activeId = $(this).attr('id');
                         }
                     });
 
-                    // If scroll is near top of article or before first heading, default to first heading
-                    if (!activeId && $headings.length > 0) {
+                    // If before first heading or near top, activate first heading
+                    if (!activeId) {
                         activeId = $headings.first().attr('id');
                     }
 
-                    if (activeId) {
-                        $tocContainer.find('.nav-link').removeClass('active');
-                        $tocContainer.find('li').removeClass('active');
-                        
-                        var $currentLink = $tocContainer.find('a[href="#' + activeId + '"]');
-                        if ($currentLink.length) {
-                            $currentLink.addClass('active');
-                            $currentLink.closest('li').addClass('active');
-                        }
-                    }
+                    setActiveToc(activeId);
                 }
 
                 $(window).on('scroll', updateTocScrollSpy);
