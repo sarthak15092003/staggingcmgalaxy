@@ -753,10 +753,29 @@ body.lex-drawer-open .lex-side-trigger {
         display: none !important;
     }
 
-    body.lex-drawer-open .docs-col-content {
-        flex: 0 0 80% !important;
-        max-width: 80% !important;
-        width: 80% !important;
+    /* Keep Modern Left Sidebar at full, spacious width (no shrinking) */
+    body.lex-drawer-open .docs-col-sidebar,
+    body.lex-drawer-open .category-left-sidebar-col {
+        flex: 0 0 300px !important;
+        max-width: 300px !important;
+        width: 300px !important;
+        min-width: 300px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.lex-drawer-open .modern-sidebar {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Main Doc Content takes all remaining space */
+    body.lex-drawer-open .docs-col-content,
+    body.lex-drawer-open .category-main-col {
+        flex: 1 1 0% !important;
+        max-width: calc(100% - 300px) !important;
+        width: calc(100% - 300px) !important;
+        min-width: 0 !important;
     }
 }
 

@@ -622,6 +622,7 @@ body.page-template-page-all-categories,
     flex: 0 0 20% !important;
     max-width: 20% !important;
     width: 20% !important;
+    min-width: 280px !important;
     padding-right: 24px !important;
     padding-left: 0 !important;
     padding-top: 24px !important;
@@ -707,6 +708,7 @@ body.page-template-page-all-categories,
         flex: 0 0 100% !important;
         max-width: 100% !important;
         width: 100% !important;
+        min-width: 0 !important;
         border-left: none !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
