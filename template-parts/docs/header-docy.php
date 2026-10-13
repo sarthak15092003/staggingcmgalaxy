@@ -250,7 +250,19 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 }
 
 :root {
+    --cmg-adminbar-height: 0px;
     --cmg-header-height: 107px;
+    --cmg-drawer-top: 107px;
+}
+
+body.admin-bar {
+    --cmg-adminbar-height: 32px;
+}
+
+@media screen and (max-width: 782px) {
+    body.admin-bar {
+        --cmg-adminbar-height: 46px;
+    }
 }
 
 /* ========================================================
@@ -261,7 +273,7 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
     background: #ffffff !important;
     border-bottom: 1px solid #e2e8f0 !important;
     position: sticky !important;
-    top: 0 !important;
+    top: var(--cmg-adminbar-height, 0px) !important;
     z-index: 99999 !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
@@ -702,12 +714,12 @@ body.lex-drawer-open .lex-side-trigger {
 .lex-drawer {
     display: none !important;
     position: fixed !important;
-    top: var(--cmg-header-height, 107px) !important;
+    top: var(--cmg-drawer-top, calc(var(--cmg-adminbar-height, 0px) + var(--cmg-header-height, 107px))) !important;
     right: 0 !important;
     bottom: 0 !important;
     width: 420px !important;
     max-width: 95vw !important;
-    height: calc(100vh - var(--cmg-header-height, 107px)) !important;
+    height: calc(100vh - var(--cmg-drawer-top, calc(var(--cmg-adminbar-height, 0px) + var(--cmg-header-height, 107px)))) !important;
     z-index: 99990 !important;
     pointer-events: auto !important;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -720,6 +732,32 @@ body.lex-drawer-open .lex-side-trigger {
 .lex-drawer.expanded {
     width: 900px !important;
     max-width: 95vw !important;
+}
+
+/* Reflow documentation content when Lex drawer is open so no text is cut off */
+@media screen and (min-width: 992px) {
+    body.lex-drawer-open .docs-main-wrapper,
+    body.lex-drawer-open .cmgalaxy-category-content-wrap,
+    body.lex-drawer-open .site-main {
+        margin-right: 420px !important;
+        transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    body.lex-drawer-open.lex-expanded .docs-main-wrapper,
+    body.lex-drawer-open.lex-expanded .cmgalaxy-category-content-wrap,
+    body.lex-drawer-open.lex-expanded .site-main {
+        margin-right: 900px !important;
+    }
+
+    body.lex-drawer-open .docs-col-toc {
+        display: none !important;
+    }
+
+    body.lex-drawer-open .docs-col-content {
+        flex: 0 0 80% !important;
+        max-width: 80% !important;
+        width: 80% !important;
+    }
 }
 
 /* No dark/blurred backdrop overlay - documentation stays 100% visible and readable */
@@ -929,21 +967,27 @@ body.lex-drawer-open .lex-side-trigger {
             }
         });
 
-        function updateHeaderHeight() {
+        function updateDrawerPosition() {
             var $h = $('.cmgalaxy-doc-header-wrap');
             if ($h.length) {
-                var h = $h.outerHeight();
-                if (h > 50) {
-                    document.documentElement.style.setProperty('--cmg-header-height', h + 'px');
+                var rect = $h[0].getBoundingClientRect();
+                var bottom = Math.round(rect.bottom);
+                if (bottom > 40) {
+                    document.documentElement.style.setProperty('--cmg-drawer-top', bottom + 'px');
+                    var drawer = document.getElementById('lex-drawer');
+                    if (drawer) {
+                        drawer.style.top = bottom + 'px';
+                        drawer.style.height = 'calc(100vh - ' + bottom + 'px)';
+                    }
                 }
             }
         }
-        updateHeaderHeight();
-        $(window).on('resize', updateHeaderHeight);
+        updateDrawerPosition();
+        $(window).on('resize scroll', updateDrawerPosition);
 
         // Open Drawer on Ask Lex Click
         function openDrawer(query) {
-            updateHeaderHeight();
+            updateDrawerPosition();
             $drawer.removeClass('closing').addClass('open');
             $('body').addClass('lex-drawer-open');
             $suggestions.hide();
@@ -965,13 +1009,14 @@ body.lex-drawer-open .lex-side-trigger {
             localStorage.setItem('lex_drawer_state', 'closed');
             setTimeout(function() {
                 $drawer.removeClass('open closing expanded');
-                $('body').removeClass('lex-drawer-open');
+                $('body').removeClass('lex-drawer-open lex-expanded');
                 syncLexExpandedState(false);
             }, 260);
         }
 
         function toggleLexExpand() {
             $drawer.toggleClass('expanded');
+            $('body').toggleClass('lex-expanded', $drawer.hasClass('expanded'));
             var isExpanded = $drawer.hasClass('expanded');
             localStorage.setItem('lex_drawer_expanded', isExpanded ? 'true' : 'false');
             syncLexExpandedState(isExpanded);
@@ -1002,9 +1047,10 @@ body.lex-drawer-open .lex-side-trigger {
             var expanded = localStorage.getItem('lex_drawer_expanded') === 'true';
             if (expanded && $drawer.length) {
                 $drawer.addClass('expanded');
+                $('body').addClass('lex-expanded');
             }
             if (state === 'open' && $drawer.length) {
-                updateHeaderHeight();
+                updateDrawerPosition();
                 $drawer.addClass('lex-no-animation open');
                 $('body').addClass('lex-drawer-open');
                 setTimeout(function() {
