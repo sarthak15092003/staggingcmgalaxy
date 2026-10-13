@@ -265,6 +265,14 @@ function cmg_enqueue_docs_assets() {
 }
 add_action('wp_enqueue_scripts', 'cmg_enqueue_docs_assets', 20);
 
+// Prevent aggressive 30-day edge caching on docs pages so updates deploy instantly
+add_action('send_headers', function() {
+    if ( function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page() ) {
+        header('Cache-Control: public, max-age=0, must-revalidate, s-maxage=60');
+        header('X-CMG-Docs: true');
+    }
+});
+
 /**
  * 3. Robust Template Selection Filter (Prevents Page Mismatch)
  */

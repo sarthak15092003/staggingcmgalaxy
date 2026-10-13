@@ -7171,7 +7171,52 @@ add_action( 'rest_api_init', function() {
         'callback'            => 'cmg_update_articles_meta_handler',
         'permission_callback' => '__return_true',
     ] );
+
+    register_rest_route( 'cmg/v1', '/purge-cache', [
+        'methods'             => [ 'GET', 'POST' ],
+        'callback'            => 'cmg_purge_cache_handler',
+        'permission_callback' => '__return_true',
+    ] );
 } );
+
+function cmg_purge_cache_handler( WP_REST_Request $request ) {
+    $secret = 'cmg_import_2026';
+    if ( $request->get_param( 'key' ) !== $secret ) {
+        return new WP_REST_Response( [ 'error' => 'Unauthorized' ], 403 );
+    }
+
+    $actions_run = [];
+    wp_cache_flush();
+    $actions_run[] = 'wp_cache_flush';
+
+    if ( class_exists( '\Elementor\Plugin' ) ) {
+        \Elementor\Plugin::$instance->files_manager->clear_cache();
+        $actions_run[] = 'elementor_clear_cache';
+    }
+
+    if ( function_exists( 'rocket_net_purge_cache' ) ) {
+        rocket_net_purge_cache();
+        $actions_run[] = 'rocket_net_purge_cache';
+    }
+    if ( function_exists( 'rocket_purge_all' ) ) {
+        rocket_purge_all();
+        $actions_run[] = 'rocket_purge_all';
+    }
+    if ( function_exists( 'rocket_clean_domain' ) ) {
+        rocket_clean_domain();
+        $actions_run[] = 'rocket_clean_domain';
+    }
+
+    do_action( 'rocket_net_purge_cache' );
+    do_action( 'rocket_purge_all' );
+    do_action( 'wpr_purge_all' );
+    do_action( 'cloudflare_purge_cache' );
+
+    return new WP_REST_Response( [
+        'success' => true,
+        'actions' => $actions_run,
+    ], 200 );
+}
 
 function cmg_update_articles_meta_handler( WP_REST_Request $request ) {
     $secret = 'cmg_import_2026';

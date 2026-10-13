@@ -56,8 +56,10 @@ $getting_started_url = ($getting_started_term && !is_wp_error($getting_started_t
 $docs_url = get_post_type_archive_link('docs') ? get_post_type_archive_link('docs') : home_url('/docs/');
 $signin_url = add_query_arg('redirect_to', urlencode($current_url), home_url('/signin/'));
 
-$logo_url = file_exists(get_template_directory() . '/assets/images/kblogo.svg')
-    ? get_template_directory_uri() . '/assets/images/kblogo.svg'
+$logo_file = get_template_directory() . '/assets/images/kblogo.svg';
+$logo_ver = file_exists($logo_file) ? filemtime($logo_file) : time();
+$logo_url = file_exists($logo_file)
+    ? add_query_arg('v', $logo_ver, get_template_directory_uri() . '/assets/images/kblogo.svg')
     : 'https://docs.cmgalaxy.com/wp-content/themes/docy/assets/img/kblogo.svg';
 
 $lex_logo_url = file_exists(get_template_directory() . '/assets/images/lexlogo.svg')
@@ -78,7 +80,7 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
             
             <!-- Logo Section -->
             <div class="cmgalaxy-logo-section">
-                <a href="<?php echo esc_url(home_url('/')); ?>" class="cmgalaxy-logo-link" title="CMGalaxy Knowledge Base">
+                <a href="<?php echo esc_url($docs_url); ?>" class="cmgalaxy-logo-link" title="CMGalaxy Knowledge Base">
                     <img src="<?php echo esc_url($logo_url); ?>" alt="CMGALAXY Knowledge Base" class="cmgalaxy-logo-img">
                 </a>
             </div>
@@ -86,7 +88,8 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
             <!-- Search Section -->
             <div class="cmgalaxy-search-section">
                 <div class="cmgalaxy-search-row">
-                    <form action="<?php echo esc_url(home_url('/')); ?>" class="cmgalaxy-search-form" method="get" role="search">
+                    <form action="<?php echo esc_url($docs_url); ?>" class="cmgalaxy-search-form" method="get" role="search">
+                        <input type="hidden" name="post_type" value="docs">
                         <div class="search-input-wrapper">
                             <!-- Magnifying Glass Icon -->
                             <svg class="search-icon-left" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -170,7 +173,7 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
         <div class="cmgalaxy-nav-menu">
             <ul class="cmgalaxy-main-nav">
                 <li class="nav-item <?php echo !$is_get_started_active ? 'active' : ''; ?>">
-                    <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-link">Home</a>
+                    <a href="<?php echo esc_url($docs_url); ?>" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>">
                     <a href="<?php echo esc_url($getting_started_url); ?>" class="nav-link">Get Started</a>
@@ -211,6 +214,22 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 <div id="cmgalaxy-search-backdrop" class="cmgalaxy-search-backdrop"></div>
 
 <style>
+/* Suppress marketing navbars whenever doc header is present */
+.ekit-template-content-header,
+.cm-navbar,
+.cmgalaxy-subnav-bar {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
 /* ========================================================
    CMGALAXY DOCS HEADER STYLES (EXACT DOCY MATCH)
    ======================================================== */
