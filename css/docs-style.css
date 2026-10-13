@@ -674,7 +674,7 @@ body.page-template-page-all-categories,
     flex: 0 0 20% !important;
     max-width: 20% !important;
     width: 20% !important;
-    border-left: 1px solid #e2e8f0 !important;
+    border-left: none !important;
     padding-left: 24px !important;
     padding-right: 0 !important;
     padding-top: 24px !important;
