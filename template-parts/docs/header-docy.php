@@ -555,7 +555,8 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 
 /* Sub-Navigation Bar */
 .cmgalaxy-nav-menu {
-    border-top: 1px solid #f1f5f9 !important;
+    border: none !important;
+    border-top: none !important;
     padding: 0 !important;
     margin: 0 !important;
 }
