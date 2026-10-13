@@ -62,6 +62,12 @@ $logo_url = file_exists($logo_file)
     ? add_query_arg('v', $logo_ver, get_template_directory_uri() . '/assets/images/kblogo.svg')
     : 'https://docs.cmgalaxy.com/wp-content/themes/docy/assets/img/kblogo.svg';
 
+$logo_png_file = get_template_directory() . '/assets/images/kblogo.png';
+$logo_png_ver  = file_exists($logo_png_file) ? filemtime($logo_png_file) : $logo_ver;
+$logo_png_url  = file_exists($logo_png_file)
+    ? add_query_arg('v', $logo_png_ver, get_template_directory_uri() . '/assets/images/kblogo.png')
+    : $logo_url;
+
 $lex_logo_url = file_exists(get_template_directory() . '/assets/images/lexlogo.svg')
     ? get_template_directory_uri() . '/assets/images/lexlogo.svg'
     : 'https://docs.cmgalaxy.com/wp-content/themes/docy/assets/img/lexlogo.svg';
@@ -81,7 +87,20 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
             <!-- Logo Section -->
             <div class="cmgalaxy-logo-section">
                 <a href="<?php echo esc_url($docs_url); ?>" class="cmgalaxy-logo-link" title="CMGalaxy Knowledge Base">
-                    <img src="<?php echo esc_url($logo_url); ?>" alt="CMGALAXY Knowledge Base" class="cmgalaxy-logo-img">
+                    <picture class="cmgalaxy-logo-picture">
+                        <source srcset="<?php echo esc_url($logo_url); ?>" type="image/svg+xml">
+                        <img src="<?php echo esc_url($logo_png_url); ?>" 
+                             alt="CMGALAXY Knowledge Base" 
+                             class="cmgalaxy-logo-img"
+                             width="160"
+                             height="40"
+                             loading="eager"
+                             decoding="sync"
+                             fetchpriority="high"
+                             data-no-lazy="1"
+                             data-skip-lazy="1"
+                             onerror="if(!this.dataset.triedPng){this.dataset.triedPng='1';this.src='<?php echo esc_url($logo_png_url); ?>';}">
+                    </picture>
                 </a>
             </div>
 
@@ -264,8 +283,14 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 }
 
 .cmgalaxy-logo-link {
-    display: block !important;
+    display: inline-flex !important;
+    align-items: center !important;
     text-decoration: none !important;
+}
+
+.cmgalaxy-logo-picture {
+    display: inline-block !important;
+    line-height: 0 !important;
 }
 
 .cmgalaxy-logo-img {
@@ -274,6 +299,8 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
     width: auto !important;
     display: block !important;
     object-fit: contain !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .cmgalaxy-search-section {

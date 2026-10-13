@@ -1493,5 +1493,29 @@ body[class*="docs"] .cm-navbar,
     border: none !important;
 }
 
+/* Logo Persistence & Display Defense */
+.cmgalaxy-logo-section {
+    flex-shrink: 0 !important;
+    min-width: 200px !important;
+}
 
+.cmgalaxy-logo-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+}
 
+.cmgalaxy-logo-picture {
+    display: inline-block !important;
+    line-height: 0 !important;
+}
+
+.cmgalaxy-logo-img {
+    height: 40px !important;
+    max-height: 44px !important;
+    width: auto !important;
+    display: block !important;
+    object-fit: contain !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
