@@ -22,10 +22,9 @@ $is_https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($
 $current_url = ($is_https ? "https://" : "http://") . $http_host . $request_uri;
 $s_value = get_search_query() ? get_search_query() : '';
 
-// Check active navigation states
-$is_home_active = is_front_page() || (is_home() && !is_post_type_archive('docs'));
 $post_obj = get_post();
 $post_name = ($post_obj && isset($post_obj->post_name)) ? $post_obj->post_name : '';
+$is_home_active = is_front_page() || is_home() || is_post_type_archive('docs') || is_page_template('page-templates/template-docs-home.php') || (is_page() && in_array($post_name, array('docs', 'kb', 'knowledge-base')));
 $is_docs_active = is_singular('docs') || is_tax('doc_category') || is_tax('doc_tag') || is_tax('doc_dir') || is_post_type_archive('docs') || (is_page() && in_array($post_name, array('docs', 'kb', 'knowledge-base')));
 
 $is_get_started_active = false;
