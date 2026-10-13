@@ -1549,3 +1549,318 @@ function lex_live_search_handler() {
 }
 add_action('wp_ajax_lex_live_search', 'lex_live_search_handler');
 add_action('wp_ajax_nopriv_lex_live_search', 'lex_live_search_handler');
+
+/**
+ * Call AI service for Lex Assistant query processing and direct answering
+ */
+function lex_call_openai($query, $force_direct = false) {
+    $api_url = 'https://text.pollinations.ai/openai';
+
+    if ($force_direct) {
+        $prompt = "You are Lex, a technical expert for CMGalaxy. ANSWER THE USER'S QUESTION DIRECTLY AND EXPERTLY: \"" . addslashes($query) . "\".\n\n" .
+                  "1. Provide a clear technical guide or explanation.\n" .
+                  "2. Use bullet points.\n" .
+                  "3. NO greeting filler.\n\n" .
+                  "Always respond in this exact JSON format only:\n" .
+                  "{\"answer\":\"your substantive technical answer here\",\"keywords\":\"\"}";
+    } else {
+        $prompt = "You are Lex, the AI assistant for 'CMGalaxy'.\n\n" .
+                  "GOAL: Extract the core search keywords from the user's question so we can search our knowledge base.\n\n" .
+                  "STRICT RULES:\n" .
+                  "1. 'answer': Leave this EMPTY string. Do NOT generate any answer, explanation, or article content. Do NOT make up articles or CMGalaxy features. Only the knowledge base search results will be shown.\n" .
+                  "2. 'keywords': Extract ONLY the 1-2 most important technical words from the query (e.g. 'whatsapp', 'dv360', 'report'). Ignore filler words like 'is there', 'any', 'related to', 'article about'.\n\n" .
+                  "IMPORTANT: Always respond in this exact JSON format only:\n" .
+                  "{\n" .
+                  "  \"answer\": \"\",\n" .
+                  "  \"keywords\": \"technical word(s) only\"\n" .
+                  "}";
+    }
+
+    $body = json_encode([
+        'model' => 'openai',
+        'messages' => [
+            ['role' => 'system', 'content' => 'You always reply in valid JSON using the requested schema.'],
+            ['role' => 'user', 'content' => $prompt]
+        ],
+        'temperature' => 0.1,
+        'jsonMode' => true
+    ]);
+
+    $response = wp_remote_post($api_url, [
+        'headers'   => [
+            'Content-Type'  => 'application/json'
+        ],
+        'body'      => $body,
+        'timeout'   => 15,
+        'sslverify' => false,
+    ]);
+
+    if (is_wp_error($response)) {
+        error_log('Lex OpenAI Error: ' . $response->get_error_message());
+        return null;
+    }
+
+    $body_response = trim(wp_remote_retrieve_body($response));
+    if (empty($body_response)) return null;
+
+    if (strpos($body_response, '{') === 0) {
+        $json_body = json_decode($body_response, true);
+        if (isset($json_body['choices'][0]['message']['content'])) {
+            $text = $json_body['choices'][0]['message']['content'];
+        } else {
+            $text = $body_response; 
+        }
+    } else {
+        $text = $body_response;
+    }
+
+    if (!$text) return null;
+
+    $clean = trim($text);
+    $clean = preg_replace('/^```(?:json)?\s*/i', '', $clean);
+    $clean = preg_replace('/\s*```$/i', '', $clean);
+    
+    if (preg_match('/\{.*\}/s', $clean, $matches)) {
+        $clean = $matches[0];
+    }
+    
+    $result = json_decode($clean, true);
+
+    if (!$result && !empty($clean)) {
+        return [
+            'answer' => $clean,
+            'keywords' => ''
+        ];
+    }
+    
+    return $result;
+}
+
+/**
+ * Handle Lex Assistant chat and documentation queries
+ */
+function lex_chat_query_handler() {
+    $original_query = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
+    if (empty($original_query)) {
+        wp_send_json_error(['message' => 'Please enter a search term or question.']);
+        wp_die();
+    }
+
+    // Ask OpenAI to classify and respond
+    $ai = lex_call_openai($original_query);
+    
+    $answer = isset($ai['answer']) ? $ai['answer'] : '';
+    $search_term = isset($ai['keywords']) ? $ai['keywords'] : '';
+
+    if (isset($ai['type']) && $ai['type'] === 'error') {
+        wp_send_json_error(['message' => $ai['text']]);
+        wp_die();
+    }
+
+    // Determine the search term: use AI keywords or fall back to manual cleaning
+    if (!$search_term && empty($answer)) {
+        $stop_phrases = [
+            'open article which tell', 'open article which tells', 'open article about',
+            'open article in', 'open article', 'find article about', 'find article in',
+            'find article', 'tell me about', 'search for', 'look for', 'how to',
+            'where is', 'what is', 'show me', 'which tell', 'which tells', 'i want to',
+            'can you', 'please', 'help me with', 'about', 'total number of', 'total number',
+            'count of', 'how many', 'number of', 'articles in', 'article in', 'articles', 'article'
+        ];
+        $q = str_ireplace($stop_phrases, '', $original_query);
+        $short_stops = ['the', 'a', 'an', 'in', 'on', 'to', 'for', 'of', 'with', 'at', 'by', 'is'];
+        foreach ($short_stops as $word) {
+            $q = preg_replace('/\b' . $word . '\b/i', '', $q);
+        }
+        $mappings = [
+            'on board' => 'onboarding', 'platfrom' => 'platform',
+            'getting stated' => 'getting started',
+        ];
+        foreach ($mappings as $wrong => $right) {
+            $q = str_ireplace($wrong, $right, $q);
+        }
+        $search_term = trim(preg_replace('/\s+/', ' ', $q)) ?: $original_query;
+    }
+
+    $post_types = ['docs', 'post'];
+
+    $args = [
+        's'              => $search_term,
+        'post_type'      => $post_types,
+        'posts_per_page' => 10,
+        'post_status'    => 'publish',
+        'orderby'        => 'relevance'
+    ];
+
+    $query = new WP_Query($args);
+    $candidates = [];
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $candidates[get_the_ID()] = [
+                'id' => get_the_ID(),
+                'title' => get_the_title(),
+                'excerpt' => get_the_excerpt(),
+                'content' => get_the_content(),
+                'url' => get_permalink(),
+                'type' => get_post_type()
+            ];
+        }
+    }
+
+    // Attempt fuzzy taxonomy/original match
+    $cleaned_q = str_ireplace(['how to', 'share', 'report'], '', strtolower($original_query));
+    if (strlen(trim($cleaned_q)) > 2) {
+        $args['s'] = $original_query;
+        $query2 = new WP_Query($args);
+        while ($query2->have_posts()) {
+            $query2->the_post();
+            $candidates[get_the_ID()] = [
+                'id' => get_the_ID(),
+                'title' => get_the_title(),
+                'excerpt' => get_the_excerpt(),
+                'content' => get_the_content(),
+                'url' => get_permalink(),
+                'type' => get_post_type()
+            ];
+        }
+    }
+
+    $scored_results = [];
+    $search_words = explode(' ', strtolower($search_term . ' ' . $original_query));
+    $search_words = array_unique(array_filter($search_words, function($w) {
+        return strlen($w) > 2 && !in_array($w, ['how', 'the', 'for', 'and', 'with', 'setup']);
+    }));
+
+    foreach ($candidates as $post_id => $data) {
+        $score = 0;
+        $title = strtolower($data['title']);
+        $excerpt = strtolower($data['excerpt']);
+        $content = strtolower($data['content'] ?? '');
+
+        if (!empty($search_term) && stripos($title, strtolower($search_term)) !== false) {
+            $score += 80;
+            if (preg_match('/\b' . preg_quote(strtolower($search_term), '/') . '\b/i', $title)) {
+                $score += 40;
+            }
+        }
+        
+        foreach ($search_words as $w) {
+            if (stripos($title, $w) !== false) $score += 30;
+            if (stripos($excerpt, $w) !== false) $score += 15;
+            if (!empty($content) && stripos($content, $w) !== false) $score += 10;
+        }
+
+        if (!empty($search_term) && strlen($search_term) > 3) {
+            $in_title = (stripos($title, $search_term) !== false);
+            $in_excerpt = (stripos($excerpt, $search_term) !== false);
+            $in_content = (stripos($content, $search_term) !== false);
+
+            if (!$in_title && !$in_excerpt && !$in_content) {
+                $score -= 150; 
+            } elseif ($in_content && !$in_title) {
+                $score += 60;
+            }
+        }
+
+        if (!empty($search_term) && stripos(trim($title), strtolower($search_term)) === 0) $score += 50;
+
+        $exact_generic_pages = ['Meta Ads', 'Reporting Hub', 'Documentation', 'CMGalaxy Knowledge Base'];
+        foreach ($exact_generic_pages as $gp) {
+            if (trim($data['title']) === $gp || stripos($title, $gp) !== false) {
+                if (stripos($original_query, $gp) === false && count($search_words) > 1) {
+                    $score -= 60;
+                }
+            }
+        }
+
+        if ($score > 30) {
+            $scored_results[] = [
+                'score' => $score,
+                'title' => $data['title'],
+                'url' => $data['url'],
+                'excerpt' => wp_trim_words($data['excerpt'] ?: wp_strip_all_tags($data['content']), 20),
+                'type' => $data['type'] === 'docs' ? 'Docs' : ucfirst($data['type'])
+            ];
+        }
+    }
+
+    usort($scored_results, function ($a, $b) {
+        return $b['score'] - $a['score'];
+    });
+
+    $results = $scored_results;
+    wp_reset_postdata();
+
+    if (!empty($results)) {
+        $actual_total = count($results);
+        $display_results = array_slice($results, 0, 5);
+        $article_text = $actual_total == 1 ? 'article' : 'articles';
+
+        if (empty($answer)) {
+            $ai_fb = lex_call_openai($original_query, true);
+            $answer = $ai_fb['answer'] ?? '';
+        }
+
+        $suggest_msg = " I also found {$actual_total} {$article_text} that might help you:";
+        if (preg_match('/(how many|total|number|count)/i', trim($original_query))) {
+            $suggest_msg = " There are {$actual_total} {$article_text} related to \"{$search_term}\". Here's the list:";
+        }
+
+        wp_send_json_success([
+            'message' => (!empty($answer) ? $answer . "\n\n" : "") . $suggest_msg,
+            'results' => $display_results
+        ]);
+    } else {
+        // Fallback: If no strict scored results, attempt a broad query before giving up
+        $fallback_args = [
+            's'              => $search_term ?: $original_query,
+            'post_type'      => $post_types,
+            'posts_per_page' => 4,
+            'post_status'    => 'publish',
+            'orderby'        => 'relevance'
+        ];
+        $fb_q = new WP_Query($fallback_args);
+        $fb_results = [];
+        if ($fb_q->have_posts()) {
+            while ($fb_q->have_posts()) {
+                $fb_q->the_post();
+                $fb_results[] = [
+                    'title' => get_the_title(),
+                    'url' => get_permalink(),
+                    'excerpt' => wp_trim_words(get_the_excerpt() ?: wp_strip_all_tags(get_the_content()), 20),
+                    'type' => get_post_type() === 'docs' ? 'Docs' : ucfirst(get_post_type())
+                ];
+            }
+            wp_reset_postdata();
+        }
+
+        if (!empty($fb_results)) {
+            wp_send_json_success([
+                'message' => "Here are some relevant articles from our knowledge base:",
+                'results' => $fb_results
+            ]);
+        } else {
+            if (empty($answer)) {
+                $ai_direct = lex_call_openai($original_query, true);
+                $answer = $ai_direct['answer'] ?? '';
+            }
+
+            if (!empty($answer)) {
+                wp_send_json_success([
+                    'message' => $answer,
+                    'results' => []
+                ]);
+            } else {
+                wp_send_json_success([
+                    'message' => "I couldn't find any articles related to \"" . esc_html($original_query) . "\" in the knowledge base. Try different keywords or browse the categories.",
+                    'results' => []
+                ]);
+            }
+        }
+    }
+    wp_die();
+}
+add_action('wp_ajax_lex_chat_query', 'lex_chat_query_handler');
+add_action('wp_ajax_nopriv_lex_chat_query', 'lex_chat_query_handler');

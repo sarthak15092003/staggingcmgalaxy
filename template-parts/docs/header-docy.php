@@ -714,6 +714,12 @@ body.lex-drawer-open .lex-side-trigger {
     animation: lexSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
     z-index: 999999 !important;
     pointer-events: auto !important;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.lex-drawer-panel.expanded {
+    width: 900px !important;
+    max-width: 95vw !important;
 }
 
 .lex-drawer-body {
@@ -728,6 +734,12 @@ body.lex-drawer-open .lex-side-trigger {
 
 .lex-drawer.closing .lex-drawer-panel {
     animation: lexSlideOut 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+.lex-drawer.lex-no-animation .lex-drawer-panel,
+.lex-drawer.lex-no-animation .lex-drawer-overlay {
+    animation: none !important;
+    transition: none !important;
 }
 
 @keyframes lexSlideIn {
@@ -755,7 +767,8 @@ body.lex-drawer-open .lex-side-trigger {
     left: -18px !important;
     transform: translateY(-50%) !important;
     background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
+    border: 1.5px solid #e0e9f9 !important;
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05) !important;
     border-radius: 50% !important;
     width: 36px !important;
     height: 36px !important;
@@ -764,6 +777,70 @@ body.lex-drawer-open .lex-side-trigger {
     justify-content: center !important;
     cursor: pointer !important;
     z-index: 101 !important;
+    transition: background 0.2s ease, transform 0.25s ease, left 0.3s ease !important;
+    flex-shrink: 0 !important;
+}
+
+.lex-drawer-expand:hover {
+    background: #f8fafc !important;
+    transform: translateY(-50%) scale(1.1) !important;
+}
+
+.lex-icon-collapse {
+    display: none !important;
+}
+
+.lex-icon-expand {
+    display: block !important;
+}
+
+.lex-drawer-panel.expanded .lex-icon-expand {
+    display: none !important;
+}
+
+.lex-drawer-panel.expanded .lex-icon-collapse {
+    display: block !important;
+}
+
+.lex-side-trigger {
+    position: fixed !important;
+    right: -18px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 99999 !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-left: 6px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.lex-side-trigger:hover {
+    right: -10px !important;
+    background: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+}
+
+.lex-side-trigger svg {
+    transition: transform 0.3s ease !important;
+}
+
+.lex-side-trigger:hover svg {
+    transform: translateX(-2px) !important;
+}
+
+body.lex-drawer-open .lex-side-trigger {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(-50%) translateX(100%) !important;
 }
 
 .lex-drawer-content {
@@ -883,6 +960,7 @@ body.lex-drawer-open .lex-side-trigger {
             $drawer.removeClass('closing').addClass('open');
             $('body').addClass('lex-drawer-open');
             $suggestions.hide();
+            localStorage.setItem('lex_drawer_state', 'open');
 
             if (query) {
                 var iframe = document.getElementById('lex-assistant-frame');
@@ -896,11 +974,71 @@ body.lex-drawer-open .lex-side-trigger {
 
         function closeDrawer() {
             $drawer.addClass('closing');
+            localStorage.setItem('lex_drawer_state', 'closed');
             setTimeout(function() {
                 $drawer.removeClass('open closing');
                 $('body').removeClass('lex-drawer-open');
             }, 280);
         }
+
+        function toggleLexExpand() {
+            var $panel = $('.lex-drawer-panel');
+            $panel.toggleClass('expanded');
+            var isExpanded = $panel.hasClass('expanded');
+            localStorage.setItem('lex_drawer_expanded', isExpanded ? 'true' : 'false');
+            syncLexExpandedState(isExpanded);
+        }
+
+        function syncLexExpandedState(isExpanded) {
+            var iframe = document.getElementById('lex-assistant-frame');
+            if (iframe && iframe.contentWindow) {
+                if (typeof isExpanded === 'undefined') {
+                    isExpanded = $('.lex-drawer-panel').hasClass('expanded');
+                }
+                iframe.contentWindow.postMessage({
+                    type: 'lex_expanded_state',
+                    expanded: isExpanded
+                }, '*');
+            }
+        }
+
+        // Restore drawer expanded & open state if needed
+        function restoreLexDrawerState() {
+            var state = localStorage.getItem('lex_drawer_state');
+            var expanded = localStorage.getItem('lex_drawer_expanded') === 'true';
+            var $panel = $('.lex-drawer-panel');
+            if (expanded && $panel.length) {
+                $panel.addClass('expanded');
+            }
+            if (state === 'open' && $drawer.length) {
+                $drawer.addClass('lex-no-animation open');
+                $('body').addClass('lex-drawer-open');
+                setTimeout(function() {
+                    $drawer.removeClass('lex-no-animation');
+                    syncLexExpandedState();
+                }, 300);
+            }
+        }
+        restoreLexDrawerState();
+
+        // Listen for internal events from Lex Assistant iframe
+        window.addEventListener('message', function(event) {
+            if (event.data === 'close-lex') {
+                closeDrawer();
+            }
+            if (event.data === 'expand-lex') {
+                toggleLexExpand();
+            }
+        });
+
+        $('#lex-drawer-expand').on('click', function(e) {
+            e.preventDefault();
+            toggleLexExpand();
+        });
+
+        $('#lex-assistant-frame').on('load', function() {
+            syncLexExpandedState();
+        });
 
         $('#cmg-ask-lex-btn, #lex-side-trigger').on('click', function(e) {
             e.preventDefault();
