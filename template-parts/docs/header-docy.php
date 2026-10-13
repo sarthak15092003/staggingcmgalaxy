@@ -114,7 +114,8 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
             <div class="cmgalaxy-actions">
                 <?php if (is_user_logged_in()) : 
                     $current_user = wp_get_current_user();
-                    $display_name = !empty($current_user->first_name) ? $current_user->first_name : $current_user->display_name;
+                    $brand_name = get_user_meta($current_user->ID, 'brand_name', true);
+                    $display_name = !empty($brand_name) ? $brand_name : (!empty($current_user->first_name) ? $current_user->first_name : $current_user->display_name);
                     $initial = strtoupper(substr($display_name, 0, 1));
                     $user_email = $current_user->user_email;
                 ?>
