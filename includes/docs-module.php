@@ -173,13 +173,62 @@ function cmgalaxy_is_docs_page() {
     return false;
 }
 
-// Prevent Elementor Theme Builder from overriding header on docs pages
+// Prevent Elementor Theme Builder and ElementsKit from overriding header on docs pages
 add_filter('elementor/theme/need_override_location', function($need_override, $location) {
     if ($location === 'header' && function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page()) {
         return false;
     }
     return $need_override;
 }, 999, 2);
+
+add_filter('elementskit/header-footer/is_header_active', function($active) {
+    if (function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page()) {
+        return false;
+    }
+    return $active;
+}, 999);
+
+add_filter('elementskit/template/is_header_active', function($active) {
+    if (function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page()) {
+        return false;
+    }
+    return $active;
+}, 999);
+
+add_filter('elementskit/header_footer/render', function($render) {
+    if (function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page()) {
+        return false;
+    }
+    return $render;
+}, 999);
+
+add_filter('elementskit/header-footer/header_template', function($template) {
+    if (function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page()) {
+        return 0;
+    }
+    return $template;
+}, 999);
+
+// Remove ElementsKit callbacks from wp_body_open and get_header on docs pages
+add_action('wp', function() {
+    if (function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page()) {
+        global $wp_filter;
+        foreach (array('wp_body_open', 'get_header') as $hook_tag) {
+            if (isset($wp_filter[$hook_tag]) && is_object($wp_filter[$hook_tag])) {
+                foreach ($wp_filter[$hook_tag]->callbacks as $priority => $callbacks) {
+                    foreach ($callbacks as $idx => $callback) {
+                        if (is_array($callback['function']) && is_object($callback['function'][0])) {
+                            $class_name = get_class($callback['function'][0]);
+                            if (stripos($class_name, 'elementskit') !== false) {
+                                remove_action($hook_tag, $callback['function'], $priority);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}, 999);
 
 /**
  * 2. Enqueue Docs Styles & Scripts

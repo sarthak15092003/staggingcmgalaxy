@@ -1387,4 +1387,35 @@ body.page-template-page-all-categories,
     display: none !important;
 }
 
+/* ========================================================
+   SUPPRESS MARKETING NAVBAR / ELEMENTSKIT ON DOCS PAGES
+   ======================================================== */
+body.single-docs .ekit-template-content-header,
+body.tax-doc_category .ekit-template-content-header,
+body.tax-doc_tag .ekit-template-content-header,
+body.tax-doc_dir .ekit-template-content-header,
+body.post-type-archive-docs .ekit-template-content-header,
+body.page-template-template-docs-home .ekit-template-content-header,
+body.page-template-page-all-categories .ekit-template-content-header,
+body.docs-template-default .ekit-template-content-header,
+body[class*="docs"] .ekit-template-content-header,
+body.single-docs .cm-navbar,
+body.tax-doc_category .cm-navbar,
+body.post-type-archive-docs .cm-navbar,
+body.docs-template-default .cm-navbar,
+body[class*="docs"] .cm-navbar,
+.cmgalaxy-subnav-bar {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+
 

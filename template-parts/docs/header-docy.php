@@ -16,12 +16,17 @@ if (defined('CMG_DOCS_HEADER_RENDERED') || !empty($GLOBALS['cmg_docs_header_rend
 define('CMG_DOCS_HEADER_RENDERED', true);
 $GLOBALS['cmg_docs_header_rendered'] = true;
 
-$current_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$http_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+$request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+$is_https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+$current_url = ($is_https ? "https://" : "http://") . $http_host . $request_uri;
 $s_value = get_search_query() ? get_search_query() : '';
 
 // Check active navigation states
 $is_home_active = is_front_page() || (is_home() && !is_post_type_archive('docs'));
-$is_docs_active = is_singular('docs') || is_tax('doc_category') || is_tax('doc_tag') || is_tax('doc_dir') || is_post_type_archive('docs') || (is_page() && in_array(get_post()->post_name ?? '', array('docs', 'kb', 'knowledge-base')));
+$post_obj = get_post();
+$post_name = ($post_obj && isset($post_obj->post_name)) ? $post_obj->post_name : '';
+$is_docs_active = is_singular('docs') || is_tax('doc_category') || is_tax('doc_tag') || is_tax('doc_dir') || is_post_type_archive('docs') || (is_page() && in_array($post_name, array('docs', 'kb', 'knowledge-base')));
 
 $is_get_started_active = false;
 if (is_tax('doc_category')) {
@@ -162,40 +167,16 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 
         </div>
 
-        <!-- Sub-Navigation Bar Row -->
+        <!-- Sub-Navigation Bar Row (Home and Get Started tabs matching docs.cmgalaxy.com) -->
         <div class="cmgalaxy-nav-menu">
-            <?php
-            if (has_nav_menu('main_menu')) {
-                wp_nav_menu(array(
-                    'theme_location' => 'main_menu',
-                    'container'      => false,
-                    'menu_class'     => 'cmgalaxy-main-nav',
-                    'depth'          => 2,
-                    'fallback_cb'    => false,
-                ));
-            } else {
-            ?>
-                <ul class="cmgalaxy-main-nav">
-                    <li class="nav-item <?php echo $is_home_active ? 'active' : ''; ?>">
-                        <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-link">Home</a>
-                    </li>
-                    <li class="nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>">
-                        <a href="<?php echo esc_url($getting_started_url); ?>" class="nav-link">Get Started</a>
-                    </li>
-                    <li class="nav-item <?php echo ($is_docs_active && !$is_get_started_active) ? 'active' : ''; ?>">
-                        <a href="<?php echo esc_url($docs_url); ?>" class="nav-link">Docs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo esc_url(home_url('/guide/')); ?>" class="nav-link">Guide</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo esc_url(home_url('/faqs/')); ?>" class="nav-link">FAQs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo esc_url(home_url('/api-docs/')); ?>" class="nav-link">API Docs</a>
-                    </li>
-                </ul>
-            <?php } ?>
+            <ul class="cmgalaxy-main-nav">
+                <li class="nav-item <?php echo ($is_home_active && !$is_get_started_active) ? 'active' : ''; ?>">
+                    <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>">
+                    <a href="<?php echo esc_url($getting_started_url); ?>" class="nav-link">Get Started</a>
+                </li>
+            </ul>
         </div>
 
     </div>

@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 
 get_header('docs');
 
-get_template_part('template-parts/docs/header-subnav');
+get_template_part('template-parts/docs/header-docy');
 
 $current_doc_id = get_the_ID();
 $terms = get_the_terms($current_doc_id, 'doc_category');

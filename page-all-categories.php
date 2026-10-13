@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 
 get_header('docs');
 
-get_template_part('template-parts/docs/header-subnav');
+get_template_part('template-parts/docs/header-docy');
 
 $taxonomy = taxonomy_exists('doc_category') ? 'doc_category' : 'category';
 $terms = get_terms(array(
