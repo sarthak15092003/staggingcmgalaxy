@@ -249,6 +249,10 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
     border: none !important;
 }
 
+:root {
+    --cmg-header-height: 107px;
+}
+
 /* ========================================================
    CMGALAXY DOCS HEADER STYLES (EXACT DOCY MATCH)
    ======================================================== */
@@ -256,8 +260,9 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
     width: 100% !important;
     background: #ffffff !important;
     border-bottom: 1px solid #e2e8f0 !important;
-    position: relative !important;
-    z-index: 9999 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 99999 !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
@@ -684,16 +689,7 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
 }
 
-/* Body & HTML Scroll Lock when Lex Drawer is open */
-body.lex-drawer-open {
-    overflow: hidden !important;
-    touch-action: none !important;
-}
-
-html:has(body.lex-drawer-open) {
-    overflow: hidden !important;
-}
-
+/* Floating Lex Side Tab Trigger */
 body.lex-drawer-open .lex-side-trigger {
     opacity: 0 !important;
     visibility: hidden !important;
@@ -701,50 +697,48 @@ body.lex-drawer-open .lex-side-trigger {
     transform: translateY(-50%) translateX(100%) !important;
 }
 
-/* Lex Drawer Container */
+/* Lex Drawer: side companion panel below the sticky header (matches docs.cmgalaxy.com) */
 .lex-drawer {
     display: none !important;
     position: fixed !important;
-    inset: 0 !important;
-    z-index: 999999 !important;
-    pointer-events: none !important;
+    top: var(--cmg-header-height, 107px) !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 420px !important;
+    max-width: 95vw !important;
+    height: calc(100vh - var(--cmg-header-height, 107px)) !important;
+    z-index: 99990 !important;
+    pointer-events: auto !important;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .lex-drawer.open {
     display: block !important;
 }
 
-/* Overlay Backdrop */
+.lex-drawer.expanded {
+    width: 900px !important;
+    max-width: 95vw !important;
+}
+
+/* No dark/blurred backdrop overlay - documentation stays 100% visible and readable */
 .lex-drawer-overlay {
-    position: absolute !important;
-    inset: 0 !important;
-    background: rgba(15, 23, 42, 0.35) !important;
-    backdrop-filter: blur(2px) !important;
-    -webkit-backdrop-filter: blur(2px) !important;
-    pointer-events: auto !important;
-    z-index: 1 !important;
+    display: none !important;
 }
 
 /* Drawer Sliding Panel */
 .lex-drawer-panel {
-    position: absolute !important;
-    top: 0 !important;
-    right: 0 !important;
-    height: 100vh !important;
-    width: 420px !important;
-    max-width: 95vw !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    animation: lexSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
-    z-index: 2 !important;
+    animation: lexSlideIn 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
     pointer-events: auto !important;
-    overflow: visible !important;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.lex-drawer-panel.expanded {
-    width: 900px !important;
-    max-width: 95vw !important;
+.lex-drawer.expanded .lex-drawer-panel {
+    width: 100% !important;
 }
 
 .lex-drawer-body {
@@ -752,17 +746,16 @@ body.lex-drawer-open .lex-side-trigger {
     width: 100% !important;
     height: 100% !important;
     background: #ffffff !important;
-    box-shadow: -12px 0 48px rgba(15, 23, 42, 0.18) !important;
-    border-left: 1.5px solid #e2e8f0 !important;
+    box-shadow: -8px 0 24px rgba(15, 23, 42, 0.08) !important;
+    border-left: 1px solid #e2e8f0 !important;
     overflow: hidden !important;
 }
 
 .lex-drawer.closing .lex-drawer-panel {
-    animation: lexSlideOut 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    animation: lexSlideOut 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
 }
 
-.lex-drawer.lex-no-animation .lex-drawer-panel,
-.lex-drawer.lex-no-animation .lex-drawer-overlay {
+.lex-drawer.lex-no-animation .lex-drawer-panel {
     animation: none !important;
     transition: none !important;
 }
@@ -777,47 +770,9 @@ body.lex-drawer-open .lex-side-trigger {
     to { transform: translateX(100%); }
 }
 
-/* Side Tab Expand/Collapse Handle */
+/* Clean border edge - expand/close is handled in header icons */
 .lex-drawer-expand {
-    position: absolute !important;
-    top: 50% !important;
-    left: -18px !important;
-    transform: translateY(-50%) !important;
-    background: #ffffff !important;
-    border: 1.5px solid #e0e9f9 !important;
-    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.08) !important;
-    border-radius: 50% !important;
-    width: 36px !important;
-    height: 36px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    z-index: 100 !important;
-    pointer-events: auto !important;
-    transition: background 0.2s ease, transform 0.25s ease, left 0.3s ease !important;
-    flex-shrink: 0 !important;
-}
-
-.lex-drawer-expand:hover {
-    background: #f8fafc !important;
-    transform: translateY(-50%) scale(1.1) !important;
-}
-
-.lex-icon-collapse {
     display: none !important;
-}
-
-.lex-icon-expand {
-    display: block !important;
-}
-
-.lex-drawer-panel.expanded .lex-icon-expand {
-    display: none !important;
-}
-
-.lex-drawer-panel.expanded .lex-icon-collapse {
-    display: block !important;
 }
 
 .lex-side-trigger {
@@ -973,8 +928,21 @@ body.lex-drawer-open .lex-side-trigger {
             }
         });
 
+        function updateHeaderHeight() {
+            var $h = $('.cmgalaxy-doc-header-wrap');
+            if ($h.length) {
+                var h = $h.outerHeight();
+                if (h > 50) {
+                    document.documentElement.style.setProperty('--cmg-header-height', h + 'px');
+                }
+            }
+        }
+        updateHeaderHeight();
+        $(window).on('resize', updateHeaderHeight);
+
         // Open Drawer on Ask Lex Click
         function openDrawer(query) {
+            updateHeaderHeight();
             $drawer.removeClass('closing').addClass('open');
             $('body').addClass('lex-drawer-open');
             $suggestions.hide();
@@ -995,15 +963,15 @@ body.lex-drawer-open .lex-side-trigger {
             $drawer.addClass('closing');
             localStorage.setItem('lex_drawer_state', 'closed');
             setTimeout(function() {
-                $drawer.removeClass('open closing');
+                $drawer.removeClass('open closing expanded');
                 $('body').removeClass('lex-drawer-open');
-            }, 280);
+                syncLexExpandedState(false);
+            }, 260);
         }
 
         function toggleLexExpand() {
-            var $panel = $('.lex-drawer-panel');
-            $panel.toggleClass('expanded');
-            var isExpanded = $panel.hasClass('expanded');
+            $drawer.toggleClass('expanded');
+            var isExpanded = $drawer.hasClass('expanded');
             localStorage.setItem('lex_drawer_expanded', isExpanded ? 'true' : 'false');
             syncLexExpandedState(isExpanded);
         }
@@ -1012,7 +980,7 @@ body.lex-drawer-open .lex-side-trigger {
             var iframe = document.getElementById('lex-assistant-frame');
             if (iframe && iframe.contentWindow) {
                 if (typeof isExpanded === 'undefined') {
-                    isExpanded = $('.lex-drawer-panel').hasClass('expanded');
+                    isExpanded = $drawer.hasClass('expanded');
                 }
                 iframe.contentWindow.postMessage({
                     type: 'lex_expanded_state',
@@ -1031,11 +999,11 @@ body.lex-drawer-open .lex-side-trigger {
         function restoreLexDrawerState() {
             var state = localStorage.getItem('lex_drawer_state');
             var expanded = localStorage.getItem('lex_drawer_expanded') === 'true';
-            var $panel = $('.lex-drawer-panel');
-            if (expanded && $panel.length) {
-                $panel.addClass('expanded');
+            if (expanded && $drawer.length) {
+                $drawer.addClass('expanded');
             }
             if (state === 'open' && $drawer.length) {
+                updateHeaderHeight();
                 $drawer.addClass('lex-no-animation open');
                 $('body').addClass('lex-drawer-open');
                 setTimeout(function() {
@@ -1057,32 +1025,20 @@ body.lex-drawer-open .lex-side-trigger {
             }
         });
 
-        // Edge handle expand/collapse
-        $(document).on('click', '#lex-drawer-expand', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleLexExpand();
-        });
-
-        $('#lex-assistant-frame').on('load', function() {
-            syncLexExpandedState();
-        });
-
+        // Toggle drawer on Ask Lex or side trigger
         $('#cmg-ask-lex-btn, #lex-side-trigger').on('click', function(e) {
             e.preventDefault();
-            var q = $searchInput.val().trim();
-            openDrawer(q);
+            if ($drawer.hasClass('open')) {
+                closeDrawer();
+            } else {
+                var q = $searchInput.val().trim();
+                openDrawer(q);
+            }
         });
 
         $(document).on('click', '#cmg-suggest-ask-lex', function() {
             var q = $searchInput.val().trim();
             openDrawer(q);
-        });
-
-        // Close on clicking backdrop overlay
-        $(document).on('click', '#lex-drawer-overlay', function(e) {
-            e.preventDefault();
-            closeDrawer();
         });
 
         // Close on Escape key press
@@ -1091,11 +1047,6 @@ body.lex-drawer-open .lex-side-trigger {
                 e.preventDefault();
                 closeDrawer();
             }
-        });
-
-        // Prevent wheel / touch scroll on overlay from scrolling background
-        $('#lex-drawer-overlay').on('wheel touchmove', function(e) {
-            e.preventDefault();
         });
 
         // User Profile Dropdown Toggle
