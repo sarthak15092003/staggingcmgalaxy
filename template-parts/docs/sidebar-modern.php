@@ -257,9 +257,9 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                 $is_current_post = $is_single_doc && ($current_post_id == $main_post->ID);
                                 $post_wrapper_class = 'sidebar-subcat-post-item' . ($is_current_post ? ' active-article' : '');
                                 ?>
-                                <div class="<?php echo esc_attr($post_wrapper_class); ?>" style="padding: 8px 12px 8px 36px; position: relative;">
+                                <div class="<?php echo esc_attr($post_wrapper_class); ?>" style="padding: 6px 12px 6px 20px; position: relative;">
                                     <?php if ($is_current_post): ?>
-                                        <div class="active-indicator-bar" style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                        <div class="active-indicator-bar" style="position: absolute; left: 4px; top: 50%; transform: translateY(-50%); width: 2.5px; height: 18px; background: #2563eb; border-radius: 3px;"></div>
                                     <?php endif; ?>
                                     <a href="<?php echo esc_url(get_permalink($main_post->ID)); ?>" title="<?php echo esc_attr($main_post->post_title); ?>">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($main_post->post_title); ?></span>
@@ -344,10 +344,10 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                     </div>
 
                                     <?php if ($has_children) : ?>
-                                        <div class="sub-subcategories" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; border-left: 2px solid #e2e8f0; margin-left: 24px;">
+                                        <div class="sub-subcategories" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; margin-left: 16px;">
                                             
                                             <?php 
-                                            // Render Sub-subcategories (Level 3)
+                                             // Render Sub-subcategories (Level 3)
                                             if ($has_sub_subcats) {
                                                 foreach ($sub_subcats as $ss) {
                                                     $is_ss_active = in_array($ss->slug, $current_categories);
@@ -370,14 +370,14 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                             📁 <?php echo esc_html($ss->name); ?>
                                                         </a>
                                                         <?php if (!empty($ss_posts)): ?>
-                                                            <div style="border-left: 1px solid #cbd5e1; margin-left: 12px;">
+                                                            <div style="margin-left: 12px;">
                                                                 <?php foreach ($ss_posts as $ssp): 
                                                                     $is_cur = ($current_post_id == $ssp->ID);
                                                                     $is_ssp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($ssp->ID);
                                                                 ?>
-                                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 5px 8px 5px 14px; position: relative;">
+                                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 6px 10px 6px 14px; position: relative;">
                                                                         <?php if ($is_cur): ?>
-                                                                            <div class="active-indicator-bar" style="position: absolute; left: -2px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                                                            <div class="active-indicator-bar" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2.5px; height: 18px; background: #2563eb; border-radius: 3px;"></div>
                                                                         <?php endif; ?>
                                                                         <a href="<?php echo esc_url(get_permalink($ssp->ID)); ?>" title="<?php echo esc_attr($ssp->post_title); ?>" style="display:flex; align-items:center;">
                                                                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($ssp->post_title); ?></span>
@@ -396,9 +396,9 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                     $is_cur = ($current_post_id == $sp->ID);
                                                     $is_sp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($sp->ID);
                                                 ?>
-                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 16px; position: relative;">
+                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 6px 10px 6px 14px; position: relative;">
                                                         <?php if ($is_cur): ?>
-                                                            <div class="active-indicator-bar" style="position: absolute; left: -2px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                                            <div class="active-indicator-bar" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2.5px; height: 18px; background: #2563eb; border-radius: 3px;"></div>
                                                         <?php endif; ?>
                                                         <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" title="<?php echo esc_attr($sp->post_title); ?>" style="display:flex; align-items:center;">
                                                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($sp->post_title); ?></span>
@@ -418,9 +418,9 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                 $is_cur = ($current_post_id == $dp->ID);
                                 $is_dp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($dp->ID);
                             ?>
-                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 7px 8px 7px 36px; position: relative;">
+                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 6px 12px 6px 20px; position: relative;">
                                     <?php if ($is_cur): ?>
-                                        <div class="active-indicator-bar" style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6; border-radius: 1px;"></div>
+                                        <div class="active-indicator-bar" style="position: absolute; left: 4px; top: 50%; transform: translateY(-50%); width: 2.5px; height: 18px; background: #2563eb; border-radius: 3px;"></div>
                                     <?php endif; ?>
                                     <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>" title="<?php echo esc_attr($dp->post_title); ?>" style="display:flex; align-items:center;">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($dp->post_title); ?></span>
