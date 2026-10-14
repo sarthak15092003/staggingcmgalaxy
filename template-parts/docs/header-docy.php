@@ -203,6 +203,68 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
     </div>
 </header>
 
+<!-- Docy Mobile Sticky Navigation Bar -->
+<div class="mobile_main_menu dark_menu" id="mobile-sticky">
+    <div class="container" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; padding: 0 16px !important; box-sizing: border-box !important;">
+        <div class="mobile_menu_left" style="display: flex !important; align-items: center !important; gap: 10px !important;">
+            <button type="button" class="navbar-toggler mobile_menu_btn" aria-label="Toggle navigation" style="background: transparent !important; border: none !important; padding: 6px !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+                <span class="menu_toggle">
+                    <span class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </span>
+            </button>
+            <div class="cmgalaxy-mobile-logo">
+                <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
+                    <img src="<?php echo esc_url($logo_png_url); ?>" alt="CMGalaxy Logo" style="height: 32px !important; width: 32px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
+                    <span class="cmgalaxy-mobile-logo-text" style="font-size: 16px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
+                </a>
+            </div>
+        </div>
+        <div class="mobile_menu_right" style="display: flex !important; align-items: center !important; gap: 10px !important;">
+            <!-- Mobile Ask Lex Trigger Icon -->
+            <button type="button" class="mobile-ask-lex-btn" id="mobile-ask-lex-btn" aria-label="Ask Lex AI" title="Ask Lex" style="background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 50% !important; width: 36px !important; height: 36px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; padding: 0 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;">
+                <img src="<?php echo esc_url($lex_logo_url); ?>" alt="Lex" style="width: 18px !important; height: 18px !important; display: block !important;">
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Docy Mobile Slide-out Drawer Navigation (Left) -->
+<div class="side_menu dark_menu" id="cmg-mobile-side-menu">
+    <div class="mobile_menu_header" style="position: sticky !important; top: 0 !important; background: #ffffff !important; z-index: 1000 !important; display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 14px 20px !important; border-bottom: 1px solid #e5e7eb !important; margin: 0 !important;">
+        <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
+            <img src="<?php echo esc_url($logo_png_url); ?>" alt="CMGalaxy Logo" style="height: 28px !important; width: 28px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
+            <span class="cmgalaxy-mobile-logo-text" style="font-size: 15px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
+        </a>
+        <div class="close_nav" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Mobile Top Navigation Tabs (Home & Get Started) -->
+    <div class="mobile-top-nav-tabs" style="padding: 10px 18px !important; background: #f8fafc !important; border-bottom: 1px solid #f1f5f9 !important; display: flex !important; gap: 16px !important;">
+        <a href="<?php echo esc_url($docs_url); ?>" style="font-size: 14px !important; font-weight: <?php echo !$is_get_started_active ? '700' : '500'; ?> !important; color: <?php echo !$is_get_started_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; padding: 4px 0 !important; border-bottom: 2px solid <?php echo !$is_get_started_active ? '#2563eb' : 'transparent'; ?> !important;">Home</a>
+        <a href="<?php echo esc_url($getting_started_url); ?>" style="font-size: 14px !important; font-weight: <?php echo $is_get_started_active ? '700' : '500'; ?> !important; color: <?php echo $is_get_started_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; padding: 4px 0 !important; border-bottom: 2px solid <?php echo $is_get_started_active ? '#2563eb' : 'transparent'; ?> !important;">Get Started</a>
+    </div>
+
+    <div class="mobile_nav_wrapper" style="padding: 0 !important; margin: 0 !important;">
+        <nav class="mobile_nav_bottom" style="padding: 12px 14px 40px 14px !important; margin: 0 !important;">
+            <div class="mobile-sidebar-container" style="margin: 0 !important; padding: 0 !important;">
+                <?php get_template_part('template-parts/docs/sidebar-modern'); ?>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<!-- Backdrop Overlay for Mobile Drawer Navigation -->
+<div class="click_capture" id="cmg-click-capture"></div>
+
 <!-- Floating Lex Side Tab Trigger -->
 <button id="lex-side-trigger" class="lex-side-trigger" aria-label="Open Lex Assistant">
     <svg width="12" height="20" viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -894,6 +956,131 @@ body.lex-drawer-open .lex-side-trigger {
         white-space: nowrap !important;
     }
 }
+
+/* ========================================================
+   DOCY EXACT MOBILE HEADER & DRAWER SYSTEM
+   ======================================================== */
+.mobile_main_menu {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    /* Hide desktop header wrapper on mobile/tablet */
+    .cmgalaxy-doc-header-wrap,
+    header.cmgalaxy-doc-header-wrap,
+    #docy-header.cmgalaxy-doc-header-wrap {
+        display: none !important;
+    }
+
+    /* Show Docy mobile header bar */
+    .mobile_main_menu {
+        display: block !important;
+        position: sticky !important;
+        top: var(--cmg-adminbar-height, 0px) !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        z-index: 100000 !important;
+        padding: 12px 0 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Hamburger button */
+    .menu_toggle {
+        width: 24px !important;
+        height: 20px !important;
+        position: relative !important;
+        cursor: pointer !important;
+        display: block !important;
+    }
+
+    .hamburger {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .hamburger span {
+        display: block !important;
+        width: 100% !important;
+        height: 2.2px !important;
+        background: #1e293b !important;
+        border-radius: 2px !important;
+        margin: 4.5px 0 !important;
+        transition: all 0.25s ease !important;
+    }
+
+    /* Side Navigation Drawer (Left) */
+    .side_menu.dark_menu,
+    .side_menu {
+        position: fixed !important;
+        top: 0 !important;
+        left: -330px !important;
+        width: 310px !important;
+        max-width: 85vw !important;
+        height: 100% !important;
+        background: #ffffff !important;
+        z-index: 100002 !important;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.12) !important;
+        overflow-y: auto !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        display: block !important;
+    }
+
+    .side_menu.menu-opened,
+    body.menu-is-opened .side_menu {
+        left: 0 !important;
+        box-shadow: 5px 0 25px rgba(0,0,0,0.18) !important;
+    }
+
+    /* Click Capture Overlay */
+    .click_capture {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(15, 23, 42, 0.5) !important;
+        z-index: 100001 !important;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.25s ease !important;
+    }
+
+    .click_capture.show,
+    body.menu-is-opened .click_capture {
+        display: block !important;
+        opacity: 1 !important;
+    }
+
+    body.menu-is-opened {
+        overflow: hidden !important;
+    }
+
+    /* Content Area Spacing on Mobile */
+    .docs-main-wrapper {
+        padding-top: 16px !important;
+        padding-bottom: 90px !important;
+    }
+
+    .docs-main-wrapper .docs-container,
+    .docs-container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    /* Article title on mobile */
+    .single-doc-title {
+        font-size: 26px !important;
+        line-height: 1.25 !important;
+        margin-top: 10px !important;
+    }
+}
 </style>
 
 <script>
@@ -914,6 +1101,50 @@ body.lex-drawer-open .lex-side-trigger {
                 e.preventDefault();
                 $searchInput.focus();
             }
+        });
+
+        // ==========================================
+        // DOCY MOBILE MENU & DRAWER TOGGLE CONTROLS
+        // ==========================================
+        function openMobileDrawer(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            $('#cmg-mobile-side-menu').addClass('menu-opened');
+            $('#cmg-click-capture').addClass('show').fadeIn(200);
+            $('body').addClass('menu-is-opened').removeClass('menu-is-closed');
+        }
+
+        function closeMobileDrawer(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            $('#cmg-mobile-side-menu').removeClass('menu-opened');
+            $('#cmg-click-capture').removeClass('show').fadeOut(200);
+            $('body').removeClass('menu-is-opened').addClass('menu-is-closed');
+        }
+
+        $(document).on('click', '.mobile_menu_btn, .menu_toggle', openMobileDrawer);
+        $(document).on('click', '.close_nav, #cmg-click-capture', closeMobileDrawer);
+
+        // When navigation link inside mobile drawer is clicked, close drawer
+        $(document).on('click', '#cmg-mobile-side-menu a', function(e) {
+            var $link = $(this);
+            if (!$link.closest('.expand-icon').length && !$link.closest('.expand-icon-subcat').length) {
+                var href = $link.attr('href');
+                if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+                    closeMobileDrawer();
+                }
+            }
+        });
+
+        // Mobile Ask Lex button handler
+        $(document).on('click', '#mobile-ask-lex-btn', function(e) {
+            e.preventDefault();
+            closeMobileDrawer();
+            openDrawer('');
         });
 
         // Live Search Input Listener

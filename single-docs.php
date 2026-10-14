@@ -452,5 +452,197 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
     </div>
 </div>
 
+<!-- Docy Mobile Floating Bottom Action Bar & Sheets (Mobile View) -->
+<div class="sc-jtXEFf jrBzsJ" id="cm-bottom-action-bar">
+    <div class="sc-eldieg eYVFtH">
+        <div class="overlay" id="toc-overlay"></div>
+        <button class="sc-kiIyQV fqmceZ table_content" aria-expanded="false" aria-controls="docy-tocs">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span>On this Page</span>
+        </button>
+        <aside class="bottom_table_content" id="docy-tocs" aria-hidden="true">
+            <button class="close-toc" aria-label="Close Table of Contents">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h6 class="toc-title mb-3">On this Page</h6>
+            <nav class="nav-sidebar doc-nav" id="docy-tocs-mobile"></nav>
+        </aside>
+        <button class="sc-kiIyQV fqmceZ table_share_btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+            <span>Share</span>
+        </button>
+        <div class="docy-modal-content" id="share-modal" aria-hidden="true">
+            <button class="close docy-close" aria-label="Close Share Modal">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="docy-share-wrap">
+                <p class="share-modal-title">Share</p>
+                <div class="social-links" style="display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: nowrap;">
+                    <!-- Copy Link Button -->
+                    <button type="button" class="share-social-icon cm-copy-action-btn" data-url="<?php the_permalink(); ?>" title="Copy link" style="width: 46px; height: 46px; border-radius: 50%; background: #f1f5f9; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; justify-content: center; color: #3b82f6; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                    <!-- WhatsApp -->
+                    <a href="https://api.whatsapp.com/send?text=<?php echo urlencode(get_the_title() . ' ' . get_permalink()); ?>" target="_blank" rel="noopener noreferrer" class="share-social-icon" title="WhatsApp" style="width: 46px; height: 46px; border-radius: 50%; background: #25D366; display: inline-flex; align-items: center; justify-content: center; color: #ffffff; text-decoration: none; flex-shrink: 0;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
+                    </a>
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>" target="_blank" rel="noopener noreferrer" class="share-social-icon" title="Facebook" style="width: 46px; height: 46px; border-radius: 50%; background: #1877F2; display: inline-flex; align-items: center; justify-content: center; color: #ffffff; text-decoration: none; flex-shrink: 0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </a>
+                    <!-- LinkedIn -->
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?php echo urlencode(get_permalink()); ?>" target="_blank" rel="noopener noreferrer" class="share-social-icon" title="LinkedIn" style="width: 46px; height: 46px; border-radius: 50%; background: #0A66C2; display: inline-flex; align-items: center; justify-content: center; color: #ffffff; text-decoration: none; flex-shrink: 0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                    </a>
+                    <!-- Twitter/X -->
+                    <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(get_permalink()); ?>&text=<?php echo urlencode(get_the_title()); ?>" target="_blank" rel="noopener noreferrer" class="share-social-icon" title="X" style="width: 46px; height: 46px; border-radius: 50%; background: #000000; display: inline-flex; align-items: center; justify-content: center; color: #ffffff; text-decoration: none; flex-shrink: 0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="cm-copy-toast" style="display: none; color: #10b981; font-size: 13px; text-align: center; margin-top: 16px; font-weight: 500;">Link copied to clipboard!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function($) {
+    'use strict';
+    $(document).ready(function() {
+        var tocVisible = false;
+        var shareModalVisible = false;
+
+        // Toggle Table of Contents sheet
+        $('.table_content').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $toc = $('#docy-tocs');
+            var $overlay = $('#toc-overlay');
+
+            if ($toc.is(':visible')) {
+                $toc.hide();
+                $overlay.hide();
+                tocVisible = false;
+            } else {
+                $('#share-modal').hide();
+                shareModalVisible = false;
+                $toc.css({'display': 'flex'}).show();
+                $overlay.show();
+                tocVisible = true;
+            }
+        });
+
+        // Close TOC when clicking close button
+        $('.close-toc').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#docy-tocs').hide();
+            $('#toc-overlay').hide();
+            tocVisible = false;
+        });
+
+        // Toggle Share Modal
+        $('.table_share_btn').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $modal = $('#share-modal');
+            var $overlay = $('#toc-overlay');
+
+            if (shareModalVisible) {
+                $modal.hide();
+                $overlay.hide();
+                shareModalVisible = false;
+            } else {
+                $('#docy-tocs').hide();
+                tocVisible = false;
+                $modal.show();
+                $overlay.show();
+                shareModalVisible = true;
+            }
+        });
+
+        // Close Share Modal
+        $('.docy-close').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#share-modal').hide();
+            $('#toc-overlay').hide();
+            shareModalVisible = false;
+        });
+
+        // Close when clicking outside overlay
+        $('#toc-overlay').on('click', function(e) {
+            e.preventDefault();
+            $('#docy-tocs').hide();
+            $('#share-modal').hide();
+            $(this).hide();
+            tocVisible = false;
+            shareModalVisible = false;
+        });
+
+        // Copy link action button
+        $(document).on('click', '.cm-copy-action-btn', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('data-url') || window.location.href;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(url);
+            } else {
+                var $temp = $('<input>');
+                $('body').append($temp);
+                $temp.val(url).select();
+                document.execCommand("copy");
+                $temp.remove();
+            }
+            var $toast = $('#share-modal .cm-copy-toast');
+            if ($toast.length) {
+                $toast.stop().fadeIn(200).delay(1800).fadeOut(300);
+            }
+        });
+
+        // Footer observer to hide mobile action bar near page bottom
+        function checkFooterHideBar() {
+            var $bar = $('#cm-bottom-action-bar');
+            var $footer = $('footer, .footer_area, .doc_footer_top, .footer-content, .footer-copyright, #colophon').first();
+            if (!$bar.length || !$footer.length) return;
+
+            var footerRect = $footer[0].getBoundingClientRect();
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            if (footerRect.top <= vh + 15) {
+                $bar.addClass('hidden-by-footer');
+            } else {
+                $bar.removeClass('hidden-by-footer');
+            }
+        }
+
+        window.addEventListener('scroll', checkFooterHideBar, { passive: true });
+        window.addEventListener('resize', checkFooterHideBar, { passive: true });
+        checkFooterHideBar();
+    });
+})(jQuery);
+</script>
+
 <?php
 get_footer();
