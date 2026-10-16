@@ -384,7 +384,7 @@ body.page-template-page-all-categories,
 }
 
 .section-header.active {
-    background: #eff6ff !important;
+    background: #dbeafe2b !important;
 }
 
 .section-icon {
@@ -404,9 +404,9 @@ body.page-template-page-all-categories,
 }
 
 .section-title {
-    font-size: 14.5px;
+    font-size: 13px !important;
     font-weight: 500;
-    color: #334155;
+    color: #161c52 !important;
     flex: 1;
     text-decoration: none;
     white-space: nowrap;
@@ -416,11 +416,11 @@ body.page-template-page-all-categories,
 }
 
 .section-header:hover .section-title {
-    color: #1e293b;
+    color: #161c52 !important;
 }
 
 .section-header.active .section-title {
-    color: #1e40af !important;
+    color: #161c52 !important;
     font-weight: 600 !important;
 }
 

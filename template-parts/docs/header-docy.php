@@ -444,10 +444,10 @@ body.admin-bar {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(15, 23, 42, 0.5) !important;
+    background: rgba(15, 23, 42, 0.35) !important;
     backdrop-filter: blur(4px) !important;
     -webkit-backdrop-filter: blur(4px) !important;
-    z-index: 99998 !important;
+    z-index: 99990 !important;
     display: none;
     opacity: 0;
     transition: opacity 0.25s ease !important;
@@ -459,70 +459,69 @@ body.search-popup-active .cmgalaxy-search-backdrop {
     opacity: 1 !important;
 }
 
-/* Header dimming to match exact body fade when search is active */
-body.search-popup-active .cmgalaxy-doc-header-wrap {
-    background: rgba(15, 23, 42, 0.5) !important;
+/* Header dimming & blurring to match exact body fade when search is active */
+body.search-popup-active .cmgalaxy-doc-header-wrap::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(15, 23, 42, 0.35) !important;
     backdrop-filter: blur(4px) !important;
     -webkit-backdrop-filter: blur(4px) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: none !important;
+    z-index: 10 !important;
+    pointer-events: none !important;
 }
 
 body.search-popup-active .cmgalaxy-logo-section,
 body.search-popup-active .cmgalaxy-actions,
 body.search-popup-active .cmgalaxy-nav-menu {
-    opacity: 0.35 !important;
+    position: relative !important;
+    z-index: 1 !important;
     pointer-events: none !important;
-    transition: opacity 0.25s ease !important;
-}
-
-body.search-popup-active .cmgalaxy-logo-img {
-    filter: brightness(0) invert(1) !important;
-}
-
-body.search-popup-active .cmgalaxy-main-nav .nav-link,
-body.search-popup-active .cmgalaxy-signin-btn,
-body.search-popup-active .cmg-user-name {
-    color: #ffffff !important;
-}
-
-body.search-popup-active .cmgalaxy-signin-icon {
-    filter: brightness(0) invert(1) !important;
 }
 
 body.search-popup-active .cmgalaxy-ask-lex-btn {
     display: none !important;
 }
 
-/* Elevated search section and input */
+/* Elevated search section and input (Exact Image 1 Match) */
 .cmgalaxy-search-section {
-    position: relative;
-    transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    z-index: 5 !important;
+    transition: all 0.25s ease !important;
 }
 
 .cmgalaxy-search-section.popup-active {
     position: relative !important;
-    z-index: 100002 !important;
-    max-width: 780px !important;
+    z-index: 20 !important;
+    max-width: 620px !important;
+}
+
+.cmgalaxy-search-input::placeholder {
+    font-style: italic !important;
+    color: #94a3b8 !important;
 }
 
 .cmgalaxy-search-section.popup-active .cmgalaxy-search-input {
     background: #ffffff !important;
-    height: 50px !important;
-    line-height: 50px !important;
-    font-size: 15px !important;
-    padding: 0 45px 0 44px !important;
-    border-color: #3b82f6 !important;
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.22), 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    font-size: 14px !important;
+    padding: 0 24px !important;
+    border: 1.5px solid #60a5fa !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25) !important;
 }
 
 .cmgalaxy-search-section.popup-active .search-icon-left {
-    color: #3b82f6 !important;
+    display: none !important;
 }
 
 .cmgalaxy-search-section.popup-active .cmgalaxy-search-suggestions {
     z-index: 100003 !important;
-    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22) !important;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18) !important;
 }
 
 .cmgalaxy-search-loader {
