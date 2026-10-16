@@ -66,7 +66,7 @@ body.page-template-page-all-categories,
     background-repeat: no-repeat;
     background-size: cover;
     padding: 60px 0 45px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: none;
 }
 
 .banner-support-title {
@@ -210,6 +210,23 @@ body.page-template-page-all-categories,
 /* ==========================================================================
    HOMEPAGE CATEGORY GRID & CARDS
    ========================================================================== */
+.doc_blog_grid_area {
+    padding: 40px 160px 80px !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 1200px) {
+    .doc_blog_grid_area {
+        padding: 40px 60px 60px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .doc_blog_grid_area {
+        padding: 30px 20px 50px !important;
+    }
+}
+
 .category-intro {
     font-size: 18px !important;
     font-weight: 400 !important;

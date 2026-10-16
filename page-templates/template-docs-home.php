@@ -112,9 +112,9 @@ if (!empty($docy_categories)) {
     <!-- Exact Search Banner from Docy -->
     <?php get_template_part('template-parts/docs/search-banner'); ?>
 
-    <section class="doc_blog_grid_area" style="padding: 40px 0 80px;">
+    <section class="doc_blog_grid_area">
         
-        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="container">
             
             <div class="row">
                 <div class="col-12">
