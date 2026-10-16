@@ -459,19 +459,35 @@ body.search-popup-active .cmgalaxy-search-backdrop {
     opacity: 1 !important;
 }
 
-/* Header dimming when search is active */
+/* Header dimming to match exact body fade when search is active */
 body.search-popup-active .cmgalaxy-doc-header-wrap {
-    background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
 }
 
 body.search-popup-active .cmgalaxy-logo-section,
 body.search-popup-active .cmgalaxy-actions,
 body.search-popup-active .cmgalaxy-nav-menu {
-    opacity: 0.25 !important;
+    opacity: 0.35 !important;
     pointer-events: none !important;
     transition: opacity 0.25s ease !important;
+}
+
+body.search-popup-active .cmgalaxy-logo-img {
+    filter: brightness(0) invert(1) !important;
+}
+
+body.search-popup-active .cmgalaxy-main-nav .nav-link,
+body.search-popup-active .cmgalaxy-signin-btn,
+body.search-popup-active .cmg-user-name {
+    color: #ffffff !important;
+}
+
+body.search-popup-active .cmgalaxy-signin-icon {
+    filter: brightness(0) invert(1) !important;
 }
 
 body.search-popup-active .cmgalaxy-ask-lex-btn {

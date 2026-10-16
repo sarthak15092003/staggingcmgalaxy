@@ -52,6 +52,79 @@ $custom_icons = array(
     'Teads Dashboard'           => 'https://docs.cmgalaxy.com/wp-content/uploads/2026/07/teads.png',
     'UTM Parameters Guidelines' => 'https://docs.cmgalaxy.com/wp-content/uploads/2026/07/UTM-.png'
 );
+
+$custom_order = array(
+    'getting started'           => 1,
+    'account management'        => 2,
+    'account mangement'         => 2,
+    'user management'           => 3,
+    'user manegement'           => 3,
+    'master dashboard'          => 4,
+    'main dashboard'            => 5,
+    'funnel attribution'        => 6,
+    'integrations'              => 7,
+    'google dashboard'          => 8,
+    'meta dashboard'            => 9,
+    'linkedin dashboard'        => 10,
+    'teads dashboard'           => 11,
+    'pinterest dashboard'       => 12,
+    'dv360 dashboard'           => 13,
+    'amazon dashboard'          => 14,
+    'recommendation'            => 15,
+    'milestone'                 => 16,
+    'notification center'       => 17,
+    'ticket/ support'           => 18,
+    'tickets / supports'        => 18,
+    'tickets / support'         => 18,
+    'ticket / support'          => 18,
+    'reporting hub'             => 19,
+    'reporting hub '            => 19,
+    'lex'                       => 20,
+    'user journey'              => 21
+);
+
+$custom_order_slugs = array(
+    'getting-started'           => 1,
+    'account-management'        => 2,
+    'user-management'           => 3,
+    'master-dashboard'          => 4,
+    'main-dashboard'            => 5,
+    'funnel-attribution'        => 6,
+    'integrations'              => 7,
+    'google-dashboard'          => 8,
+    'meta-dashboard'            => 9,
+    'linkedin-dashboard'        => 10,
+    'teads-dashboard'           => 11,
+    'pinterest-dashboard'       => 12,
+    'dv360-dashboard'           => 13,
+    'amazon-dashboard'          => 14,
+    'recommendation'            => 15,
+    'milestone'                 => 16,
+    'notification-center'       => 17,
+    'ticket-support'            => 18,
+    'tickets-supports'          => 18,
+    'reporting-hub'             => 19,
+    'lex'                       => 20,
+    'user-journey'              => 21
+);
+
+if (!empty($terms) && !is_wp_error($terms)) {
+    usort($terms, function($a, $b) use ($custom_order, $custom_order_slugs) {
+        $title_a = strtolower(trim($a->name));
+        $title_b = strtolower(trim($b->name));
+        $slug_a = strtolower(trim($a->slug));
+        $slug_b = strtolower(trim($b->slug));
+
+        $pos_a = isset($custom_order[$title_a]) ? $custom_order[$title_a] : (isset($custom_order_slugs[$slug_a]) ? $custom_order_slugs[$slug_a] : 999);
+        $pos_b = isset($custom_order[$title_b]) ? $custom_order[$title_b] : (isset($custom_order_slugs[$slug_b]) ? $custom_order_slugs[$slug_b] : 999);
+
+        if ($pos_a !== $pos_b) {
+            return $pos_a - $pos_b;
+        }
+
+        return strcasecmp($a->name, $b->name);
+    });
+}
 ?>
 
 <div class="docs-main-wrapper" style="padding-top: 32px; padding-bottom: 64px;">

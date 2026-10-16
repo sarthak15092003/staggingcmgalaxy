@@ -873,10 +873,50 @@ function cmgalaxy_sort_terms_by_order( $a, $b ) {
     $val_a = ($order_a !== '') ? intval($order_a) : 9999;
     $val_b = ($order_b !== '') ? intval($order_b) : 9999;
     
-    if ( $val_a == $val_b ) {
-        return $a->term_id - $b->term_id;
+    if ( $val_a !== $val_b ) {
+        return ( $val_a < $val_b ) ? -1 : 1;
     }
-    return ( $val_a < $val_b ) ? -1 : 1;
+
+    $custom_order = array(
+        'getting started'           => 1,
+        'account management'        => 2,
+        'account mangement'         => 2,
+        'user management'           => 3,
+        'user manegement'           => 3,
+        'master dashboard'          => 4,
+        'main dashboard'            => 5,
+        'funnel attribution'        => 6,
+        'integrations'              => 7,
+        'google dashboard'          => 8,
+        'meta dashboard'            => 9,
+        'linkedin dashboard'        => 10,
+        'teads dashboard'           => 11,
+        'pinterest dashboard'       => 12,
+        'dv360 dashboard'           => 13,
+        'amazon dashboard'          => 14,
+        'recommendation'            => 15,
+        'milestone'                 => 16,
+        'notification center'       => 17,
+        'ticket/ support'           => 18,
+        'tickets / supports'        => 18,
+        'tickets / support'         => 18,
+        'ticket / support'          => 18,
+        'reporting hub'             => 19,
+        'lex'                       => 20,
+        'user journey'              => 21
+    );
+
+    $name_a = strtolower(trim($a->name));
+    $name_b = strtolower(trim($b->name));
+
+    $pos_a = isset($custom_order[$name_a]) ? $custom_order[$name_a] : 999;
+    $pos_b = isset($custom_order[$name_b]) ? $custom_order[$name_b] : 999;
+
+    if ($pos_a !== $pos_b) {
+        return $pos_a - $pos_b;
+    }
+
+    return strcasecmp($a->name, $b->name);
 }
 
 // Save sidebar order field in admin category edit

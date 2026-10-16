@@ -125,22 +125,90 @@ if (!empty($terms_query) && !is_wp_error($terms_query)) {
     }
 }
 
-// Custom sort logic based on Docy's '_cmgalaxy_sidebar_order' meta field
+// Custom category order matching template-docs-home.php
+$custom_order = array(
+    'getting started'           => 1,
+    'account management'        => 2,
+    'account mangement'         => 2,
+    'user management'           => 3,
+    'user manegement'           => 3,
+    'master dashboard'          => 4,
+    'main dashboard'            => 5,
+    'funnel attribution'        => 6,
+    'integrations'              => 7,
+    'google dashboard'          => 8,
+    'meta dashboard'            => 9,
+    'linkedin dashboard'        => 10,
+    'teads dashboard'           => 11,
+    'pinterest dashboard'       => 12,
+    'dv360 dashboard'           => 13,
+    'amazon dashboard'          => 14,
+    'recommendation'            => 15,
+    'milestone'                 => 16,
+    'notification center'       => 17,
+    'ticket/ support'           => 18,
+    'tickets / supports'        => 18,
+    'tickets / support'         => 18,
+    'ticket / support'          => 18,
+    'reporting hub'             => 19,
+    'reporting hub '            => 19,
+    'lex'                       => 20,
+    'user journey'              => 21
+);
+
+$custom_order_slugs = array(
+    'getting-started'           => 1,
+    'account-management'        => 2,
+    'user-management'           => 3,
+    'master-dashboard'          => 4,
+    'main-dashboard'            => 5,
+    'funnel-attribution'        => 6,
+    'integrations'              => 7,
+    'google-dashboard'          => 8,
+    'meta-dashboard'            => 9,
+    'linkedin-dashboard'        => 10,
+    'teads-dashboard'           => 11,
+    'pinterest-dashboard'       => 12,
+    'dv360-dashboard'           => 13,
+    'amazon-dashboard'          => 14,
+    'recommendation'            => 15,
+    'milestone'                 => 16,
+    'notification-center'       => 17,
+    'ticket-support'            => 18,
+    'tickets-supports'          => 18,
+    'reporting-hub'             => 19,
+    'lex'                       => 20,
+    'user-journey'              => 21
+);
+
+// Custom sort logic: Respect manual order meta if set, otherwise follow homepage custom order
 if (!empty($sidebar_sections)) {
-    usort($sidebar_sections, function($a, $b) {
+    usort($sidebar_sections, function($a, $b) use ($custom_order, $custom_order_slugs) {
         $term_id_a = isset($a['term_id']) ? intval($a['term_id']) : 0;
         $term_id_b = isset($b['term_id']) ? intval($b['term_id']) : 0;
 
         $order_a = $term_id_a ? get_term_meta($term_id_a, '_cmgalaxy_sidebar_order', true) : '';
         $order_b = $term_id_b ? get_term_meta($term_id_b, '_cmgalaxy_sidebar_order', true) : '';
 
-        $val_a = ($order_a !== '') ? intval($order_a) : 9999;
-        $val_b = ($order_b !== '') ? intval($order_b) : 9999;
-
-        if ($val_a == $val_b) {
-            return strcasecmp($a['title'], $b['title']);
+        // If admin order meta is explicitly set on both and different, use it
+        if ($order_a !== '' && $order_b !== '' && intval($order_a) !== intval($order_b)) {
+            return intval($order_a) - intval($order_b);
         }
-        return ($val_a < $val_b) ? -1 : 1;
+
+        // Use custom order matching homepage
+        $title_a = strtolower(trim($a['title']));
+        $title_b = strtolower(trim($b['title']));
+        $slug_a = strtolower(trim($a['slug'] ?? ''));
+        $slug_b = strtolower(trim($b['slug'] ?? ''));
+
+        $pos_a = isset($custom_order[$title_a]) ? $custom_order[$title_a] : (isset($custom_order_slugs[$slug_a]) ? $custom_order_slugs[$slug_a] : 999);
+        $pos_b = isset($custom_order[$title_b]) ? $custom_order[$title_b] : (isset($custom_order_slugs[$slug_b]) ? $custom_order_slugs[$slug_b] : 999);
+
+        if ($pos_a !== $pos_b) {
+            return $pos_a - $pos_b;
+        }
+
+        return strcasecmp($a['title'], $b['title']);
     });
 }
 

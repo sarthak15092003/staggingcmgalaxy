@@ -640,7 +640,7 @@ body.page-template-page-all-categories,
     max-width: 20% !important;
     width: 20% !important;
     min-width: 280px !important;
-    padding-right: 24px !important;
+    padding-right: 0 !important;
     padding-left: 0 !important;
     padding-top: 24px !important;
     padding-bottom: 60px !important;
