@@ -444,9 +444,9 @@ body.admin-bar {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(15, 23, 42, 0.35) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
     z-index: 99990 !important;
     display: none;
     opacity: 0;
@@ -459,7 +459,20 @@ body.search-popup-active .cmgalaxy-search-backdrop {
     opacity: 1 !important;
 }
 
+.docs-main-wrapper {
+    transition: filter 0.25s ease !important;
+}
+
+body.search-popup-active .docs-main-wrapper {
+    filter: blur(4px) !important;
+}
+
 /* Header dimming & blurring to match exact body fade when search is active */
+body.search-popup-active .cmgalaxy-doc-header-wrap {
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+}
+
 body.search-popup-active .cmgalaxy-doc-header-wrap::before {
     content: '' !important;
     position: absolute !important;
@@ -467,9 +480,9 @@ body.search-popup-active .cmgalaxy-doc-header-wrap::before {
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    background: rgba(15, 23, 42, 0.35) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
     z-index: 10 !important;
     pointer-events: none !important;
 }
@@ -486,7 +499,7 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     display: none !important;
 }
 
-/* Elevated search section and input (Exact Image 1 Match) */
+/* Elevated search section and input (Exact Image 2 Match) */
 .cmgalaxy-search-section {
     position: relative !important;
     z-index: 5 !important;
@@ -510,9 +523,10 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     line-height: 44px !important;
     font-size: 14px !important;
     padding: 0 24px !important;
-    border: 1.5px solid #60a5fa !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
     border-radius: 9999px !important;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    outline: none !important;
 }
 
 .cmgalaxy-search-section.popup-active .search-icon-left {
