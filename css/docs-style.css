@@ -516,7 +516,7 @@ body.page-template-page-all-categories,
 
 .sidebar-subcat-post-item {
     position: relative !important;
-    padding: 6px 14px 6px 56px !important;
+    padding: 10px 14px 10px 56px !important;
     transition: background-color 0.15s ease !important;
     border-radius: 6px !important;
     margin-bottom: 2px !important;
