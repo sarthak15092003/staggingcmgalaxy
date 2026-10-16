@@ -148,7 +148,7 @@ if (!empty($docy_categories)) {
                         ));
                         $cat_count = $post_count_query->found_posts;
                         
-                        $author_icon_url = 'https://docs.cmgalaxy.com/wp-content/uploads/2026/06/cropped-Group-1000004539-300x300-1.png';
+                        $author_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/cropped-Group-1000004539-300x300-1.webp';
                         $cat_icon_url = isset($custom_icons[$cat->name]) ? $custom_icons[$cat->name] : 'https://docs.cmgalaxy.com/wp-content/uploads/2026/07/category-2.png';
                     ?>
                         <div class="col-md-4 col-lg-4" style="flex: 0 0 33.333333%; max-width: 33.333333%; padding: 12px; box-sizing: border-box;">

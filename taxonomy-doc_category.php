@@ -73,11 +73,7 @@ $sidebar_img_url = file_exists(get_template_directory() . '/assets/images/sideba
                 <!-- Meta Line (Author & Articles Count) -->
                 <div class="doc-author-meta-box" style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
                     <div class="author-avatar" style="width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L3 12.5V21h8.5z" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M16 8L2 22" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M17.5 15H9" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <img src="https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/cropped-Group-1000004539-300x300-1.webp" alt="CMGalaxy" style="width: 20px; height: 20px; object-fit: contain; display: block;" />
                     </div>
                     <div class="author-info" style="font-size: 14px; color: #6b7280; line-height: 1.4;">
                         By &nbsp;<span style="color: #374151; font-weight: 600;">CMGalaxy</span> &nbsp;&middot;&nbsp; <?php echo intval($articles_count); ?> articles
