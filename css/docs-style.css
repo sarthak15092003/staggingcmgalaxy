@@ -465,7 +465,7 @@ body.page-template-page-all-categories,
 
 .subsection-item.current-page,
 .subsection-item.active-subcat {
-    background: #f1f5f9 !important;
+    background: transparent !important;
 }
 
 .subsection-item .subsection-title {

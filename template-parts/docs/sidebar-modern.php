@@ -442,7 +442,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                 $subcat_expanded_class = ($is_sub_active && $has_children) ? ' expanded' : '';
                             ?>
                                 <div class="cmgalaxy-subcat-wrapper" data-term-id="<?php echo esc_attr($sub->term_id); ?>" style="margin: 2px 0;">
-                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page active-subcat' : ''; ?> <?php echo $has_children ? 'expandable-subcat' : ''; ?><?php echo $subcat_expanded_class; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="display:flex; align-items:center; justify-content:space-between; padding: 8px 14px 8px 48px; border-radius: 6px; cursor:pointer; <?php echo $is_sub_active ? 'background: #f1f5f9;' : ''; ?>">
+                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page active-subcat' : ''; ?> <?php echo $has_children ? 'expandable-subcat' : ''; ?><?php echo $subcat_expanded_class; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="display:flex; align-items:center; justify-content:space-between; padding: 8px 14px 8px 48px; border-radius: 6px; cursor:pointer;">
                                         <a href="<?php echo esc_url($sub_link); ?>" class="subsection-title" style="color: <?php echo $is_sub_active ? '#161c52' : '#475569'; ?>; font-size: 13.5px; font-weight: <?php echo $is_sub_active ? '600' : '500'; ?>; text-decoration: none; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             <?php echo esc_html($sub->name); ?>
                                         </a>
