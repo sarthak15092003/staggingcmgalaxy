@@ -342,7 +342,7 @@ body.admin-bar {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 0 30px !important;
+    padding: 16px 30px 0px !important;
     box-sizing: border-box !important;
 }
 
