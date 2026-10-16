@@ -705,7 +705,7 @@ body.page-template-page-all-categories,
     min-width: 280px !important;
     padding-right: 0 !important;
     padding-left: 0 !important;
-    padding-top: 24px !important;
+    padding-top: 0 !important;
     padding-bottom: 60px !important;
     box-sizing: border-box !important;
     background: #ffffff !important;
@@ -758,7 +758,7 @@ body.page-template-page-all-categories,
     border-left: none !important;
     padding-left: 24px !important;
     padding-right: 0 !important;
-    padding-top: 24px !important;
+    padding-top: 0 !important;
     padding-bottom: 60px !important;
     box-sizing: border-box !important;
     position: sticky !important;
