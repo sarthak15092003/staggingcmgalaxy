@@ -435,6 +435,80 @@ body.admin-bar {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
 }
 
+/* ========================================================
+   GLOBAL SEARCH BACKDROP & POPUP FOCUS OVERLAY (IMAGE 2 MATCH)
+   ======================================================== */
+.cmgalaxy-search-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 99998 !important;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease !important;
+}
+
+.cmgalaxy-search-backdrop.active,
+body.search-popup-active .cmgalaxy-search-backdrop {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* Header dimming when search is active */
+body.search-popup-active .cmgalaxy-doc-header-wrap {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+}
+
+body.search-popup-active .cmgalaxy-logo-section,
+body.search-popup-active .cmgalaxy-actions,
+body.search-popup-active .cmgalaxy-nav-menu {
+    opacity: 0.25 !important;
+    pointer-events: none !important;
+    transition: opacity 0.25s ease !important;
+}
+
+body.search-popup-active .cmgalaxy-ask-lex-btn {
+    display: none !important;
+}
+
+/* Elevated search section and input */
+.cmgalaxy-search-section {
+    position: relative;
+    transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.cmgalaxy-search-section.popup-active {
+    position: relative !important;
+    z-index: 100002 !important;
+    max-width: 780px !important;
+}
+
+.cmgalaxy-search-section.popup-active .cmgalaxy-search-input {
+    background: #ffffff !important;
+    height: 50px !important;
+    line-height: 50px !important;
+    font-size: 15px !important;
+    padding: 0 45px 0 44px !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.22), 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.cmgalaxy-search-section.popup-active .search-icon-left {
+    color: #3b82f6 !important;
+}
+
+.cmgalaxy-search-section.popup-active .cmgalaxy-search-suggestions {
+    z-index: 100003 !important;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22) !important;
+}
+
 .cmgalaxy-search-loader {
     position: absolute !important;
     right: 14px !important;
@@ -1100,12 +1174,57 @@ body.lex-drawer-open .lex-side-trigger {
         var $suggestions = $('#search-suggestions');
         var $loader = $('.cmgalaxy-search-loader');
         var $drawer = $('#lex-drawer');
+        var $searchSection = $('.cmgalaxy-search-section');
+        var $backdrop = $('#cmgalaxy-search-backdrop');
 
-        // Shortcut '/' to focus search input
+        // ==========================================
+        // SEARCH BACKDROP & FOCUS OVERLAY (IMAGE 2 MATCH)
+        // ==========================================
+        function openSearchFocus() {
+            $searchSection.addClass('popup-active');
+            $('body').addClass('search-popup-active');
+            $backdrop.addClass('active');
+
+            var q = $searchInput.val().trim();
+            if (q.length >= 2 && $suggestions.children().length > 0) {
+                $suggestions.show();
+            }
+        }
+
+        function closeSearchFocus() {
+            $searchSection.removeClass('popup-active');
+            $('body').removeClass('search-popup-active');
+            $backdrop.removeClass('active');
+            $suggestions.hide();
+        }
+
+        $searchInput.on('focus click', function() {
+            openSearchFocus();
+        });
+
+        // Close search focus when clicking backdrop or outside search section
+        $(document).on('mousedown', function(e) {
+            if ($('body').hasClass('search-popup-active')) {
+                if (!$(e.target).closest('.cmgalaxy-search-section').length) {
+                    closeSearchFocus();
+                }
+            }
+        });
+
+        $(document).on('click', '#cmgalaxy-search-backdrop', function(e) {
+            e.preventDefault();
+            closeSearchFocus();
+        });
+
+        // Shortcut '/' to focus search input and 'Escape' to close
         $(document).on('keydown', function(e) {
             if (e.key === '/' && !$(e.target).is('input, textarea')) {
                 e.preventDefault();
                 $searchInput.focus();
+                openSearchFocus();
+            }
+            if (e.key === 'Escape') {
+                closeSearchFocus();
             }
         });
 

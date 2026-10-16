@@ -669,10 +669,10 @@ body.page-template-page-all-categories,
     max-width: 60% !important;
     width: 60% !important;
     border-left: 1px solid #e2e8f0 !important;
-    padding-left: 32px !important;
-    padding-right: 32px !important;
-    padding-top: 24px !important;
-    padding-bottom: 80px !important;
+    padding-top: 20px !important;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    padding-bottom: 0 !important;
     box-sizing: border-box !important;
     min-width: 0 !important;
 }
