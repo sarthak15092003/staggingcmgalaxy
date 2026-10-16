@@ -261,7 +261,48 @@ $sidebar_instance_id = uniqid('docs_sb_');
             $subcats = array();
             if (!empty($subcats_raw) && !is_wp_error($subcats_raw)) {
                 foreach ($subcats_raw as $sc) {
-                    $subcats[] = $sc;
+                    $sc_post_count = $wpdb->get_var($wpdb->prepare("
+                        SELECT COUNT(p.ID) 
+                        FROM {$wpdb->posts} p
+                        INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                        INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                        WHERE tt.term_id = %d
+                        AND tt.taxonomy = %s
+                        AND p.post_type IN ('docs', 'post')
+                        AND p.post_status = 'publish'
+                    ", $sc->term_id, $sec_tax));
+
+                    $has_children = false;
+                    if (intval($sc_post_count) > 0) {
+                        $has_children = true;
+                    } else {
+                        $sub_sub_ids = get_terms(array(
+                            'taxonomy'   => $sec_tax,
+                            'parent'     => $sc->term_id,
+                            'fields'     => 'ids',
+                            'hide_empty' => false,
+                        ));
+                        if (!empty($sub_sub_ids) && !is_wp_error($sub_sub_ids)) {
+                            $placeholders = implode(',', array_fill(0, count($sub_sub_ids), '%d'));
+                            $sub_sub_count = $wpdb->get_var($wpdb->prepare("
+                                SELECT COUNT(p.ID) 
+                                FROM {$wpdb->posts} p
+                                INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                                INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                                WHERE tt.term_id IN ($placeholders)
+                                AND tt.taxonomy = %s
+                                AND p.post_type IN ('docs', 'post')
+                                AND p.post_status = 'publish'
+                            ", array_merge($sub_sub_ids, array($sec_tax))));
+                            if (intval($sub_sub_count) > 0) {
+                                $has_children = true;
+                            }
+                        }
+                    }
+
+                    if ($has_children) {
+                        $subcats[] = $sc;
+                    }
                 }
             }
             if (function_exists('cmgalaxy_sort_terms_by_order')) {

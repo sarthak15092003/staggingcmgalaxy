@@ -26,6 +26,31 @@ if (!empty($subcategories) && !is_wp_error($subcategories) && function_exists('c
     usort($subcategories, 'cmgalaxy_sort_terms_by_order');
 }
 
+$valid_subcategories = [];
+if (!empty($subcategories) && !is_wp_error($subcategories)) {
+    foreach ($subcategories as $subcat) {
+        $sub_articles = new WP_Query([
+            'post_type'      => ['docs', 'post'],
+            'tax_query'      => [
+                [
+                    'taxonomy' => $taxonomy_name,
+                    'field'    => 'term_id',
+                    'terms'    => $subcat->term_id,
+                ]
+            ],
+            'posts_per_page' => -1,
+            'orderby'        => ['menu_order' => 'ASC', 'ID' => 'ASC'],
+        ]);
+        if ($sub_articles->have_posts()) {
+            $valid_subcategories[] = [
+                'term'     => $subcat,
+                'articles' => $sub_articles,
+                'count'    => $sub_articles->found_posts,
+            ];
+        }
+    }
+}
+
 $direct_articles = new WP_Query([
     'post_type'      => ['docs', 'post'],
     'tax_query'      => [
@@ -43,21 +68,11 @@ $direct_articles = new WP_Query([
 
 <div class="tw-cat-detail-container">
     
-    <?php if (!empty($subcategories) && !is_wp_error($subcategories)) : ?>
-        <?php foreach ($subcategories as $subcat) :
-            $sub_articles = new WP_Query([
-                'post_type'      => ['docs', 'post'],
-                'tax_query'      => [
-                    [
-                        'taxonomy' => $taxonomy_name,
-                        'field'    => 'term_id',
-                        'terms'    => $subcat->term_id,
-                    ]
-                ],
-                'posts_per_page' => -1,
-                'orderby'        => ['menu_order' => 'ASC', 'ID' => 'ASC'],
-            ]);
-            $count = $sub_articles->found_posts;
+    <?php if (!empty($valid_subcategories)) : ?>
+        <?php foreach ($valid_subcategories as $item) :
+            $subcat = $item['term'];
+            $sub_articles = $item['articles'];
+            $count = $item['count'];
         ?>
             <div class="tw-cat-articles-card">
                 <div class="tw-subcategory-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none');">
@@ -73,27 +88,23 @@ $direct_articles = new WP_Query([
                 </div>
 
                 <div class="tw-subcategory-articles" style="display: block; border-top: 1px solid #e5e7eb;">
-                    <?php if ($sub_articles->have_posts()) : ?>
-                        <?php while ($sub_articles->have_posts()) : $sub_articles->the_post(); 
-                            $is_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
-                        ?>
-                            <a href="<?php the_permalink(); ?>" class="tw-article-row">
-                                <div class="tw-article-content">
-                                    <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
-                                        <span><?php the_title(); ?></span>
-                                    </div>
-                                    <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
+                    <?php while ($sub_articles->have_posts()) : $sub_articles->the_post(); 
+                        $is_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
+                    ?>
+                        <a href="<?php the_permalink(); ?>" class="tw-article-row">
+                            <div class="tw-article-content">
+                                <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
+                                    <span><?php the_title(); ?></span>
                                 </div>
-                                <div class="tw-article-arrow">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </div>
-                            </a>
-                        <?php endwhile; wp_reset_postdata(); ?>
-                    <?php else : ?>
-                        <p style="padding: 16px 20px; color: #6b7280; margin: 0;">No articles found.</p>
-                    <?php endif; ?>
+                                <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
+                            </div>
+                            <div class="tw-article-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </div>
+                        </a>
+                    <?php endwhile; wp_reset_postdata(); ?>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -101,7 +112,7 @@ $direct_articles = new WP_Query([
 
     <?php if ($direct_articles->have_posts()) : ?>
         <div class="tw-cat-articles-card">
-            <?php if (!empty($subcategories) && !is_wp_error($subcategories)) : ?>
+            <?php if (!empty($valid_subcategories)) : ?>
                 <div class="tw-subcategory-header" style="background: #ffffff; cursor: default;">
                     <h3 class="tw-subcategory-title">
                         <span>Other Articles</span>
