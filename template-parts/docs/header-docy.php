@@ -356,7 +356,7 @@ body.admin-bar {
 }
 
 .cmgalaxy-logo-section {
-    flex-shrink: 0 !important;
+    flex: 0 0 200px !important;
     min-width: 200px !important;
 }
 
@@ -382,9 +382,12 @@ body.admin-bar {
 }
 
 .cmgalaxy-search-section {
-    flex: 1 1 520px !important;
-    max-width: 620px !important;
-    transition: max-width 0.3s ease !important;
+    flex: 0 1 480px !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    z-index: 5 !important;
+    transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1), flex-basis 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .cmgalaxy-search-row {
@@ -478,20 +481,21 @@ body.search-popup-active .cmgalaxy-nav-menu {
 }
 
 body.search-popup-active .cmgalaxy-ask-lex-btn {
-    display: none !important;
+    opacity: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-width: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
 }
 
-/* Elevated search section and input (Exact Image 2 Match) */
-.cmgalaxy-search-section {
-    position: relative !important;
-    z-index: 5 !important;
-    transition: all 0.25s ease !important;
-}
-
+/* Elevated search section and input (Centered Symmetrical Expansion) */
 .cmgalaxy-search-section.popup-active {
     position: relative !important;
     z-index: 20 !important;
-    max-width: 620px !important;
+    flex: 0 1 640px !important;
+    max-width: 640px !important;
 }
 
 .cmgalaxy-search-input::placeholder {
@@ -505,10 +509,11 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     line-height: 44px !important;
     font-size: 14px !important;
     padding: 0 24px !important;
-    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    border: 1.5px solid #60a5fa !important;
     border-radius: 9999px !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
     outline: none !important;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
 }
 
 .cmgalaxy-search-section.popup-active .search-icon-left {
@@ -559,8 +564,11 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     font-weight: 600 !important;
     text-decoration: none !important;
     flex-shrink: 0 !important;
-    transition: all 0.2s ease !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+    max-width: 130px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    transition: opacity 0.25s ease, max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease, margin 0.35s ease, border-width 0.35s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .cmgalaxy-ask-lex-btn:hover {
@@ -577,8 +585,8 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
 }
 
 .cmgalaxy-actions {
-    flex-shrink: 0 !important;
-    min-width: 140px !important;
+    flex: 0 0 200px !important;
+    min-width: 200px !important;
     display: flex !important;
     justify-content: flex-end !important;
     align-items: center !important;
