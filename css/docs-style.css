@@ -372,7 +372,7 @@ body.page-template-page-all-categories,
 .section-header {
     display: flex;
     align-items: center;
-    padding: 10px 14px;
+    padding: 20px 16px !important;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
