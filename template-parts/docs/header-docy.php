@@ -459,32 +459,11 @@ body.search-popup-active .cmgalaxy-search-backdrop {
     opacity: 1 !important;
 }
 
-.docs-main-wrapper {
-    transition: filter 0.25s ease !important;
-}
-
-body.search-popup-active .docs-main-wrapper {
-    filter: blur(4px) !important;
-}
-
 /* Header dimming & blurring to match exact body fade when search is active */
 body.search-popup-active .cmgalaxy-doc-header-wrap {
-    border-bottom-color: transparent !important;
+    background: transparent !important;
+    border-bottom: none !important;
     box-shadow: none !important;
-}
-
-body.search-popup-active .cmgalaxy-doc-header-wrap::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    background: rgba(15, 23, 42, 0.45) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    z-index: 10 !important;
-    pointer-events: none !important;
 }
 
 body.search-popup-active .cmgalaxy-logo-section,
@@ -492,7 +471,10 @@ body.search-popup-active .cmgalaxy-actions,
 body.search-popup-active .cmgalaxy-nav-menu {
     position: relative !important;
     z-index: 1 !important;
+    opacity: 0.25 !important;
+    filter: blur(2px) !important;
     pointer-events: none !important;
+    transition: opacity 0.2s ease, filter 0.2s ease !important;
 }
 
 body.search-popup-active .cmgalaxy-ask-lex-btn {
