@@ -43,7 +43,7 @@ $sidebar_img_url = file_exists(get_template_directory() . '/assets/images/sideba
     : 'https://docs.cmgalaxy.com/wp-content/themes/docy/assets/img/sidebarimg.png';
 ?>
 
-<div class="docs-main-wrapper" style="padding-top: 0; padding-bottom: 72px;">
+<div class="docs-main-wrapper" style="padding-top: 28px; padding-bottom: 72px;">
     <div class="docs-container">
         
         <div class="docs-layout-row">
