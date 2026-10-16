@@ -526,25 +526,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                             <?php }
                         }
 
-                        // 3. Fallback direct posts if both exist (excluding posts already shown in subcategories)
-                        if ($has_main_direct_posts && $has_subcats) {
-                            foreach ($main_direct_posts as $dp) {
-                                if (in_array($dp->ID, $rendered_post_ids)) {
-                                    continue; // Do NOT duplicate posts already in subcategories!
-                                }
-                                $is_cur = ($current_post_id == $dp->ID);
-                                $is_dp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($dp->ID);
-                            ?>
-                                <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 6px 14px 6px 48px; position: relative;">
-                                    <?php if ($is_cur): ?>
-                                        <div class="active-indicator-bar" style="position: absolute; left: 36px; top: 50%; transform: translateY(-50%); width: 2.5px; height: 18px; background: #2563eb; border-radius: 3px;"></div>
-                                    <?php endif; ?>
-                                    <a href="<?php echo esc_url(get_permalink($dp->ID)); ?>" title="<?php echo esc_attr($dp->post_title); ?>" style="display:flex; align-items:center;">
-                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($dp->post_title); ?></span>
-                                    </a>
-                                </div>
-                            <?php }
-                        }
+
                         ?>
 
                     </div>

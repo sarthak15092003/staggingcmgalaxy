@@ -110,16 +110,8 @@ $direct_articles = new WP_Query([
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php if ($direct_articles->have_posts()) : ?>
+    <?php if (empty($valid_subcategories) && $direct_articles->have_posts()) : ?>
         <div class="tw-cat-articles-card">
-            <?php if (!empty($valid_subcategories)) : ?>
-                <div class="tw-subcategory-header" style="background: #ffffff; cursor: default;">
-                    <h3 class="tw-subcategory-title">
-                        <span>Other Articles</span>
-                        <span class="tw-subcategory-count">(<?php echo intval($direct_articles->found_posts); ?> articles)</span>
-                    </h3>
-                </div>
-            <?php endif; ?>
             <div class="tw-subcategory-articles" style="display: block;">
                 <?php while ($direct_articles->have_posts()) : $direct_articles->the_post(); 
                     $is_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
