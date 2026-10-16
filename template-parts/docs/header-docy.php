@@ -964,6 +964,13 @@ body.lex-drawer-open .lex-side-trigger {
     display: none;
 }
 
+/* Hide mobile-only elements on desktop */
+.side_menu,
+.side_menu.dark_menu,
+.click_capture {
+    display: none;
+}
+
 @media (max-width: 1024px) {
     /* Hide desktop header wrapper on mobile/tablet */
     .cmgalaxy-doc-header-wrap,
