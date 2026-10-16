@@ -424,29 +424,28 @@ body.page-template-page-all-categories,
     font-weight: 600 !important;
 }
 
-.expand-icon,
-.expand-icon-subcat {
-    color: #94a3b8;
-    transition: transform 0.25s ease, color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    flex-shrink: 0;
+.expand-icon {
+    color: #94a3b8 !important;
+    transition: transform 0.25s ease, color 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    padding: 0 !important;
+    margin-left: auto !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
     transform: rotate(0deg);
 }
 
-.expand-icon {
-    margin-left: 8px;
-}
-
-.expand-icon-subcat {
-    margin-left: 6px;
-}
-
 .section-header.active .expand-icon,
+.section-header .expand-icon.expanded,
+.expand-icon.expanded {
+    transform: rotate(90deg) !important;
+    color: #161c52 !important;
+}
+
 /* Left Sidebar Subcategories (Matching Reference Image) */
 .subsection-item {
     display: flex !important;
