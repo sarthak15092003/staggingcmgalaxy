@@ -75,6 +75,8 @@ $lex_logo_url = file_exists(get_template_directory() . '/assets/images/lexlogo.s
 $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin.svg')
     ? get_template_directory_uri() . '/assets/images/signin.svg'
     : 'https://docs.cmgalaxy.com/wp-content/themes/docy/assets/img/signin.svg';
+
+$brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/cropped-Group-1000004539-300x300-1.webp';
 ?>
 
 <!-- CMGALAXY Docs Complete Header -->
@@ -206,7 +208,15 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 <!-- Docy Mobile Sticky Navigation Bar -->
 <div class="mobile_main_menu dark_menu" id="mobile-sticky">
     <div class="container" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; padding: 0 16px !important; box-sizing: border-box !important;">
-        <div class="mobile_menu_left" style="display: flex !important; align-items: center !important; gap: 10px !important;">
+        <div class="mobile_menu_left" style="display: flex !important; align-items: center !important;">
+            <div class="cmgalaxy-mobile-logo">
+                <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 10px !important; text-decoration: none !important;">
+                    <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 32px !important; width: 32px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
+                    <span class="cmgalaxy-mobile-logo-text" style="font-size: 18px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
+                </a>
+            </div>
+        </div>
+        <div class="mobile_menu_right" style="display: flex !important; align-items: center !important;">
             <button type="button" class="navbar-toggler mobile_menu_btn" aria-label="Toggle navigation" style="background: transparent !important; border: none !important; padding: 6px !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important;">
                 <span class="menu_toggle">
                     <span class="hamburger">
@@ -216,18 +226,6 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
                     </span>
                 </span>
             </button>
-            <div class="cmgalaxy-mobile-logo">
-                <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
-                    <img src="<?php echo esc_url($logo_png_url); ?>" alt="CMGalaxy Logo" style="height: 32px !important; width: 32px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
-                    <span class="cmgalaxy-mobile-logo-text" style="font-size: 16px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
-                </a>
-            </div>
-        </div>
-        <div class="mobile_menu_right" style="display: flex !important; align-items: center !important; gap: 10px !important;">
-            <!-- Mobile Ask Lex Trigger Icon -->
-            <button type="button" class="mobile-ask-lex-btn" id="mobile-ask-lex-btn" aria-label="Ask Lex AI" title="Ask Lex" style="background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 50% !important; width: 36px !important; height: 36px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; padding: 0 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;">
-                <img src="<?php echo esc_url($lex_logo_url); ?>" alt="Lex" style="width: 18px !important; height: 18px !important; display: block !important;">
-            </button>
         </div>
     </div>
 </div>
@@ -235,9 +233,9 @@ $signin_icon_url = file_exists(get_template_directory() . '/assets/images/signin
 <!-- Docy Mobile Slide-out Drawer Navigation (Left) -->
 <div class="side_menu dark_menu" id="cmg-mobile-side-menu">
     <div class="mobile_menu_header" style="position: sticky !important; top: 0 !important; background: #ffffff !important; z-index: 1000 !important; display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 14px 20px !important; border-bottom: 1px solid #e5e7eb !important; margin: 0 !important;">
-        <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
-            <img src="<?php echo esc_url($logo_png_url); ?>" alt="CMGalaxy Logo" style="height: 28px !important; width: 28px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
-            <span class="cmgalaxy-mobile-logo-text" style="font-size: 15px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
+        <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 10px !important; text-decoration: none !important;">
+            <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 28px !important; width: 28px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
+            <span class="cmgalaxy-mobile-logo-text" style="font-size: 16px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
         </a>
         <div class="close_nav" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -341,8 +339,9 @@ body.admin-bar {
 }
 
 .cmgalaxy-doc-header-inner {
-    max-width: 1440px !important;
-    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
     padding: 14px 30px 0 30px !important;
     box-sizing: border-box !important;
 }
@@ -989,8 +988,8 @@ body.lex-drawer-open .lex-side-trigger {
         width: 100% !important;
         background: #ffffff !important;
         z-index: 100000 !important;
-        padding: 12px 0 !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+        padding: 14px 0 !important;
+        box-shadow: none !important;
         border-bottom: 1px solid #e5e7eb !important;
         box-sizing: border-box !important;
     }
@@ -1014,9 +1013,9 @@ body.lex-drawer-open .lex-side-trigger {
         display: block !important;
         width: 100% !important;
         height: 2.2px !important;
-        background: #1e293b !important;
+        background: #111827 !important;
         border-radius: 2px !important;
-        margin: 4.5px 0 !important;
+        margin: 4px 0 !important;
         transition: all 0.25s ease !important;
     }
 
