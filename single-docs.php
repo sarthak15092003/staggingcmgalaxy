@@ -564,6 +564,13 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
             tocVisible = false;
         });
 
+        // Automatically close mobile TOC sheet when any item link is clicked
+        $(document).on('click', '#docy-tocs a, #docy-tocs-mobile a, .bottom_table_content a', function() {
+            $('#docy-tocs').hide();
+            $('#toc-overlay').hide();
+            tocVisible = false;
+        });
+
         // Toggle Share Modal
         $('.table_share_btn').on('click', function(e) {
             e.preventDefault();

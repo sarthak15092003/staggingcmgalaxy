@@ -166,6 +166,10 @@
                             var targetId = href.substring(1);
                             setActiveToc(targetId);
                             isSmoothScrolling = true;
+
+                            // Close mobile TOC bottom popup sheet & overlay
+                            $('#docy-tocs').hide();
+                            $('#toc-overlay').hide();
                             
                             var offsetTop = targetEl.offset().top - 100;
                             $('html, body').stop().animate({

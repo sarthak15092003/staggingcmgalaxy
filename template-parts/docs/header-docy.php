@@ -124,6 +124,7 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
                                    id="cmgalaxy-search-input"
                                    autocomplete="off" 
                                    spellcheck="false">
+                            <button type="button" class="cmgalaxy-search-clear" id="cmgalaxy-search-clear" aria-label="Clear Search">&times;</button>
                             <span class="cmgalaxy-search-loader" aria-hidden="true"></span>
                             <div class="cmgalaxy-search-suggestions" id="search-suggestions"></div>
                         </div>
@@ -543,6 +544,40 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
     outline: none !important;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
+}
+
+
+.cmgalaxy-search-clear {
+    display: none;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 26px;
+    background: transparent;
+    border: none;
+    color: #2563eb;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+.cmgalaxy-search-clear:hover {
+    color: #1d4ed8;
+    background: #eff6ff;
+}
+.cmgalaxy-search-section.popup-active .cmgalaxy-search-clear {
+    display: flex !important;
+}
+.cmgalaxy-search-section.popup-active .cmgalaxy-search-input {
+    padding-right: 46px !important;
 }
 
 .cmgalaxy-search-section.popup-active .search-icon-left {
@@ -1384,6 +1419,14 @@ body.lex-drawer-open .lex-side-trigger {
                     closeSearchFocus();
                 }
             }
+        });
+
+                $(document).on('click', '#cmgalaxy-search-clear', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $searchInput.val('');
+            $suggestions.empty().hide();
+            closeSearchFocus();
         });
 
         $(document).on('click', '#cmgalaxy-search-backdrop', function(e) {
