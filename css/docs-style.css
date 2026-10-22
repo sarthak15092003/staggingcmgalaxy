@@ -1984,16 +1984,20 @@ body[class*="docs"] .cm-navbar,
     right: 0 !important;
     width: 100% !important;
     background: #ffffff !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
-    z-index: 100003 !important;
-    overflow: hidden !important;
+    box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.15), 0 8px 16px rgba(0, 0, 0, 0.04) !important;
+    z-index: 100005 !important;
     display: none;
     text-align: left !important;
     max-height: 480px !important;
     overflow-y: auto !important;
     box-sizing: border-box !important;
+}
+
+.cmgalaxy-search-suggestions.active,
+.cmgalaxy-search-suggestions.show {
+    display: block !important;
 }
 
 .suggestion-item {

@@ -851,13 +851,19 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     right: 0 !important;
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1) !important;
-    z-index: 10002 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16) !important;
+    z-index: 100005 !important;
     max-height: 440px !important;
     overflow-y: auto !important;
-    display: none !important;
+    display: none;
     text-align: left !important;
+    box-sizing: border-box !important;
+}
+
+.cmgalaxy-search-suggestions.active,
+.cmgalaxy-search-suggestions.show {
+    display: block !important;
 }
 
 .suggestion-item {
@@ -1663,20 +1669,39 @@ body.lex-drawer-open .lex-side-trigger {
             openDrawer('');
         });
 
-        // Live Search Input Listener (Both Top Bar and Hero Banner)
+        // Live Search Input Listener (Top Bar, Hero Banner, and Mobile Bar)
         var searchInputsSelector = '#cmgalaxy-search-input, #searchInput, .cmgalaxy-search-input, .use-cmgalaxy-live-search-input, .stylish-search__input, #cmgalaxy-mobile-search-input, .cmgalaxy-mobile-search-input';
+
+        function getSuggestionsContainer($input) {
+            var $wrapper = $input.closest('.search-input-wrapper, .stylish-search__shell, .stylish-search, .cmgalaxy-search-section, .cmgalaxy-mobile-search-bar, form');
+            var $curr = $wrapper.find('.cmgalaxy-search-suggestions');
+            if (!$curr.length) {
+                var inputId = $input.attr('id');
+                if (inputId === 'searchInput') {
+                    $curr = $('#search-suggestions-banner');
+                } else if (inputId === 'cmgalaxy-mobile-search-input') {
+                    $curr = $('#search-suggestions-mobile');
+                } else {
+                    $curr = $('#search-suggestions');
+                }
+            }
+            return $curr;
+        }
 
         $(document).on('input', searchInputsSelector, function() {
             var $input = $(this);
-            var $wrapper = $input.closest('.search-input-wrapper, .cmgalaxy-search-section, .stylish-search, form');
-            var $currSuggestions = $wrapper.find('.cmgalaxy-search-suggestions');
+            var $currSuggestions = getSuggestionsContainer($input);
+            var $wrapper = $input.closest('.search-input-wrapper, .stylish-search__shell, .stylish-search, .cmgalaxy-search-section, .cmgalaxy-mobile-search-bar, form');
             var $currLoader = $wrapper.find('.cmgalaxy-search-loader');
             var q = $input.val().trim();
 
             clearTimeout(searchTimer);
 
             if (q.length < 2) {
-                $currSuggestions.hide().empty();
+                $currSuggestions.removeClass('active').empty().hide();
+                if ($currSuggestions[0]) {
+                    $currSuggestions[0].style.setProperty('display', 'none', 'important');
+                }
                 $currLoader.removeClass('active');
                 return;
             }
@@ -1687,32 +1712,44 @@ body.lex-drawer-open .lex-side-trigger {
                 $.ajax({
                     url: ajaxUrl,
                     type: 'POST',
+                    dataType: 'json',
                     data: { action: 'lex_live_search', query: q },
                     success: function(res) {
                         $currLoader.removeClass('active');
-                        if (res.success && res.data && res.data.results) {
+                        if (typeof res === 'string') {
+                            try { res = JSON.parse(res); } catch(e) {}
+                        }
+                        if (res && res.success && res.data && res.data.results) {
                             renderSearchSuggestions($currSuggestions, q, res.data.results);
+                        } else if (res && res.success && res.data) {
+                            renderSearchSuggestions($currSuggestions, q, res.data.results || []);
+                        } else {
+                            renderSearchSuggestions($currSuggestions, q, []);
                         }
                     },
-                    error: function() {
+                    error: function(xhr, status, err) {
+                        console.error('Search AJAX error:', status, err);
                         $currLoader.removeClass('active');
                     }
                 });
             }, 150);
         });
 
-        $(document).on('focus', searchInputsSelector, function() {
+        $(document).on('focus click', searchInputsSelector, function() {
             var $input = $(this);
-            var $wrapper = $input.closest('.search-input-wrapper, .cmgalaxy-search-section, .stylish-search, form');
-            var $currSuggestions = $wrapper.find('.cmgalaxy-search-suggestions');
+            var $currSuggestions = getSuggestionsContainer($input);
             var q = $input.val().trim();
             if (q.length >= 2 && $currSuggestions.children().length > 0) {
-                $('.cmgalaxy-search-suggestions').not($currSuggestions).hide();
-                $currSuggestions.show();
+                $('.cmgalaxy-search-suggestions').not($currSuggestions).removeClass('active').hide();
+                $currSuggestions.addClass('active').show();
+                if ($currSuggestions[0]) {
+                    $currSuggestions[0].style.setProperty('display', 'block', 'important');
+                }
             }
         });
 
         function renderSearchSuggestions($container, q, results) {
+            if (!$container || !$container.length) return;
             $container.empty();
             if (results && results.length > 0) {
                 results.forEach(function(r) {
@@ -1728,24 +1765,19 @@ body.lex-drawer-open .lex-side-trigger {
                         '</a>'
                     );
                 });
+            } else {
+                $container.append(
+                    '<div class="suggestion-item no-results" style="padding: 14px 18px; color: #64748b; font-size: 14px; text-align: center;">' +
+                        'No results found for "<strong>' + $('<div>').text(q).html() + '</strong>"' +
+                    '</div>'
+                );
             }
 
-            // Ask Lex Item at bottom
-            $container.append(
-                '<div class="ask-ai-suggestion">' +
-                    '<div class="ask-ai-item cmg-suggest-ask-lex" data-query="' + $('<div>').text(q).html() + '">' +
-                        '<img src="' + lexLogo + '" style="width:20px; height:20px; object-fit:contain;">' +
-                        '<div>' +
-                            '<div class="ask-ai-text">Ask Lex: <em>"' + $('<div>').text(q).html() + '"</em></div>' +
-                            '<div class="suggestion-meta" style="font-size:12px; color:#64748b;">Get an AI-powered answer instantly</div>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>'
-            );
-
-            $container.show();
+            $container.addClass('active').show();
+            if ($container[0]) {
+                $container[0].style.setProperty('display', 'block', 'important');
+            }
         }
-
         // Click on Ask Lex suggestion
         $(document).on('click', '.cmg-suggest-ask-lex, #cmg-suggest-ask-lex', function(e) {
             e.preventDefault();
@@ -1757,8 +1789,9 @@ body.lex-drawer-open .lex-side-trigger {
 
         // Close suggestions on outside click
         $(document).on('click', function(e) {
-            if (!$(e.target).closest('.search-input-wrapper, .stylish-search, .cmgalaxy-search-section, .cmgalaxy-search-suggestions').length) {
-                $('.cmgalaxy-search-suggestions').hide();
+            if (!$(e.target).closest('.search-input-wrapper, .stylish-search__shell, .stylish-search, .cmgalaxy-search-section, .cmgalaxy-search-suggestions, .cmgalaxy-mobile-search-bar').length) {
+                $('.cmgalaxy-search-suggestions').removeClass('active').hide();
+                $('.cmgalaxy-search-suggestions').each(function() { this.style.setProperty('display', 'none', 'important'); });
             }
         });
 
