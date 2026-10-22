@@ -416,14 +416,16 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                             ));
 
                             if ($related_query->have_posts()) : ?>
-                                <div style="margin-top: 40px; padding: 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
-                                    <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0 0 16px 0;">Related Guides & Articles</h3>
-                                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                                <div class="related-articles-section" style="margin-top: 3.0rem; margin-bottom: 1.5rem;">
+                                    <h5 class="fw-semibold mb-3" id="related-articles" style="color: #484A61 !important; font-size: 20px !important; font-weight: 600 !important; margin: 0 0 16px 0;">Related Articles</h5>
+                                    <ul class="list-unstyled mb-0" style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; padding: 0; margin: 0; list-style: none;">
                                         <?php while ($related_query->have_posts()) : $related_query->the_post(); ?>
-                                            <li>
-                                                <a href="<?php the_permalink(); ?>" style="color: #3b82f6; text-decoration: none; font-size: 14.5px; font-weight: 500; display: flex; align-items: center; justify-content: space-between;">
+                                            <li style="border-bottom: 1px solid #e5e7eb; margin: 0; padding: 0; list-style: none;">
+                                                <a href="<?php the_permalink(); ?>" class="d-flex justify-content-between align-items-center related-article-link">
                                                     <span><?php the_title(); ?></span>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H9M17 7V15"/></svg>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="related-article-icon">
+                                                        <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
                                                 </a>
                                             </li>
                                         <?php endwhile; wp_reset_postdata(); ?>
