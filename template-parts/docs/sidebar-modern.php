@@ -257,7 +257,9 @@ $sidebar_instance_id = uniqid('docs_sb_');
             $subcats_raw = get_terms(array(
                 'taxonomy'   => $sec_tax,
                 'parent'     => $cat_term_id,
-                'hide_empty' => false
+                'hide_empty' => false,
+                'orderby'    => 'term_id',
+                'order'      => 'ASC'
             ));
 
             $subcats = array();

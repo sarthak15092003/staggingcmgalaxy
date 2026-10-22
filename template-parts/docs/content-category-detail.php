@@ -21,6 +21,8 @@ $subcategories = get_terms([
     'taxonomy'   => $taxonomy_name,
     'parent'     => $current_cat_id,
     'hide_empty' => false,
+    'orderby'    => 'term_id',
+    'order'      => 'ASC',
 ]);
 if (!empty($subcategories) && !is_wp_error($subcategories) && function_exists('cmgalaxy_sort_terms_by_order')) {
     usort($subcategories, 'cmgalaxy_sort_terms_by_order');
