@@ -4,10 +4,10 @@
  * Same code, design, and color from docy (docy/index.php & live-style.css)
  */
 ?>
-<section class="home-cta-banner" style="padding: 80px 0 0px !important;">
+<section class="home-cta-banner">
     <style>
         .home-cta-banner {
-            padding: 80px 0 80px;
+            padding: 80px 0 80px 0 !important;
             clear: both;
         }
 
@@ -141,6 +141,9 @@
         }
 
         @media (max-width: 991px) {
+            .home-cta-banner {
+                padding: 50px 0 60px 0 !important;
+            }
             .home-cta-banner__inner {
                 flex-direction: column !important;
                 text-align: center !important;
@@ -157,6 +160,9 @@
         }
 
         @media (max-width: 575px) {
+            .home-cta-banner {
+                padding: 36px 0 44px 0 !important;
+            }
             .home-cta-banner__inner {
                 padding: 36px 28px !important;
                 border-radius: 20px !important;
