@@ -1271,6 +1271,10 @@ body.page-template-page-all-categories,
     .banner-support-title {
         font-size: 36px !important;
     }
+    .doc_banner_area,
+    .doc_banner_area.search-banner-light {
+        padding: 0 !important;
+    }
 }
 
 /* ==========================================================================

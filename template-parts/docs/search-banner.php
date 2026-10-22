@@ -8,7 +8,7 @@ $placeholder = 'Search documentation, guides, troubleshooting...';
 ?>
 
 <section class="banner-bg">
-    <div class="doc_banner_area search-banner-light banner_creative1 sbnr-global" style="background-image: url('<?php echo esc_url($fallback_bg); ?>'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 60px 0 50px; position: relative;">
+    <div class="doc_banner_area search-banner-light banner_creative1 sbnr-global" style="background-image: url('<?php echo esc_url($fallback_bg); ?>'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 0; position: relative;">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px; text-align: center;">
             <div class="doc_banner_content">
                 <h1 class="banner-support-title">
