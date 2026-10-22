@@ -124,8 +124,8 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
                                    id="cmgalaxy-search-input"
                                    autocomplete="off" 
                                    spellcheck="false">
-                            <button type="button" class="cmgalaxy-search-clear" id="cmgalaxy-search-clear" aria-label="Clear Search">&times;</button>
                             <span class="cmgalaxy-search-loader" aria-hidden="true"></span>
+                            <button type="button" class="cmgalaxy-search-clear" id="cmgalaxy-search-clear" aria-label="Clear Search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                             <div class="cmgalaxy-search-suggestions" id="search-suggestions"></div>
                         </div>
                     </form>
@@ -255,8 +255,8 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
                        class="cmgalaxy-mobile-search-input use-cmgalaxy-live-search-input" 
                        placeholder="Search documentation..." 
                        autocomplete="off">
-                <button type="button" class="cmgalaxy-mobile-search-close" id="cmgalaxy-mobile-search-close" aria-label="Close search">&times;</button>
                 <span class="cmgalaxy-search-loader" aria-hidden="true"></span>
+                <button type="button" class="cmgalaxy-mobile-search-close" id="cmgalaxy-mobile-search-close" aria-label="Close search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 <div class="cmgalaxy-search-suggestions" id="search-suggestions-mobile"></div>
             </div>
         </form>
@@ -569,33 +569,36 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
 
 .cmgalaxy-search-clear {
     display: none;
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 26px;
-    height: 26px;
-    background: transparent;
-    border: none;
-    color: #2563eb;
-    font-size: 22px;
-    font-weight: 500;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0;
-    z-index: 10;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: color 0.15s ease, background 0.15s ease;
+    position: absolute !important;
+    right: 14px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin-top: -2px !important;
+    width: 24px !important;
+    height: 24px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #2563eb !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    z-index: 10 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: color 0.15s ease, background 0.15s ease !important;
 }
+
+.cmgalaxy-search-clear svg {
+    display: block !important;
+    width: 14px !important;
+    height: 14px !important;
+}
+
 .cmgalaxy-search-clear:hover {
-    color: #1d4ed8;
-    background: #eff6ff;
+    color: #1d4ed8 !important;
+    background: #eff6ff !important;
 }
-.cmgalaxy-search-section.popup-active .cmgalaxy-search-clear {
-    display: flex !important;
-}
+
 .cmgalaxy-search-section.popup-active .cmgalaxy-search-input {
     padding-right: 46px !important;
 }
@@ -613,21 +616,37 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     position: absolute !important;
     right: 14px !important;
     top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin-top: -2px !important;
     width: 16px !important;
     height: 16px !important;
-    margin-top: -8px !important;
     border: 2px solid #cbd5e1 !important;
-    border-top-color: #3b82f6 !important;
+    border-top-color: #2563eb !important;
     border-radius: 50% !important;
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+    z-index: 12 !important;
 }
 
 .cmgalaxy-search-loader.active {
     opacity: 1 !important;
     visibility: visible !important;
     animation: cmgSearchSpin 0.75s linear infinite !important;
+}
+
+/* Ensure One at a Time: When loader is active, strictly hide cross button */
+.is-searching .cmgalaxy-search-clear,
+.is-searching .cmgalaxy-mobile-search-close,
+.search-input-wrapper.is-searching .cmgalaxy-search-clear,
+.mobile-search-input-wrap.is-searching .cmgalaxy-mobile-search-close,
+.search-input-wrapper:has(.cmgalaxy-search-loader.active) .cmgalaxy-search-clear,
+.mobile-search-input-wrap:has(.cmgalaxy-search-loader.active) .cmgalaxy-mobile-search-close,
+.cmgalaxy-search-loader.active + .cmgalaxy-search-clear,
+.cmgalaxy-search-loader.active + .cmgalaxy-mobile-search-close,
+.cmgalaxy-search-loader.active ~ .cmgalaxy-search-clear,
+.cmgalaxy-search-loader.active ~ .cmgalaxy-mobile-search-close {
+    display: none !important;
 }
 
 @keyframes cmgSearchSpin {
@@ -1382,14 +1401,12 @@ body.lex-drawer-open .lex-side-trigger {
         right: 10px !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
-        width: 26px !important;
-        height: 26px !important;
+        margin-top: -2px !important;
+        width: 24px !important;
+        height: 24px !important;
         border: none !important;
         background: transparent !important;
         color: #2563eb !important;
-        font-size: 22px !important;
-        font-weight: 500 !important;
-        line-height: 1 !important;
         cursor: pointer !important;
         display: flex !important;
         align-items: center !important;
@@ -1397,7 +1414,11 @@ body.lex-drawer-open .lex-side-trigger {
         padding: 0 !important;
     }
 
-
+    .cmgalaxy-mobile-search-close svg {
+        display: block !important;
+        width: 14px !important;
+        height: 14px !important;
+    }
 
     .cmgalaxy-mobile-logo {
         display: flex !important;
@@ -1614,8 +1635,14 @@ body.lex-drawer-open .lex-side-trigger {
             $backdrop.addClass('active');
 
             var q = $searchInput.val().trim();
+            var $clearBtn = $searchSection.find('#cmgalaxy-search-clear');
+            if (q.length > 0 && !$searchSection.hasClass('is-searching')) {
+                $clearBtn.css('display', 'flex').show();
+            } else {
+                $clearBtn.hide();
+            }
             if (q.length >= 2 && $suggestions.children().length > 0) {
-                $suggestions.show();
+                $suggestions.addClass('active').show();
             }
         }
 
@@ -1623,7 +1650,8 @@ body.lex-drawer-open .lex-side-trigger {
             $searchSection.removeClass('popup-active');
             $('body').removeClass('search-popup-active');
             $backdrop.removeClass('active');
-            $suggestions.hide();
+            $suggestions.removeClass('active').hide();
+            $searchSection.find('#cmgalaxy-search-clear').hide();
         }
 
         $searchInput.on('focus click', function() {
@@ -1639,12 +1667,24 @@ body.lex-drawer-open .lex-side-trigger {
             }
         });
 
-                $(document).on('click', '#cmgalaxy-search-clear', function(e) {
+        $(document).on('click', '#cmgalaxy-search-clear, .cmgalaxy-search-clear', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            $searchInput.val('');
-            $suggestions.empty().hide();
-            closeSearchFocus();
+            var $btn = $(this);
+            var $wrapper = $btn.closest('.search-input-wrapper, .cmgalaxy-search-section, .cmgalaxy-mobile-search-bar, form');
+            var $input = $wrapper.find('input[type="search"], #cmgalaxy-search-input, #cmgalaxy-mobile-search-input');
+            var $curr = getSuggestionsContainer($input);
+            var $loader = $wrapper.find('.cmgalaxy-search-loader');
+
+            $input.val('');
+            $loader.removeClass('active');
+            $wrapper.removeClass('is-searching');
+            $curr.removeClass('active').empty().hide();
+            if ($curr[0]) {
+                $curr[0].style.setProperty('display', 'none', 'important');
+            }
+            $btn.hide();
+            $input.focus();
         });
 
         $(document).on('click', '#cmgalaxy-search-backdrop', function(e) {
@@ -1760,19 +1800,36 @@ body.lex-drawer-open .lex-side-trigger {
             var $currSuggestions = getSuggestionsContainer($input);
             var $wrapper = $input.closest('.search-input-wrapper, .stylish-search__shell, .stylish-search, .cmgalaxy-search-section, .cmgalaxy-mobile-search-bar, form');
             var $currLoader = $wrapper.find('.cmgalaxy-search-loader');
+            var $clearBtn = $wrapper.find('.cmgalaxy-search-clear, #cmgalaxy-search-clear, .cmgalaxy-mobile-search-close');
             var q = $input.val().trim();
 
             clearTimeout(searchTimer);
 
-            if (q.length < 2) {
+            if (q.length === 0) {
+                $clearBtn.hide();
+                $currLoader.removeClass('active');
+                $wrapper.removeClass('is-searching');
                 $currSuggestions.removeClass('active').empty().hide();
                 if ($currSuggestions[0]) {
                     $currSuggestions[0].style.setProperty('display', 'none', 'important');
                 }
-                $currLoader.removeClass('active');
                 return;
             }
 
+            if (q.length < 2) {
+                $clearBtn.css('display', 'flex').show();
+                $currLoader.removeClass('active');
+                $wrapper.removeClass('is-searching');
+                $currSuggestions.removeClass('active').empty().hide();
+                if ($currSuggestions[0]) {
+                    $currSuggestions[0].style.setProperty('display', 'none', 'important');
+                }
+                return;
+            }
+
+            // Start search: activate circular loader, strictly hide cross
+            $wrapper.addClass('is-searching');
+            $clearBtn.hide();
             $currLoader.addClass('active');
 
             searchTimer = setTimeout(function() {
@@ -1783,6 +1840,10 @@ body.lex-drawer-open .lex-side-trigger {
                     data: { action: 'lex_live_search', query: q },
                     success: function(res) {
                         $currLoader.removeClass('active');
+                        $wrapper.removeClass('is-searching');
+                        if ($input.val().trim().length > 0) {
+                            $clearBtn.css('display', 'flex').show();
+                        }
                         if (typeof res === 'string') {
                             try { res = JSON.parse(res); } catch(e) {}
                         }
@@ -1797,6 +1858,10 @@ body.lex-drawer-open .lex-side-trigger {
                     error: function(xhr, status, err) {
                         console.error('Search AJAX error:', status, err);
                         $currLoader.removeClass('active');
+                        $wrapper.removeClass('is-searching');
+                        if ($input.val().trim().length > 0) {
+                            $clearBtn.css('display', 'flex').show();
+                        }
                     }
                 });
             }, 150);
