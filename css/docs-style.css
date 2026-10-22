@@ -814,11 +814,13 @@ body.page-template-page-all-categories,
 }
 
 .custom-breadcrumb a {
-    color: #3b82f6;
+    color: #64748b !important;
     text-decoration: none;
+    transition: color 0.15s ease;
 }
 
 .custom-breadcrumb a:hover {
+    color: #1e293b !important;
     text-decoration: underline;
 }
 
