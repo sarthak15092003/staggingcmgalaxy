@@ -120,7 +120,7 @@ body.page-template-page-all-categories,
     padding: 8px !important;
     border-radius: 999px !important;
     background: linear-gradient(135deg, rgba(79, 140, 255, 0.18), rgba(61, 220, 151, 0.18)) !important;
-    box-shadow: 0 12px 35px -4px rgba(58, 125, 255, 0.18), 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: none !important;
     box-sizing: border-box !important;
     margin: 0 !important;
 }
