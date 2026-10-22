@@ -1592,11 +1592,12 @@ body[class*="docs"] .cm-navbar,
 }
 
 .cmgalaxy-logo-img {
-    height: 40px !important;
-    max-height: 44px !important;
+    max-height: 50px !important;
+    height: auto !important;
     width: auto !important;
-    display: block !important;
+    max-width: 300px !important;
     object-fit: contain !important;
+    display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
 }

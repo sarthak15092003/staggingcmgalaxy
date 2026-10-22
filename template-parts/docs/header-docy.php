@@ -94,8 +94,7 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
                         <img src="<?php echo esc_url($logo_png_url); ?>" 
                              alt="CMGALAXY Knowledge Base" 
                              class="cmgalaxy-logo-img"
-                             width="160"
-                             height="40"
+                             height="50"
                              loading="eager"
                              decoding="sync"
                              fetchpriority="high"
@@ -356,8 +355,9 @@ body.admin-bar {
 }
 
 .cmgalaxy-logo-section {
-    flex: 0 0 200px !important;
+    flex: 0 0 auto !important;
     min-width: 200px !important;
+    max-width: 300px !important;
 }
 
 .cmgalaxy-logo-link {
@@ -372,11 +372,12 @@ body.admin-bar {
 }
 
 .cmgalaxy-logo-img {
-    height: 40px !important;
-    max-height: 44px !important;
+    max-height: 50px !important;
+    height: auto !important;
     width: auto !important;
-    display: block !important;
+    max-width: 300px !important;
     object-fit: contain !important;
+    display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
 }
