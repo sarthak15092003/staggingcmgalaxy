@@ -6,7 +6,8 @@
  * Matches Docy ordering logic and drag-and-drop sortable structure
  */
 
-$is_single_doc = is_singular('docs') || is_singular('post');
+$is_mobile_menu = !empty($args['is_mobile_menu']) || (isset($is_mobile_menu) && $is_mobile_menu);
+$is_single_doc = (is_singular('docs') || is_singular('post')) && !$is_mobile_menu;
 $current_post_id = get_queried_object_id();
 $taxonomy_name = taxonomy_exists('doc_category') ? 'doc_category' : 'category';
 $post_type_name = post_type_exists('docs') ? 'docs' : 'post';
@@ -128,23 +129,24 @@ if (!empty($terms_query) && !is_wp_error($terms_query)) {
 // Custom category order matching template-docs-home.php
 $custom_order = array(
     'getting started'           => 1,
+    'getting-started'           => 1,
     'account management'        => 2,
     'account mangement'         => 2,
     'user management'           => 3,
     'user manegement'           => 3,
-    'master dashboard'          => 4,
-    'main dashboard'            => 5,
-    'funnel attribution'        => 6,
-    'integrations'              => 7,
+    'funnel attribution'        => 4,
+    'integrations'              => 5,
+    'main dashboard'            => 6,
+    'master dashboard'          => 7,
     'google dashboard'          => 8,
     'meta dashboard'            => 9,
     'linkedin dashboard'        => 10,
-    'teads dashboard'           => 11,
-    'pinterest dashboard'       => 12,
-    'dv360 dashboard'           => 13,
-    'amazon dashboard'          => 14,
-    'recommendation'            => 15,
-    'milestone'                 => 16,
+    'amazon dashboard'          => 11,
+    'teads dashboard'           => 12,
+    'milestone'                 => 13,
+    'recommendation'            => 14,
+    'pinterest dashboard'       => 15,
+    'dv360 dashboard'           => 16,
     'notification center'       => 17,
     'ticket/ support'           => 18,
     'tickets / supports'        => 18,
@@ -160,19 +162,19 @@ $custom_order_slugs = array(
     'getting-started'           => 1,
     'account-management'        => 2,
     'user-management'           => 3,
-    'master-dashboard'          => 4,
-    'main-dashboard'            => 5,
-    'funnel-attribution'        => 6,
-    'integrations'              => 7,
+    'funnel-attribution'        => 4,
+    'integrations'              => 5,
+    'main-dashboard'            => 6,
+    'master-dashboard'          => 7,
     'google-dashboard'          => 8,
     'meta-dashboard'            => 9,
     'linkedin-dashboard'        => 10,
-    'teads-dashboard'           => 11,
-    'pinterest-dashboard'       => 12,
-    'dv360-dashboard'           => 13,
-    'amazon-dashboard'          => 14,
-    'recommendation'            => 15,
-    'milestone'                 => 16,
+    'amazon-dashboard'          => 11,
+    'teads-dashboard'           => 12,
+    'milestone'                 => 13,
+    'recommendation'            => 14,
+    'pinterest-dashboard'       => 15,
+    'dv360-dashboard'           => 16,
     'notification-center'       => 17,
     'ticket-support'            => 18,
     'tickets-supports'          => 18,
@@ -349,7 +351,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                     <a href="<?php echo esc_url($term_link); ?>" class="section-title"><?php echo esc_html($sec['title']); ?></a>
                     <?php if ($has_content) : ?>
                         <span class="expand-icon <?php echo $is_active_cat ? 'expanded' : ''; ?>">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
                             </svg>
                         </span>

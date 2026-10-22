@@ -265,46 +265,28 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
 
 <!-- Unified Single Mobile Menu Drawer (Right) -->
 <div class="side_menu dark_menu" id="cmg-mobile-side-menu">
-    <div class="mobile_menu_header">
+    <div class="mobile_menu_header" style="position: sticky !important; top: 0 !important; background: #ffffff !important; z-index: 1000 !important; display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 14px 20px !important; border-bottom: 1px solid #e5e7eb !important; margin: 0 !important;">
         <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
-            <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 26px !important; width: 26px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
-            <span class="cmgalaxy-mobile-logo-text" style="font-size: 16px !important; font-weight: 600 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Knowledge Base</span>
+            <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 28px !important; width: 28px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
+            <span class="cmgalaxy-mobile-logo-text" style="font-size: 15px !important; font-weight: 600 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Knowledge Base</span>
         </a>
         <div class="close_nav" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </div>
     </div>
 
-    <div class="mobile_nav_wrapper" style="padding: 16px 20px 40px 20px !important;">
-        <!-- Top Nav Links -->
-        <ul class="navbar-nav menu ml-auto" style="list-style: none !important; padding: 0 0 16px 0 !important; margin: 0 0 20px 0 !important; border-bottom: 1px solid #f1f5f9 !important;">
-            <li class="menu-item nav-item <?php echo $is_home_active ? 'active' : ''; ?>" style="margin-bottom: 6px !important;">
-                <div class="nav-link-wrap">
-                    <a title="Home" class="nav-link" href="<?php echo esc_url($docs_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_home_active ? '#2563eb' : '#334155'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Home</a>
-                </div>
-            </li>
-            <li class="menu-item nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>" style="margin-bottom: 6px !important;">
-                <div class="nav-link-wrap">
-                    <a title="Get Started" class="nav-link" href="<?php echo esc_url($getting_started_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_get_started_active ? '#2563eb' : '#334155'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Get Started</a>
-                </div>
-            </li>
-            <li class="menu-item nav-item" style="margin-bottom: 6px !important;">
-                <div class="nav-link-wrap">
-                    <a title="Sign In" class="nav-link" href="<?php echo esc_url($signin_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: #334155 !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">
-                        <?php echo is_user_logged_in() ? 'My Profile' : 'Sign In'; ?>
-                    </a>
-                </div>
-            </li>
-        </ul>
-
-        <!-- Documentation Categories Section -->
-        <div class="mobile-docs-accordion-section" style="margin-top: 10px !important;">
-            <div style="font-size: 12px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; color: #94a3b8 !important; margin-bottom: 14px !important;">Documentation</div>
-            <?php get_template_part('template-parts/docs/sidebar-modern'); ?>
-        </div>
+    <div class="mobile_nav_wrapper" style="padding: 0 !important; margin: 0 !important;">
+        <nav class="mobile_nav_bottom" style="padding: 0 !important; margin: 0 !important;">
+            <?php
+            // Main menu removed as per request (matching Docy theme)
+            ?>
+            <div class="mobile-sidebar-container" style="margin-top: 0px !important; padding-top: 5px !important; padding-bottom: 40px !important;">
+                <?php get_template_part('template-parts/docs/sidebar-modern', null, array('is_mobile_menu' => true)); ?>
+            </div>
+        </nav>
     </div>
 </div>
 
@@ -1610,6 +1592,101 @@ body.lex-drawer-open .lex-side-trigger {
         margin-top: 10px !important;
     }
 }
+
+    /* Clean Mobile Menu Categories (Docy exact styling) */
+    .mobile-sidebar-container {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+    }
+    .mobile-sidebar-container .modern-sidebar {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .mobile-sidebar-container .sidebar-content {
+        padding: 0 !important;
+    }
+    .mobile-sidebar-container .sidebar-back-btn {
+        display: none !important;
+    }
+    .mobile-sidebar-container .sidebar-section {
+        margin-bottom: 0 !important;
+        border: none !important;
+    }
+    .mobile-sidebar-container .section-header {
+        display: flex !important;
+        align-items: center !important;
+        padding: 12px 20px !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        cursor: pointer !important;
+        transition: background-color 0.15s ease !important;
+        user-select: none !important;
+        margin: 0 !important;
+    }
+    .mobile-sidebar-container .section-header:hover {
+        background: #f9fafb !important;
+    }
+    .mobile-sidebar-container .section-header.active {
+        background: #f8fafc !important;
+    }
+    .mobile-sidebar-container .section-icon {
+        width: 22px !important;
+        height: 22px !important;
+        margin-right: 14px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+    .mobile-sidebar-container .section-icon img {
+        width: 22px !important;
+        height: 22px !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+    .mobile-sidebar-container .section-title {
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        color: #374151 !important;
+        flex: 1 !important;
+        text-decoration: none !important;
+        line-height: 1.4 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    .mobile-sidebar-container .section-header:hover .section-title,
+    .mobile-sidebar-container .section-header.active .section-title {
+        color: #111827 !important;
+    }
+    .mobile-sidebar-container .expand-icon {
+        margin-left: auto !important;
+        color: #9ca3af !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 18px !important;
+        height: 18px !important;
+        flex-shrink: 0 !important;
+        transition: transform 0.25s ease, color 0.15s ease !important;
+        transform: rotate(0deg) !important;
+    }
+    .mobile-sidebar-container .expand-icon svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .mobile-sidebar-container .section-header.active .expand-icon,
+    .mobile-sidebar-container .section-header .expand-icon.expanded,
+    .mobile-sidebar-container .expand-icon.expanded {
+        transform: rotate(90deg) !important;
+        color: #4b5563 !important;
+    }
+
 </style>
 
 <script>
