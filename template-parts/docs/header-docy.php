@@ -1659,6 +1659,7 @@ body.lex-drawer-open .lex-side-trigger {
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        padding-right: 12px !important;
     }
     .mobile-sidebar-container .section-header:hover .section-title,
     .mobile-sidebar-container .section-header.active .section-title {
@@ -1670,15 +1671,52 @@ body.lex-drawer-open .lex-side-trigger {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 18px !important;
-        height: 18px !important;
+        width: 52px !important;
+        min-width: 52px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        padding: 0 14px !important;
+        margin-right: -16px !important;
+        margin-top: -10px !important;
+        margin-bottom: -10px !important;
+        cursor: pointer !important;
         flex-shrink: 0 !important;
         transition: transform 0.25s ease, color 0.15s ease !important;
         transform: rotate(0deg) !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+        z-index: 10 !important;
     }
     .mobile-sidebar-container .expand-icon svg {
-        width: 18px !important;
-        height: 18px !important;
+        width: 20px !important;
+        height: 20px !important;
+        pointer-events: none !important;
+    }
+    .mobile-sidebar-container .expand-icon-subcat {
+        margin-left: auto !important;
+        color: #9ca3af !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 48px !important;
+        min-width: 48px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        padding: 0 12px !important;
+        margin-right: -10px !important;
+        margin-top: -6px !important;
+        margin-bottom: -6px !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+        transition: transform 0.2s ease, color 0.15s ease !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+        z-index: 10 !important;
+    }
+    .mobile-sidebar-container .expand-icon-subcat svg {
+        width: 16px !important;
+        height: 16px !important;
+        pointer-events: none !important;
     }
     .mobile-sidebar-container .section-header.active .expand-icon,
     .mobile-sidebar-container .section-header .expand-icon.expanded,
@@ -1831,6 +1869,30 @@ body.lex-drawer-open .lex-side-trigger {
             $('#cmgalaxy-mobile-search-input').val('');
             $('#search-suggestions-mobile').empty().hide();
             $('#cmgalaxy-search-backdrop').removeClass('active');
+        });
+
+        // Dedicated toggle handler for expand arrows inside mobile drawer
+        $(document).on('click', '#cmg-mobile-side-menu .expand-icon, #cmg-mobile-side-menu .expand-icon-subcat', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $icon = $(this);
+            var isSubcat = $icon.hasClass('expand-icon-subcat');
+            var $parent = isSubcat ? $icon.closest('.subsection-item') : $icon.closest('.section-header');
+            var targetId = $parent.data('target');
+            if (targetId) {
+                var $target = $('#' + targetId);
+                if ($target.length) {
+                    if ($target.is(':visible')) {
+                        $target.slideUp(200);
+                        $parent.removeClass('active expanded');
+                        $icon.removeClass('expanded');
+                    } else {
+                        $target.slideDown(200);
+                        $parent.addClass('active expanded');
+                        $icon.addClass('expanded');
+                    }
+                }
+            }
         });
 
         $(document).on('click', '.mobile_menu_btn, #cmg-mobile-menu-btn', openMobileMenu);

@@ -430,13 +430,23 @@ body.page-template-page-all-categories,
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 20px !important;
-    height: 20px !important;
-    padding: 0 !important;
+    width: 48px !important;
+    min-width: 48px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 12px !important;
+    margin-right: -8px !important;
     margin-left: auto !important;
     cursor: pointer !important;
     flex-shrink: 0 !important;
     transform: rotate(0deg);
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+    z-index: 5 !important;
+}
+
+.expand-icon svg {
+    pointer-events: none !important;
 }
 
 .section-header.active .expand-icon,
@@ -497,8 +507,20 @@ body.page-template-page-all-categories,
     align-items: center !important;
     justify-content: center !important;
     flex-shrink: 0 !important;
-    width: 18px !important;
-    height: 18px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 10px !important;
+    margin-right: -8px !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+    z-index: 5 !important;
+}
+
+.expand-icon-subcat svg {
+    pointer-events: none !important;
 }
 
 .subsection-item.expanded .expand-icon-subcat,

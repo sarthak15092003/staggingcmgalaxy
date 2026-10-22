@@ -68,6 +68,29 @@
             }
         });
 
+        // Dedicated click handler for category expand icon
+        $(document).on('click', '.expand-icon', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $header = $(this).closest('.section-header.expandable');
+            if ($header.length) {
+                var targetId = $header.data('target');
+                var $content = $('#' + targetId);
+                var $icon = $(this);
+                
+                var isCurrentlyOpen = $content.is(':visible');
+                if (isCurrentlyOpen) {
+                    $content.slideUp(200);
+                    $header.removeClass('active');
+                    $icon.removeClass('expanded');
+                } else {
+                    $content.slideDown(200);
+                    $header.addClass('active');
+                    $icon.addClass('expanded');
+                }
+            }
+        });
+
         // Dedicated click handler for subcategory expand icon
         $(document).on('click', '.expand-icon-subcat', function(e) {
             e.preventDefault();
