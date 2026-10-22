@@ -807,9 +807,10 @@ body.page-template-page-all-categories,
     align-items: center;
     gap: 6px;
     padding: 0;
-    margin: 0 0 18px 0;
+    margin: 0 0 12px 0;
     list-style: none;
-    font-size: 13.5px;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .custom-breadcrumb a {
@@ -823,10 +824,17 @@ body.page-template-page-all-categories,
 
 .custom-breadcrumb .breadcrumb-separator {
     color: #94a3b8;
+    font-size: 12px;
 }
 
 .custom-breadcrumb .active-crumb {
-    color: #475569;
+    color: #64748b;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: bottom;
 }
 
 /* Single Doc Header & Content */
@@ -1966,9 +1974,12 @@ body[class*="docs"] .cm-navbar,
     }
 
     .custom-breadcrumb {
-        font-size: 12.5px !important;
+        font-size: 12px !important;
         gap: 4px !important;
-        margin-bottom: 12px !important;
+        margin-bottom: 10px !important;
+    }
+    .custom-breadcrumb .active-crumb {
+        max-width: 140px !important;
     }
 }
 

@@ -39,8 +39,6 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                 <nav aria-label="breadcrumb">
                     <ol class="custom-breadcrumb">
                         <li><a href="<?php echo esc_url(home_url('/')); ?>">Home</a></li>
-                        <li class="breadcrumb-separator">/</li>
-                        <li><a href="<?php echo esc_url($docs_home_url); ?>">Docs</a></li>
                         <?php if ($first_term) : 
                             $term_link = get_term_link($first_term);
                             $term_link = is_wp_error($term_link) ? '#' : $term_link;
@@ -49,7 +47,7 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                             <li><a href="<?php echo esc_url($term_link); ?>"><?php echo esc_html($first_term->name); ?></a></li>
                         <?php endif; ?>
                         <li class="breadcrumb-separator">/</li>
-                        <li class="active-crumb" aria-current="page"><?php echo esc_html(wp_trim_words(get_the_title(), 6, '...')); ?></li>
+                        <li class="active-crumb" aria-current="page" title="<?php echo esc_attr(get_the_title()); ?>"><?php echo esc_html(wp_trim_words(get_the_title(), 3, '...')); ?></li>
                     </ol>
                 </nav>
 
