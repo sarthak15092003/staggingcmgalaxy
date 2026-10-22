@@ -828,7 +828,7 @@ body.page-template-page-all-categories,
 }
 
 .custom-breadcrumb .active-crumb {
-    color: #64748b;
+    color: #0f172a !important;
     max-width: 220px;
     white-space: nowrap;
     overflow: hidden;
