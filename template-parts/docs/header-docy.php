@@ -205,19 +205,10 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
     </div>
 </header>
 
-<!-- Docy Mobile Sticky Navigation Bar -->
+<!-- Single Mobile Sticky Header matching docs.cmgalaxy.com -->
 <div class="mobile_main_menu dark_menu" id="mobile-sticky">
     <div class="container">
         <div class="mobile_menu_left">
-            <button type="button" class="navbar-toggler mobile_menu_btn" aria-label="Toggle Navigation">
-                <span class="menu_toggle">
-                    <span class="hamburger">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span>
-                </span>
-            </button>
             <div class="cmgalaxy-mobile-logo">
                 <a href="<?php echo esc_url($docs_url); ?>">
                     <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" class="cmgalaxy-mobile-logo-img">
@@ -226,22 +217,22 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
             </div>
         </div>
         <div class="mobile_menu_right">
-            <!-- Right Hamburger for Modern Sidebar -->
-            <button type="button" class="navbar-toggler modern_sidebar_btn" aria-label="Toggle Documentation Navigation">
+            <!-- Single Hamburger Menu on Right matching docs.cmgalaxy.com -->
+            <button type="button" class="navbar-toggler mobile_menu_btn" id="cmg-mobile-menu-btn" aria-label="Toggle Navigation">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 12H21M3 6H21M3 18H21" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 6H21M3 12H21M3 18H21" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
         </div>
     </div>
 </div>
 
-<!-- Left Side Menu (Main Navigation) -->
+<!-- Unified Single Mobile Menu Drawer (Right) -->
 <div class="side_menu dark_menu" id="cmg-mobile-side-menu">
     <div class="mobile_menu_header">
         <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
-            <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 28px !important; width: 28px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
-            <span class="cmgalaxy-mobile-logo-text" style="font-size: 15px !important; font-weight: 600 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Knowledge Base</span>
+            <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 26px !important; width: 26px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
+            <span class="cmgalaxy-mobile-logo-text" style="font-size: 16px !important; font-weight: 600 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Knowledge Base</span>
         </a>
         <div class="close_nav" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -251,40 +242,33 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
         </div>
     </div>
 
-    <div class="mobile_nav_wrapper">
-        <nav class="mobile_nav_bottom">
-            <ul class="navbar-nav menu ml-auto" style="list-style: none !important; padding: 14px 20px !important; margin: 0 !important;">
-                <li class="menu-item nav-item <?php echo $is_home_active ? 'active' : ''; ?>" style="margin-bottom: 8px !important;">
-                    <div class="nav-link-wrap">
-                        <a title="Home" class="nav-link" href="<?php echo esc_url($docs_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_home_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Home</a>
-                    </div>
-                </li>
-                <li class="menu-item nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>" style="margin-bottom: 8px !important;">
-                    <div class="nav-link-wrap">
-                        <a title="Get Started" class="nav-link" href="<?php echo esc_url($getting_started_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_get_started_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Get Started</a>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
+    <div class="mobile_nav_wrapper" style="padding: 16px 20px 40px 20px !important;">
+        <!-- Top Nav Links -->
+        <ul class="navbar-nav menu ml-auto" style="list-style: none !important; padding: 0 0 16px 0 !important; margin: 0 0 20px 0 !important; border-bottom: 1px solid #f1f5f9 !important;">
+            <li class="menu-item nav-item <?php echo $is_home_active ? 'active' : ''; ?>" style="margin-bottom: 6px !important;">
+                <div class="nav-link-wrap">
+                    <a title="Home" class="nav-link" href="<?php echo esc_url($docs_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_home_active ? '#2563eb' : '#334155'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Home</a>
+                </div>
+            </li>
+            <li class="menu-item nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>" style="margin-bottom: 6px !important;">
+                <div class="nav-link-wrap">
+                    <a title="Get Started" class="nav-link" href="<?php echo esc_url($getting_started_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_get_started_active ? '#2563eb' : '#334155'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Get Started</a>
+                </div>
+            </li>
+            <li class="menu-item nav-item" style="margin-bottom: 6px !important;">
+                <div class="nav-link-wrap">
+                    <a title="Sign In" class="nav-link" href="<?php echo esc_url($signin_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: #334155 !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">
+                        <?php echo is_user_logged_in() ? 'My Profile' : 'Sign In'; ?>
+                    </a>
+                </div>
+            </li>
+        </ul>
 
-<!-- Right Side Menu (Modern Sidebar with Expandable Categories) -->
-<div class="modern_sidebar_drawer" id="cmg-modern-sidebar-drawer">
-    <div class="mobile_menu_header">
-        <div class="mobile_logo" style="display: flex !important; align-items: center !important; gap: 8px !important;">
-            <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 25px !important; width: 25px !important; object-fit: contain !important; display: block !important;">
-            <span style="font-size: 15px !important; font-weight: 600 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Documentation</span>
+        <!-- Documentation Categories Section -->
+        <div class="mobile-docs-accordion-section" style="margin-top: 10px !important;">
+            <div style="font-size: 12px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; color: #94a3b8 !important; margin-bottom: 14px !important;">Documentation</div>
+            <?php get_template_part('template-parts/docs/sidebar-modern'); ?>
         </div>
-        <div class="close_modern_sidebar" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </div>
-    </div>
-    <div class="modern_sidebar_drawer_content">
-        <?php get_template_part('template-parts/docs/sidebar-modern'); ?>
     </div>
 </div>
 
@@ -1267,14 +1251,15 @@ body.lex-drawer-open .lex-side-trigger {
     .side_menu {
         position: fixed !important;
         top: 0 !important;
-        left: -320px !important;
-        width: 300px !important;
+        right: -340px !important;
+        left: auto !important;
+        width: 320px !important;
         max-width: 85vw !important;
         height: 100% !important;
         background: #ffffff !important;
         z-index: 100002 !important;
-        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
+        transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1) !important;
         overflow-y: auto !important;
         padding: 0 !important;
         box-sizing: border-box !important;
@@ -1283,8 +1268,9 @@ body.lex-drawer-open .lex-side-trigger {
 
     .side_menu.menu-opened,
     body.menu-is-opened .side_menu.menu-opened {
-        left: 0 !important;
-        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15) !important;
+        right: 0 !important;
+        left: auto !important;
+        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15) !important;
     }
 
     /* Modern Sidebar Drawer (Right) */
@@ -1448,43 +1434,28 @@ body.lex-drawer-open .lex-side-trigger {
 
         // ==========================================
         // DOCY MOBILE MENU & DRAWER TOGGLE CONTROLS
-        // ==========================================
-        function openLeftDrawer(e) {
+        function openMobileMenu(e) {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
-            $('#cmg-modern-sidebar-drawer').removeClass('open');
             $('#cmg-mobile-side-menu').addClass('menu-opened');
             $('#cmg-click-capture').addClass('show').fadeIn(200);
             $('body').addClass('menu-is-opened').removeClass('menu-is-closed');
         }
 
-        function openRightDrawer(e) {
+        function closeMobileMenu(e) {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
             $('#cmg-mobile-side-menu').removeClass('menu-opened');
-            $('#cmg-modern-sidebar-drawer').addClass('open');
-            $('#cmg-click-capture').addClass('show').fadeIn(200);
-            $('body').addClass('menu-is-opened').removeClass('menu-is-closed');
-        }
-
-        function closeAllDrawers(e) {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            $('#cmg-mobile-side-menu').removeClass('menu-opened');
-            $('#cmg-modern-sidebar-drawer').removeClass('open');
             $('#cmg-click-capture').removeClass('show').fadeOut(200);
             $('body').removeClass('menu-is-opened').addClass('menu-is-closed');
         }
 
-        $(document).on('click', '.mobile_menu_btn, .menu_toggle', openLeftDrawer);
-        $(document).on('click', '.modern_sidebar_btn', openRightDrawer);
-        $(document).on('click', '.close_nav, .close_modern_sidebar, #cmg-click-capture', closeAllDrawers);
+        $(document).on('click', '.mobile_menu_btn, #cmg-mobile-menu-btn', openMobileMenu);
+        $(document).on('click', '.close_nav, #cmg-click-capture', closeMobileMenu);
 
         // When navigation link inside mobile drawer is clicked, close drawer
         $(document).on('click', '#cmg-mobile-side-menu a, #cmg-modern-sidebar-drawer a', function(e) {
