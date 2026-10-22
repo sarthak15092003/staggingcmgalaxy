@@ -1154,6 +1154,62 @@ body.lex-drawer-open .lex-side-trigger {
 }
 
 @media (max-width: 1024px) {
+    /* Lex Drawer Full Page on Mobile */
+    .lex-drawer {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        z-index: 1000005 !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+    }
+
+    .lex-drawer.expanded {
+        width: 100vw !important;
+        max-width: 100vw !important;
+    }
+
+    .lex-drawer-panel {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .lex-drawer-body {
+        width: 100% !important;
+        height: 100% !important;
+        border-left: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .lex-drawer-content {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .lex-drawer-content iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .lex-drawer-expand {
+        display: none !important;
+    }
+
+    body.lex-drawer-open {
+        overflow: hidden !important;
+    }
+
     /* Hide desktop header wrapper */
     .cmgalaxy-doc-header-wrap,
     header.cmgalaxy-doc-header-wrap,
@@ -1806,13 +1862,29 @@ body.lex-drawer-open .lex-side-trigger {
         });
 
         function updateDrawerPosition() {
+            var drawer = document.getElementById('lex-drawer');
+            var isMobile = window.innerWidth <= 1024;
+            if (isMobile) {
+                document.documentElement.style.setProperty('--cmg-drawer-top', '0px');
+                if (drawer) {
+                    drawer.style.top = '0px';
+                    drawer.style.height = '100vh';
+                    drawer.style.height = '100dvh';
+                    drawer.style.width = '100vw';
+                    drawer.style.maxWidth = '100vw';
+                }
+                return;
+            }
+            if (drawer) {
+                drawer.style.width = '';
+                drawer.style.maxWidth = '';
+            }
             var $h = $('.cmgalaxy-doc-header-wrap');
             if ($h.length) {
                 var rect = $h[0].getBoundingClientRect();
                 var bottom = Math.round(rect.bottom);
                 if (bottom > 40) {
                     document.documentElement.style.setProperty('--cmg-drawer-top', bottom + 'px');
-                    var drawer = document.getElementById('lex-drawer');
                     if (drawer) {
                         drawer.style.top = bottom + 'px';
                         drawer.style.height = 'calc(100vh - ' + bottom + 'px)';
