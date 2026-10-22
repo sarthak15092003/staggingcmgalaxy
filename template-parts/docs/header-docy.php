@@ -451,7 +451,7 @@ body.admin-bar {
     height: 42px !important;
     line-height: 42px !important;
     padding: 0 40px 0 38px !important;
-    background: #f8fafc !important;
+    background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 999px !important;
     font-size: 14px !important;
@@ -459,7 +459,7 @@ body.admin-bar {
     outline: none !important;
     box-sizing: border-box !important;
     transition: all 0.2s ease !important;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
 }
 
 .cmgalaxy-search-input:focus {
