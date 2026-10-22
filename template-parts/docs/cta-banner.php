@@ -54,9 +54,9 @@
         }
 
         .home-cta-banner__title {
-            font-size: 28px !important;
+            font-size: 32px !important;
             font-weight: 600 !important;
-            line-height: 1.25 !important;
+            line-height: 1.2 !important;
             color: #ffffff !important;
             margin: 0 0 16px 0 !important;
             letter-spacing: normal !important;
@@ -161,6 +161,9 @@
         }
 
         @media (max-width: 767px) {
+            .home-cta-banner__title {
+                font-size: 28px !important;
+            }
             .home-cta-banner__subtitle {
                 font-size: 16px !important;
             }
@@ -171,7 +174,7 @@
                 padding: 36px 0 44px 0 !important;
             }
             .home-cta-banner__title {
-                font-size: 24px !important;
+                font-size: 28px !important;
             }
 
             .home-cta-banner__subtitle {
