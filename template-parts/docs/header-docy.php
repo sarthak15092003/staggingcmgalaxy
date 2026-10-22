@@ -853,10 +853,10 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
 }
 
 .search-highlight {
-    background: #fef08a !important;
-    color: #854d0e !important;
-    padding: 0 2px !important;
-    border-radius: 2px !important;
+    background: transparent !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    padding: 0 !important;
 }
 
 /* Floating Lex Trigger Button */
@@ -1460,18 +1460,25 @@ body.lex-drawer-open .lex-side-trigger {
             openDrawer('');
         });
 
-        // Live Search Input Listener
-        $searchInput.on('input', function() {
-            var q = $(this).val().trim();
+        // Live Search Input Listener (Both Top Bar and Hero Banner)
+        var searchInputsSelector = '#cmgalaxy-search-input, #searchInput, .cmgalaxy-search-input, .use-cmgalaxy-live-search-input, .stylish-search__input';
+
+        $(document).on('input', searchInputsSelector, function() {
+            var $input = $(this);
+            var $wrapper = $input.closest('.search-input-wrapper, .cmgalaxy-search-section, .stylish-search, form');
+            var $currSuggestions = $wrapper.find('.cmgalaxy-search-suggestions');
+            var $currLoader = $wrapper.find('.cmgalaxy-search-loader');
+            var q = $input.val().trim();
+
             clearTimeout(searchTimer);
 
             if (q.length < 2) {
-                $suggestions.hide().empty();
-                $loader.removeClass('active');
+                $currSuggestions.hide().empty();
+                $currLoader.removeClass('active');
                 return;
             }
 
-            $loader.addClass('active');
+            $currLoader.addClass('active');
 
             searchTimer = setTimeout(function() {
                 $.ajax({
@@ -1479,54 +1486,86 @@ body.lex-drawer-open .lex-side-trigger {
                     type: 'POST',
                     data: { action: 'lex_live_search', query: q },
                     success: function(res) {
-                        $loader.removeClass('active');
+                        $currLoader.removeClass('active');
                         if (res.success && res.data && res.data.results) {
-                            renderSuggestions(q, res.data.results);
+                            renderSearchSuggestions($currSuggestions, q, res.data.results);
                         }
                     },
                     error: function() {
-                        $loader.removeClass('active');
+                        $currLoader.removeClass('active');
                     }
                 });
-            }, 180);
+            }, 150);
         });
 
-        function renderSuggestions(q, results) {
-            $suggestions.empty();
-            if (results.length > 0) {
+        $(document).on('focus', searchInputsSelector, function() {
+            var $input = $(this);
+            var $wrapper = $input.closest('.search-input-wrapper, .cmgalaxy-search-section, .stylish-search, form');
+            var $currSuggestions = $wrapper.find('.cmgalaxy-search-suggestions');
+            var q = $input.val().trim();
+            if (q.length >= 2 && $currSuggestions.children().length > 0) {
+                $('.cmgalaxy-search-suggestions').not($currSuggestions).hide();
+                $currSuggestions.show();
+            }
+        });
+
+        function renderSearchSuggestions($container, q, results) {
+            $container.empty();
+            if (results && results.length > 0) {
                 results.forEach(function(r) {
-                    var escaped = q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-                    var titleH = r.title.replace(new RegExp('(' + escaped + ')', 'gi'), '<mark class="search-highlight">$1</mark>');
+                    var escaped = q.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    var titleH = r.title.replace(new RegExp('(' + escaped + ')', 'gi'), '<strong class="search-highlight">$1</strong>');
                     var catText = r.category ? r.category : 'Documentation';
-                    $suggestions.append(
+                    $container.append(
                         '<a href="' + r.url + '" class="suggestion-item">' +
-                            '<div class="suggestion-title">' + titleH + '</div>' +
-                            '<div class="suggestion-meta">' + catText + '</div>' +
+                            '<div class="suggestion-content">' +
+                                '<div class="suggestion-title">' + titleH + '</div>' +
+                                '<div class="suggestion-meta">' + catText + '</div>' +
+                            '</div>' +
                         '</a>'
                     );
                 });
             }
 
             // Ask Lex Item at bottom
-            $suggestions.append(
+            $container.append(
                 '<div class="ask-ai-suggestion">' +
-                    '<div class="ask-ai-item" id="cmg-suggest-ask-lex">' +
-                        '<img src="' + lexLogo + '" style="width:20px; height:20px;">' +
+                    '<div class="ask-ai-item cmg-suggest-ask-lex" data-query="' + $('<div>').text(q).html() + '">' +
+                        '<img src="' + lexLogo + '" style="width:20px; height:20px; object-fit:contain;">' +
                         '<div>' +
-                            '<div class="ask-ai-text">Ask Lex: <em>"' + q + '"</em></div>' +
+                            '<div class="ask-ai-text">Ask Lex: <em>"' + $('<div>').text(q).html() + '"</em></div>' +
                             '<div class="suggestion-meta" style="font-size:12px; color:#64748b;">Get an AI-powered answer instantly</div>' +
                         '</div>' +
                     '</div>' +
                 '</div>'
             );
 
-            $suggestions.show();
+            $container.show();
         }
+
+        // Click on Ask Lex suggestion
+        $(document).on('click', '.cmg-suggest-ask-lex, #cmg-suggest-ask-lex', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var queryText = $(this).attr('data-query') || $(this).find('em').text().replace(/^"|"$/g, '');
+            $('.cmgalaxy-search-suggestions').hide();
+            openDrawer(queryText);
+        });
 
         // Close suggestions on outside click
         $(document).on('click', function(e) {
-            if (!$(e.target).closest('.search-input-wrapper').length) {
-                $suggestions.hide();
+            if (!$(e.target).closest('.search-input-wrapper, .stylish-search, .cmgalaxy-search-section, .cmgalaxy-search-suggestions').length) {
+                $('.cmgalaxy-search-suggestions').hide();
+            }
+        });
+
+        // Submit form or enter key navigates to top result
+        $(document).on('submit', '#ajax-search-form, .header_search_form', function(e) {
+            var $form = $(this);
+            var $firstItem = $form.find('.suggestion-item').first();
+            if ($firstItem.length && $form.find('.cmgalaxy-search-suggestions').is(':visible')) {
+                e.preventDefault();
+                window.location.href = $firstItem.attr('href');
             }
         });
 
