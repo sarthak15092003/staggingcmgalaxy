@@ -171,10 +171,17 @@
                             $('#docy-tocs').hide();
                             $('#toc-overlay').hide();
                             
-                            var offsetTop = targetEl.offset().top - 100;
+                            var headerHeight = 125;
+                            var $header = $('.cmgalaxy-doc-header-wrap');
+                            if ($header.length) {
+                                headerHeight = $header.outerHeight() || 125;
+                            }
+                            var gap = 45; // Generous breathing room gap below sticky header
+                            var offsetTop = Math.max(0, targetEl.offset().top - headerHeight - gap);
+                            
                             $('html, body').stop().animate({
                                 scrollTop: offsetTop
-                            }, 300, function() {
+                            }, 350, function() {
                                 setTimeout(function() {
                                     isSmoothScrolling = false;
                                     setActiveToc(targetId);
@@ -200,7 +207,8 @@
                         return;
                     }
 
-                    var scrollPos = scrollTop + 130;
+                    var headerHeight = $('.cmgalaxy-doc-header-wrap').outerHeight() || 125;
+                    var scrollPos = scrollTop + headerHeight + 55;
                     var activeId = '';
                     
                     $headings.each(function() {

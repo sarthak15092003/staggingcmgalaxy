@@ -895,7 +895,7 @@ body.page-template-page-all-categories,
     color: #0f172a !important;
     margin: 36px 0 16px;
     padding-top: 8px;
-    scroll-margin-top: 100px;
+    scroll-margin-top: 170px !important;
     line-height: 1.35;
 }
 
@@ -904,7 +904,7 @@ body.page-template-page-all-categories,
     font-weight: 600 !important;
     color: #1e293b !important;
     margin: 28px 0 12px;
-    scroll-margin-top: 100px;
+    scroll-margin-top: 170px !important;
     line-height: 1.4;
 }
 
@@ -2258,4 +2258,37 @@ strong.search-highlight {
 
 .related-article-link:hover .related-article-icon path {
     stroke: #3A7DFF !important;
+}
+
+/* Smooth TOC scroll offset & generous section gap */
+html {
+    scroll-padding-top: 170px !important;
+}
+
+.doc-article-content h1,
+.doc-article-content h2,
+.doc-article-content h3,
+.doc-article-content h4,
+.doc-article-content h5,
+.doc-article-content h6,
+.doc-article-item h1,
+.doc-article-item h2,
+.doc-article-item h3,
+.doc-article-item h4 {
+    scroll-margin-top: 170px !important;
+}
+
+@media (max-width: 1024px) {
+    html {
+        scroll-padding-top: 120px !important;
+    }
+    .doc-article-content h1,
+    .doc-article-content h2,
+    .doc-article-content h3,
+    .doc-article-content h4,
+    .doc-article-item h1,
+    .doc-article-item h2,
+    .doc-article-item h3 {
+        scroll-margin-top: 120px !important;
+    }
 }
