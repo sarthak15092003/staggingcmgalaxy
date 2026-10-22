@@ -3,11 +3,12 @@
  * Exact CMGalaxy / Docy Search Banner Component
  */
 
+$fallback_bg = get_template_directory_uri() . '/assets/images/indexbg.svg';
 $placeholder = 'Search documentation, guides, troubleshooting...';
 ?>
 
-<section class="banner-bg" style="background: transparent !important; position: relative;">
-    <div class="doc_banner_area search-banner-light banner_creative1 sbnr-global" style="background: transparent !important; background-image: none !important; padding: 48px 0 28px; position: relative; overflow: visible;">
+<section class="banner-bg">
+    <div class="doc_banner_area search-banner-light banner_creative1 sbnr-global" style="background-image: url('<?php echo esc_url($fallback_bg); ?>'); background-size: cover; background-position: center; background-repeat: no-repeat; background-color: transparent; padding: 60px 0 45px; position: relative; overflow: visible;">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px; text-align: center; overflow: visible;">
             <div class="doc_banner_content" style="overflow: visible;">
                 <h1 class="banner-support-title">
