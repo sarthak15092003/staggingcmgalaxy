@@ -1724,8 +1724,11 @@ body[class*="docs"] .cm-navbar,
         border-color: #6b7280 !important;
     }
 
+    .jrBzsJ .eYVFtH .table_content svg {
+        display: none !important;
+    }
+
     .jrBzsJ .eYVFtH .fqmceZ svg,
-    .jrBzsJ .eYVFtH .table_content svg,
     .jrBzsJ .eYVFtH .table_share_btn svg {
         color: #ffffff !important;
         stroke: #ffffff !important;

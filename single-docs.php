@@ -467,9 +467,6 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
     <div class="sc-eldieg eYVFtH">
         <div class="overlay" id="toc-overlay"></div>
         <button class="sc-kiIyQV fqmceZ table_content" aria-expanded="false" aria-controls="docy-tocs">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 6h16M4 12h16M4 18h16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
             <span>On this Page</span>
         </button>
         <aside class="bottom_table_content" id="docy-tocs" aria-hidden="true">
