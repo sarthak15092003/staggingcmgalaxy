@@ -1121,13 +1121,16 @@ body.lex-drawer-open .lex-side-trigger {
     .navbar-collapse.cmgalaxy-header,
     .cmgalaxy-header-main,
     .cmgalaxy-nav-menu,
-    #navbarSupportedContent {
+    #navbarSupportedContent,
+    .lex-side-trigger,
+    #lex-side-trigger {
         display: none !important;
         visibility: hidden !important;
         height: 0 !important;
         padding: 0 !important;
         margin: 0 !important;
         overflow: hidden !important;
+        pointer-events: none !important;
     }
 
     /* Show Docy mobile header bar */
