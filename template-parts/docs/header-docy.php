@@ -206,17 +206,9 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
 
 <!-- Docy Mobile Sticky Navigation Bar -->
 <div class="mobile_main_menu dark_menu" id="mobile-sticky">
-    <div class="container" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; padding: 0 16px !important; box-sizing: border-box !important;">
-        <div class="mobile_menu_left" style="display: flex !important; align-items: center !important;">
-            <div class="cmgalaxy-mobile-logo">
-                <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 10px !important; text-decoration: none !important;">
-                    <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 32px !important; width: 32px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
-                    <span class="cmgalaxy-mobile-logo-text" style="font-size: 18px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
-                </a>
-            </div>
-        </div>
-        <div class="mobile_menu_right" style="display: flex !important; align-items: center !important;">
-            <button type="button" class="navbar-toggler mobile_menu_btn" aria-label="Toggle navigation" style="background: transparent !important; border: none !important; padding: 6px !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+    <div class="container">
+        <div class="mobile_menu_left">
+            <button type="button" class="navbar-toggler mobile_menu_btn" aria-label="Toggle Navigation">
                 <span class="menu_toggle">
                     <span class="hamburger">
                         <span></span>
@@ -225,16 +217,30 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
                     </span>
                 </span>
             </button>
+            <div class="cmgalaxy-mobile-logo">
+                <a href="<?php echo esc_url($docs_url); ?>">
+                    <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" class="cmgalaxy-mobile-logo-img">
+                    <span class="cmgalaxy-mobile-logo-text">Knowledge Base</span>
+                </a>
+            </div>
+        </div>
+        <div class="mobile_menu_right">
+            <!-- Right Hamburger for Modern Sidebar -->
+            <button type="button" class="navbar-toggler modern_sidebar_btn" aria-label="Toggle Documentation Navigation">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 12H21M3 6H21M3 18H21" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
     </div>
 </div>
 
-<!-- Docy Mobile Slide-out Drawer Navigation (Left) -->
+<!-- Left Side Menu (Main Navigation) -->
 <div class="side_menu dark_menu" id="cmg-mobile-side-menu">
-    <div class="mobile_menu_header" style="position: sticky !important; top: 0 !important; background: #ffffff !important; z-index: 1000 !important; display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 14px 20px !important; border-bottom: 1px solid #e5e7eb !important; margin: 0 !important;">
-        <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 10px !important; text-decoration: none !important;">
+    <div class="mobile_menu_header">
+        <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
             <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 28px !important; width: 28px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
-            <span class="cmgalaxy-mobile-logo-text" style="font-size: 16px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;">Knowledge Base</span>
+            <span class="cmgalaxy-mobile-logo-text" style="font-size: 15px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Knowledge Base</span>
         </a>
         <div class="close_nav" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -244,18 +250,40 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
         </div>
     </div>
 
-    <!-- Mobile Top Navigation Tabs (Home & Get Started) -->
-    <div class="mobile-top-nav-tabs" style="padding: 10px 18px !important; background: #f8fafc !important; border-bottom: 1px solid #f1f5f9 !important; display: flex !important; gap: 16px !important;">
-        <a href="<?php echo esc_url($docs_url); ?>" style="font-size: 14px !important; font-weight: <?php echo !$is_get_started_active ? '700' : '500'; ?> !important; color: <?php echo !$is_get_started_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; padding: 4px 0 !important; border-bottom: 2px solid <?php echo !$is_get_started_active ? '#2563eb' : 'transparent'; ?> !important;">Home</a>
-        <a href="<?php echo esc_url($getting_started_url); ?>" style="font-size: 14px !important; font-weight: <?php echo $is_get_started_active ? '700' : '500'; ?> !important; color: <?php echo $is_get_started_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; padding: 4px 0 !important; border-bottom: 2px solid <?php echo $is_get_started_active ? '#2563eb' : 'transparent'; ?> !important;">Get Started</a>
-    </div>
-
-    <div class="mobile_nav_wrapper" style="padding: 0 !important; margin: 0 !important;">
-        <nav class="mobile_nav_bottom" style="padding: 12px 14px 40px 14px !important; margin: 0 !important;">
-            <div class="mobile-sidebar-container" style="margin: 0 !important; padding: 0 !important;">
-                <?php get_template_part('template-parts/docs/sidebar-modern'); ?>
-            </div>
+    <div class="mobile_nav_wrapper">
+        <nav class="mobile_nav_bottom">
+            <ul class="navbar-nav menu ml-auto" style="list-style: none !important; padding: 14px 20px !important; margin: 0 !important;">
+                <li class="menu-item nav-item <?php echo $is_home_active ? 'active' : ''; ?>" style="margin-bottom: 8px !important;">
+                    <div class="nav-link-wrap">
+                        <a title="Home" class="nav-link" href="<?php echo esc_url($docs_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_home_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Home</a>
+                    </div>
+                </li>
+                <li class="menu-item nav-item <?php echo $is_get_started_active ? 'active' : ''; ?>" style="margin-bottom: 8px !important;">
+                    <div class="nav-link-wrap">
+                        <a title="Get Started" class="nav-link" href="<?php echo esc_url($getting_started_url); ?>" style="font-size: 16px !important; font-weight: 500 !important; color: <?php echo $is_get_started_active ? '#2563eb' : '#475569'; ?> !important; text-decoration: none !important; display: block !important; padding: 8px 0 !important;">Get Started</a>
+                    </div>
+                </li>
+            </ul>
         </nav>
+    </div>
+</div>
+
+<!-- Right Side Menu (Modern Sidebar with Expandable Categories) -->
+<div class="modern_sidebar_drawer" id="cmg-modern-sidebar-drawer">
+    <div class="mobile_menu_header">
+        <div class="mobile_logo" style="display: flex !important; align-items: center !important; gap: 8px !important;">
+            <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 25px !important; width: 25px !important; object-fit: contain !important; display: block !important;">
+            <span style="font-size: 15px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Documentation</span>
+        </div>
+        <div class="close_modern_sidebar" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </div>
+    </div>
+    <div class="modern_sidebar_drawer_content">
+        <?php get_template_part('template-parts/docs/sidebar-modern'); ?>
     </div>
 </div>
 
@@ -1057,19 +1085,30 @@ body.lex-drawer-open .lex-side-trigger {
     display: none;
 }
 
-/* Hide mobile-only elements on desktop */
 .side_menu,
 .side_menu.dark_menu,
+.modern_sidebar_drawer,
 .click_capture {
     display: none;
 }
 
 @media (max-width: 1024px) {
-    /* Hide desktop header wrapper on mobile/tablet */
+    /* Hide desktop header wrapper */
     .cmgalaxy-doc-header-wrap,
     header.cmgalaxy-doc-header-wrap,
-    #docy-header.cmgalaxy-doc-header-wrap {
+    #docy-header.cmgalaxy-doc-header-wrap,
+    #sticky,
+    .header,
+    .navbar-collapse.cmgalaxy-header,
+    .cmgalaxy-header-main,
+    .cmgalaxy-nav-menu,
+    #navbarSupportedContent {
         display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
     }
 
     /* Show Docy mobile header bar */
@@ -1082,16 +1121,78 @@ body.lex-drawer-open .lex-side-trigger {
         width: 100% !important;
         background: #ffffff !important;
         z-index: 100000 !important;
-        padding: 14px 0 !important;
-        box-shadow: none !important;
+        padding: 10px 0 !important;
         border-bottom: 1px solid #e5e7eb !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
         box-sizing: border-box !important;
     }
 
-    /* Hamburger button */
+    .mobile_main_menu .container {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 0 16px !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+
+    .mobile_main_menu .mobile_menu_left {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    .mobile_main_menu .mobile_menu_right {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .cmgalaxy-mobile-logo {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .cmgalaxy-mobile-logo a {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        text-decoration: none !important;
+    }
+
+    .cmgalaxy-mobile-logo-img {
+        height: 32px !important;
+        width: 32px !important;
+        object-fit: contain !important;
+        display: block !important;
+        flex-shrink: 0 !important;
+    }
+
+    .cmgalaxy-mobile-logo-text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+        font-weight: 700 !important;
+        color: #111827 !important;
+        font-size: 16px !important;
+        letter-spacing: -0.2px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Left Hamburger button */
+    .mobile_menu_btn {
+        background: transparent !important;
+        border: none !important;
+        padding: 8px !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        z-index: 100001 !important;
+    }
+
     .menu_toggle {
-        width: 24px !important;
-        height: 20px !important;
+        width: 22px !important;
+        height: 18px !important;
         position: relative !important;
         cursor: pointer !important;
         display: block !important;
@@ -1106,11 +1207,24 @@ body.lex-drawer-open .lex-side-trigger {
     .hamburger span {
         display: block !important;
         width: 100% !important;
-        height: 2.2px !important;
+        height: 2px !important;
         background: #111827 !important;
         border-radius: 2px !important;
-        margin: 4px 0 !important;
+        margin: 3.5px 0 !important;
         transition: all 0.25s ease !important;
+    }
+
+    /* Right Modern Sidebar button */
+    .modern_sidebar_btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 8px !important;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 100001 !important;
     }
 
     /* Side Navigation Drawer (Left) */
@@ -1118,14 +1232,14 @@ body.lex-drawer-open .lex-side-trigger {
     .side_menu {
         position: fixed !important;
         top: 0 !important;
-        left: -330px !important;
-        width: 310px !important;
+        left: -320px !important;
+        width: 300px !important;
         max-width: 85vw !important;
         height: 100% !important;
         background: #ffffff !important;
         z-index: 100002 !important;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.12) !important;
+        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
         overflow-y: auto !important;
         padding: 0 !important;
         box-sizing: border-box !important;
@@ -1133,9 +1247,51 @@ body.lex-drawer-open .lex-side-trigger {
     }
 
     .side_menu.menu-opened,
-    body.menu-is-opened .side_menu {
+    body.menu-is-opened .side_menu.menu-opened {
         left: 0 !important;
-        box-shadow: 5px 0 25px rgba(0,0,0,0.18) !important;
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Modern Sidebar Drawer (Right) */
+    .modern_sidebar_drawer {
+        position: fixed !important;
+        top: 0 !important;
+        right: -320px !important;
+        width: 300px !important;
+        max-width: 85vw !important;
+        height: 100% !important;
+        background: #ffffff !important;
+        z-index: 100002 !important;
+        transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1) !important;
+        overflow-y: auto !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        display: block !important;
+    }
+
+    .modern_sidebar_drawer.open,
+    body.menu-is-opened .modern_sidebar_drawer.open {
+        right: 0 !important;
+        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .modern_sidebar_drawer .mobile_menu_header,
+    .side_menu .mobile_menu_header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 14px 20px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        position: sticky !important;
+        top: 0 !important;
+        background: #ffffff !important;
+        z-index: 10 !important;
+        margin: 0 !important;
+    }
+
+    .modern_sidebar_drawer_content {
+        padding: 12px 14px 40px 14px !important;
     }
 
     /* Click Capture Overlay */
@@ -1152,8 +1308,7 @@ body.lex-drawer-open .lex-side-trigger {
         transition: opacity 0.25s ease !important;
     }
 
-    .click_capture.show,
-    body.menu-is-opened .click_capture {
+    .click_capture.show {
         display: block !important;
         opacity: 1 !important;
     }
@@ -1251,41 +1406,54 @@ body.lex-drawer-open .lex-side-trigger {
         // ==========================================
         // DOCY MOBILE MENU & DRAWER TOGGLE CONTROLS
         // ==========================================
-        function openMobileDrawer(e) {
+        function openLeftDrawer(e) {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
+            $('#cmg-modern-sidebar-drawer').removeClass('open');
             $('#cmg-mobile-side-menu').addClass('menu-opened');
             $('#cmg-click-capture').addClass('show').fadeIn(200);
             $('body').addClass('menu-is-opened').removeClass('menu-is-closed');
         }
 
-        function closeMobileDrawer(e) {
+        function openRightDrawer(e) {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
             $('#cmg-mobile-side-menu').removeClass('menu-opened');
+            $('#cmg-modern-sidebar-drawer').addClass('open');
+            $('#cmg-click-capture').addClass('show').fadeIn(200);
+            $('body').addClass('menu-is-opened').removeClass('menu-is-closed');
+        }
+
+        function closeAllDrawers(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            $('#cmg-mobile-side-menu').removeClass('menu-opened');
+            $('#cmg-modern-sidebar-drawer').removeClass('open');
             $('#cmg-click-capture').removeClass('show').fadeOut(200);
             $('body').removeClass('menu-is-opened').addClass('menu-is-closed');
         }
 
-        $(document).on('click', '.mobile_menu_btn, .menu_toggle', openMobileDrawer);
-        $(document).on('click', '.close_nav, #cmg-click-capture', closeMobileDrawer);
+        $(document).on('click', '.mobile_menu_btn, .menu_toggle', openLeftDrawer);
+        $(document).on('click', '.modern_sidebar_btn', openRightDrawer);
+        $(document).on('click', '.close_nav, .close_modern_sidebar, #cmg-click-capture', closeAllDrawers);
 
         // When navigation link inside mobile drawer is clicked, close drawer
-        $(document).on('click', '#cmg-mobile-side-menu a', function(e) {
+        $(document).on('click', '#cmg-mobile-side-menu a, #cmg-modern-sidebar-drawer a', function(e) {
             var $link = $(this);
-            if (!$link.closest('.expand-icon').length && !$link.closest('.expand-icon-subcat').length) {
+            if (!$link.closest('.expand-icon').length && !$link.closest('.expand-icon-subcat').length && !$link.hasClass('section-header')) {
                 var href = $link.attr('href');
                 if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
-                    closeMobileDrawer();
+                    closeAllDrawers();
                 }
             }
         });
 
-        // Mobile Ask Lex button handler
         $(document).on('click', '#mobile-ask-lex-btn', function(e) {
             e.preventDefault();
             closeMobileDrawer();

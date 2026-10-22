@@ -1886,3 +1886,84 @@ body[class*="docs"] .cm-navbar,
     }
 }
 
+
+
+/* ==========================================================================
+   DOCY EXACT MOBILE TEMPLATE STYLES (HOME, CATEGORY, SINGLE DOC)
+   ========================================================================== */
+@media (max-width: 1024px) {
+    /* Hide desktop left sidebar and right TOC across category and single doc */
+    .docs-col-sidebar,
+    .category-left-sidebar-col,
+    .docs-col-toc,
+    .category-right-sidebar-col,
+    .col-lg-3.doc_right_mobile,
+    .doc_right_mobile {
+        display: none !important;
+    }
+
+    /* Main Content Column Full Width */
+    .docs-col-content,
+    .category-main-col,
+    .docs-col-content.has-toc-sidebar {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        border-left: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .docs-layout-row {
+        display: block !important;
+    }
+
+    .docs-main-wrapper {
+        padding-top: 12px !important;
+        padding-bottom: 80px !important;
+    }
+
+    .docs-container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        max-width: 100% !important;
+    }
+}
+
+/* Template 1: Docs Home Cards Grid */
+@media (max-width: 991px) {
+    .category-card {
+        margin-bottom: 16px !important;
+    }
+    .col-md-4.col-lg-4,
+    [class*="col-md-4"] {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-md-4.col-lg-4,
+    [class*="col-md-4"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    .category-intro {
+        font-size: 15px !important;
+        margin: 10px auto 25px !important;
+        padding: 0 12px !important;
+    }
+
+    .single-doc-title {
+        font-size: 26px !important;
+        line-height: 1.25 !important;
+    }
+
+    .custom-breadcrumb {
+        font-size: 12.5px !important;
+        gap: 4px !important;
+        margin-bottom: 12px !important;
+    }
+}
