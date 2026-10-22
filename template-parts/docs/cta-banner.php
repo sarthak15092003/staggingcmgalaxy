@@ -160,6 +160,12 @@
             }
         }
 
+        @media (max-width: 767px) {
+            .home-cta-banner__subtitle {
+                font-size: 16px !important;
+            }
+        }
+
         @media (max-width: 575px) {
             .home-cta-banner {
                 padding: 36px 0 44px 0 !important;
@@ -169,7 +175,7 @@
             }
 
             .home-cta-banner__subtitle {
-                font-size: 15px !important;
+                font-size: 16px !important;
             }
 
             .home-cta-banner__inner {
