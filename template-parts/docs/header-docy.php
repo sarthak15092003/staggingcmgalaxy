@@ -461,13 +461,17 @@ body.admin-bar {
     outline: none !important;
     box-sizing: border-box !important;
     transition: all 0.2s ease !important;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    box-shadow: none !important;
+}
+
+.cmgalaxy-search-input:hover {
+    border-color: #cbd5e1 !important;
 }
 
 .cmgalaxy-search-input:focus {
     background: #ffffff !important;
     border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    box-shadow: none !important;
 }
 
 /* ========================================================
@@ -541,11 +545,11 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     line-height: 44px !important;
     font-size: 14px !important;
     padding: 0 24px !important;
-    border: 1.5px solid #60a5fa !important;
+    border: 1.5px solid #3b82f6 !important;
     border-radius: 9999px !important;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: none !important;
     outline: none !important;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
+    transition: border-color 0.25s ease, background 0.25s ease !important;
 }
 
 
