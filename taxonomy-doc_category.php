@@ -103,5 +103,8 @@ $sidebar_img_url = file_exists(get_template_directory() . '/assets/images/sideba
     </div>
 </div>
 
+<!-- CMGalaxy Bottom CTA Banner -->
+<?php get_template_part('template-parts/docs/cta-banner'); ?>
+
 <?php
 get_footer();

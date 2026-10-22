@@ -185,5 +185,8 @@ if (!empty($docy_categories)) {
 
 </div>
 
+<!-- CMGalaxy Bottom CTA Banner -->
+<?php get_template_part('template-parts/docs/cta-banner'); ?>
+
 <?php
 get_footer();

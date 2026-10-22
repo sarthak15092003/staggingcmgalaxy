@@ -651,5 +651,8 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
 })(jQuery);
 </script>
 
+<!-- CMGalaxy Bottom CTA Banner -->
+<?php get_template_part('template-parts/docs/cta-banner'); ?>
+
 <?php
 get_footer();
