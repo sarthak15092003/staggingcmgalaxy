@@ -98,7 +98,7 @@ $direct_articles = new WP_Query([
                                 <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
                                     <span><?php the_title(); ?></span>
                                 </div>
-                                <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
+                                <p class="tw-article-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
                             </div>
                             <div class="tw-article-arrow">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -123,7 +123,7 @@ $direct_articles = new WP_Query([
                             <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
                                 <span><?php the_title(); ?></span>
                             </div>
-                            <p class="tw-article-desc"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '...')); ?></p>
+                            <p class="tw-article-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '...')); ?></p>
                         </div>
                         <div class="tw-article-arrow">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
