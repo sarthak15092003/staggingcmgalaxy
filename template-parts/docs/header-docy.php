@@ -746,7 +746,7 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     display: inline-block !important;
     padding: 10px 0 !important;
     color: #64748b !important;
-    font-size: 14px !important;
+    font-size: 16px !important;
     font-weight: 500 !important;
     text-decoration: none !important;
     border-bottom: 2px solid transparent !important;
