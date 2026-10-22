@@ -851,15 +851,35 @@ body.page-template-page-all-categories,
 .doc-author-meta-box {
     display: flex;
     align-items: center;
+    gap: 8px;
     margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #e5e7eb;
+}
+
+.doc-author-meta-box .author-avatar {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doc-author-meta-box .author-avatar img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
 }
 
 .doc-author-meta-box .author-info {
     font-size: 14px;
     color: #64748b;
-    line-height: 1.5;
+    line-height: 1.4;
+}
+
+.doc-author-meta-box .author-info .author-name {
+    color: #334155;
+    font-weight: 500;
 }
 
 .doc-article-content {

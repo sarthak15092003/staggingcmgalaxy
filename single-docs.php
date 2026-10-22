@@ -58,9 +58,19 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                         <h1 class="single-doc-title"><?php the_title(); ?></h1>
                         
                         <!-- Author & Meta Box -->
-                        <div class="doc-author-meta-box">
-                            <div class="author-info">
-                                Written by <strong style="color: #334155; font-weight: 600;"><?php echo get_the_author(); ?></strong> &bull; Updated <?php echo get_the_modified_date('M j, Y'); ?>
+                        <?php
+                        $author_name = get_the_author();
+                        if (empty($author_name) || stripos($author_name, 'admin') !== false || stripos($author_name, 'cmgalaxy') !== false) {
+                            $author_name = 'CMGalaxy';
+                        }
+                        $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/cropped-Group-1000004539-300x300-1.webp';
+                        ?>
+                        <div class="doc-author-meta-box" style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+                            <div class="author-avatar" style="width: 18px; height: 18px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                <img src="<?php echo esc_url($brand_icon_url); ?>" alt="<?php echo esc_attr($author_name); ?>" style="width: 18px; height: 18px; object-fit: contain; display: block;" />
+                            </div>
+                            <div class="author-info" style="font-size: 14px; color: #64748b; line-height: 1.4;">
+                                Written by <span class="author-name" style="color: #334155; font-weight: 500;"><?php echo esc_html($author_name); ?></span>
                             </div>
                         </div>
 
