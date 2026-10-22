@@ -50,13 +50,13 @@
         }
 
         .home-cta-banner__copy {
-            max-width: 560px;
+            max-width: 460px !important;
         }
 
         .home-cta-banner__title {
-            font-size: 32px !important;
+            font-size: 28px !important;
             font-weight: 600 !important;
-            line-height: 1.2 !important;
+            line-height: 1.25 !important;
             color: #ffffff !important;
             margin: 0 0 16px 0 !important;
             letter-spacing: normal !important;
@@ -87,6 +87,7 @@
             align-items: center !important;
             justify-content: center !important;
             border-radius: 999px !important;
+            font-size: 15px !important;
             font-weight: 600 !important;
             text-decoration: none !important;
             box-sizing: border-box !important;
@@ -163,6 +164,14 @@
             .home-cta-banner {
                 padding: 36px 0 44px 0 !important;
             }
+            .home-cta-banner__title {
+                font-size: 24px !important;
+            }
+
+            .home-cta-banner__subtitle {
+                font-size: 15px !important;
+            }
+
             .home-cta-banner__inner {
                 padding: 36px 28px !important;
                 border-radius: 20px !important;
