@@ -210,7 +210,7 @@ if (!empty($sidebar_sections)) {
             return $pos_a - $pos_b;
         }
 
-        return strcasecmp($a['title'], $b['title']);
+        return ($term_id_a && $term_id_b) ? ($term_id_a - $term_id_b) : strcasecmp($a['title'], $b['title']);
     });
 }
 
@@ -249,7 +249,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                 AND tt.taxonomy = %s
                 AND p.post_type IN ('docs', 'post')
                 AND p.post_status = 'publish'
-                ORDER BY p.menu_order ASC, p.ID ASC
+                ORDER BY p.menu_order ASC, p.post_date ASC, p.ID ASC
             ", $cat_term_id, $sec_tax));
             $has_main_direct_posts = !empty($main_direct_posts);
 
@@ -414,7 +414,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                     AND tt.taxonomy = %s
                                     AND p.post_type IN ('docs', 'post')
                                     AND p.post_status = 'publish'
-                                    ORDER BY p.menu_order ASC, p.ID ASC
+                                    ORDER BY p.menu_order ASC, p.post_date ASC, p.ID ASC
                                 ", $sub->term_id, $sec_tax));
 
                                 $has_sub_posts = !empty($sub_posts);
@@ -476,7 +476,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                         AND tt.taxonomy = %s
                                                         AND p.post_type IN ('docs', 'post')
                                                         AND p.post_status = 'publish'
-                                                        ORDER BY p.menu_order ASC, p.ID ASC
+                                                        ORDER BY p.menu_order ASC, p.post_date ASC, p.ID ASC
                                                     ", $ss->term_id, $sec_tax));
                                                     $ss_link = get_term_link($ss->term_id, $sec_tax);
                                                     $ss_link = is_wp_error($ss_link) ? '#' : $ss_link;

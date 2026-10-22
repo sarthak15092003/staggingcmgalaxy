@@ -67,43 +67,10 @@ $custom_icons = array(
     'UTM Parameters Guidelines' => 'https://docs.cmgalaxy.com/wp-content/uploads/2026/07/UTM-.png'
 );
 
-$custom_order = array(
-    'Getting started'           => 1,
-    'Getting Started'           => 1,
-    'Account Management'        => 2,
-    'Account Mangement'         => 2,
-    'User Management'           => 3,
-    'User Manegement'           => 3,
-    'Master Dashboard'          => 4,
-    'Main Dashboard'            => 5,
-    'Funnel Attribution'        => 6,
-    'Integrations'              => 7,
-    'Google Dashboard'          => 8,
-    'Meta Dashboard'            => 9,
-    'Linkedin Dashboard'        => 10,
-    'LinkedIn Dashboard'        => 10,
-    'Teads Dashboard'           => 11,
-    'Pinterest Dashboard'       => 12,
-    'DV360 Dashboard'           => 13,
-    'Amazon Dashboard'          => 14,
-    'Recommendation'            => 15,
-    'Milestone'                 => 16,
-    'Notification Center'       => 17,
-    'Ticket/ Support'           => 18,
-    'Reporting Hub'             => 19,
-    'Lex'                       => 20,
-    'User Journey'              => 21
-);
-
-if (!empty($docy_categories)) {
-    usort($docy_categories, function($a, $b) use ($custom_order) {
-        $pos_a = isset($custom_order[$a->name]) ? $custom_order[$a->name] : 999;
-        $pos_b = isset($custom_order[$b->name]) ? $custom_order[$b->name] : 999;
-        if ($pos_a == $pos_b) {
-            return strcmp($a->name, $b->name);
-        }
-        return $pos_a - $pos_b;
-    });
+if (!empty($docy_categories) && !is_wp_error($docy_categories)) {
+    if (function_exists('cmgalaxy_sort_terms_by_order')) {
+        usort($docy_categories, 'cmgalaxy_sort_terms_by_order');
+    }
 }
 ?>
 

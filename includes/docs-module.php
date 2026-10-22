@@ -878,153 +878,158 @@ function cmgalaxy_sort_terms_by_order( $a, $b ) {
         return ($val_a < $val_b) ? -1 : 1;
     }
 
+    $slug_a = isset($a->slug) ? strtolower(trim($a->slug)) : '';
+    $slug_b = isset($b->slug) ? strtolower(trim($b->slug)) : '';
+    $name_a = isset($a->name) ? strtolower(trim($a->name)) : '';
+    $name_b = isset($b->name) ? strtolower(trim($b->name)) : '';
+
     // 2. Docy exact subcategory ordering mapping
     static $docy_subcat_order = null;
     if ($docy_subcat_order === null) {
-        $docy_subcat_order = array(
-            // linkedin-dashboard
-            'linkedin-performance-dashboard'               => 10,
-            'time-graph-linkedln'                          => 20,
-            'top-data-linkedln'                            => 30,
-            'cost-analysis'                                => 40,
-            'placement-wise-cost-breakdown'                => 50,
-            'professional-demographics'                    => 60,
-            'reporting-export'                             => 70,
-            'lex-ai-support-on-linkedin-dashboard'         => 80,
+$docy_subcat_order = array(
+            // amazon-dashboard
+            'dashboard-overview'                                         => 10,
+            'filters-data-loading'                                       => 20,
+            'time-graph-performance-trend'                               => 30,
+            'campaign-level'                                             => 40,
+            'ad-group-level'                                             => 50,
+            'asin-level'                                                 => 60,
+            'ad-format-performance'                                      => 70,
+            'keyword-performance-search-term-analysis'                   => 80,
+            'data-export-csv-download'                                   => 90,
+            'data-consistency-troubleshooting'                           => 100,
+            'amazon-ads-hierarchy'                                       => 110,
+            'campaign-summary'                                           => 120,
 
             // funnel-attribution
-            'funnel-overview'                              => 10,
-            'tofu-top-of-funnel-attribution'               => 20,
-            'mofu-middle-of-funnel-attribution-dashboard'  => 30,
-            'bofu-bottom-of-funnel-attribution-dashboard'  => 40,
-            'conversion-attribution-dashboard'             => 50,
+            'funnel-overview'                                            => 10,
+            'tofu-top-of-funnel-attribution'                             => 20,
+            'mofu-middle-of-funnel-attribution-dashboard'                => 30,
+            'bofu-bottom-of-funnel-attribution-dashboard'                => 40,
+            'conversion-attribution-dashboard'                           => 50,
 
             // getting-started
-            'onboarding'                                   => 10,
-
-            // integrations
-            'pixel-installation-and-verification'          => 10,
-            'shopify-integration-and-setup'                => 20,
-            'woocommerce-integration'                      => 30,
-            'ad-platform-integration'                      => 40,
-            'troubleshooting'                              => 50,
-
-            // main_dashboard
-            'overall-performance-metrics'                  => 10,
-            'dashboard-filters-navigation'                 => 20,
-            'ai-recommendations-section-in-the-main-dashboard' => 30,
-            'platform-comparison'                          => 40,
-            'user-revenue-by-segments'                     => 50,
-            'marketing-channel-intelligence'               => 60,
-            'top-data-table'                               => 70,
-            'creative-quadrant'                            => 80,
-            'lex-ai-assistant'                             => 90,
-
-            // meta-dashboard
-            'meta-dashboard-overview'                      => 10,
-            'access-meta-performance-dashboard'            => 20,
-            'connect-your-meta-ads-account'                => 30,
-            'filters-and-date-range'                       => 40,
-            'time-graph'                                   => 50,
-            'campaign-hierarchy'                           => 60,
-            'performance-metrics-kpis'                     => 70,
-            'meta-ads-hierarchy'                           => 80,
-            'date-wise-metrics-overview'                   => 90,
-            'demographics-insights'                        => 100,
-            'product-performance'                          => 110,
-            'platform-performance'                         => 120,
-            'region-analysis'                              => 130,
-            'creative-performance'                         => 140,
-
-            // teads-dashboard
-            'teads-ads-performance-dashboard'              => 10,
-            'top-data'                                     => 20,
-            'device-performance'                           => 30,
-            'publisher-performance'                        => 40,
-            'reporting-exports'                            => 50,
-            'lex-ai-teads-ads-dashboard'                   => 60,
-
-            // amazon-dashboard
-            'amazon-ads-performance-overview'              => 10,
-            'top-data-campaign-performance-overview'       => 20,
-            'targeting-type-performance'                   => 30,
-            'placement-performance'                        => 40,
-            'sponsored-products-performance'               => 50,
-            'sponsored-brands-performance'                 => 60,
-            'ad-format-performance'                        => 70,
-            'keyword-performance-search-term-analysis'     => 80,
-            'data-export-csv-download'                     => 90,
-            'data-consistency-troubleshooting'             => 100,
-            'amazon-ads-hierarchy'                         => 110,
-            'campaign-summary'                             => 120,
+            'onboarding'                                                 => 10,
 
             // google-dashboard
-            'campaign-management'                          => 10,
-            'recommendations-ai-optimization'              => 20,
-            'lex-ai-assistant-support-on-google-dashboard' => 30,
-            'asset-group-ad-group-analysis'                => 40,
-            'ad-creative-performance'                      => 50,
-            'asset-performance-management'                 => 60,
-            'clicks-by-devices'                            => 70,
-            'keyword-performance'                          => 80,
-            'region-wise-breakdown'                         => 90,
-            'creative-quadrant-google-dashboard'           => 100,
-            'google-performance-dashboard'                 => 110,
-            'performance-metrics-kpis-google-dashboard'    => 120,
-            'demographics-insights-google-dashboard'       => 130,
-            'time-graph-google-dashboard'                  => 140,
+            'campaign-management'                                        => 10,
+            'recommendations-ai-optimization'                            => 20,
+            'lex-ai-assistant-support-on-google-dashboard'               => 30,
+            'asset-group-ad-group-analysis'                              => 40,
+            'ad-creative-performance'                                    => 50,
+            'asset-performance-management'                               => 60,
+            'clicks-by-devices'                                          => 70,
+            'keyword-performance'                                        => 80,
+            'region-wise-breakdown'                                      => 90,
+            'creative-quadrant-google-dashboard'                         => 100,
+            'google-performance-dashboard'                               => 110,
+            'performance-metrics-kpis-google-dashboard'                  => 120,
+            'demographics-insights-google-dashboard'                     => 130,
+            'time-graph-google-dashboard'                                => 140,
+
+            // integrations
+            'pixel-installation-and-verification'                        => 10,
+            'shopify-integration-and-setup'                              => 20,
+            'woocommerce-integration'                                    => 30,
+            'ad-platform-integration'                                    => 40,
+            'troubleshooting'                                            => 50,
+
+            // linkedin-dashboard
+            'linkedin-performance-dashboard'                             => 10,
+            'time-graph-linkedln'                                        => 20,
+            'top-data-linkedln'                                          => 30,
+            'cost-analysis'                                              => 40,
+            'placement-wise-cost-breakdown'                              => 50,
+            'professional-demographics'                                  => 60,
+            'reporting-export'                                           => 70,
+            'lex-ai-support-on-linkedin-dashboard'                       => 80,
+
+            // main_dashboard
+            'overall-performance-metrics'                                => 10,
+            'dashboard-filters-navigation'                               => 20,
+            'ai-recommendations-section-in-the-main-dashboard'           => 30,
+            'platform-comparison'                                        => 40,
+            'user-revenue-by-segments'                                   => 50,
+            'marketing-channel-intelligence'                             => 60,
+            'top-data-table'                                             => 70,
+            'creative-quadrant'                                          => 80,
+            'lex-ai-assistant'                                           => 90,
+
+            // meta-dashboard
+            'meta-dashboard-overview'                                    => 10,
+            'access-meta-performance-dashboard'                          => 20,
+            'connect-your-meta-ads-account'                              => 30,
+            'filters-and-date-range'                                     => 40,
+            'time-graph'                                                 => 50,
+            'campaign-hierarchy'                                         => 60,
+            'performance-metrics-kpis'                                   => 70,
+            'meta-ads-hierarchy'                                         => 80,
+            'date-wise-metrics-overview'                                 => 90,
+            'demographics-insights'                                      => 100,
+            'product-performance'                                        => 110,
+            'platform-performance'                                       => 120,
+            'region-analysis'                                            => 130,
+            'creative-performance'                                       => 140,
+
+            // teads-dashboard
+            'teads-ads-performance-dashboard'                            => 10,
+            'top-data'                                                   => 20,
+            'device-performance'                                         => 30,
+            'publisher-performance'                                      => 40,
+            'reporting-exports'                                          => 50,
+            'lex-ai-teads-ads-dashboard'                                 => 60,
 
             // user-management
-            'overview-of-user-roles-in-cmgalaxy'           => 10,
-            'role-based-access-control-rbac-in-cmgalaxy'    => 20,
-            'what-permissions-does-an-admin-have-in-cmgalaxy' => 30,
-            'what-permissions-does-a-business-head-have-in-cmg' => 40,
-            'what-permissions-does-an-account-manager-have-in' => 50,
-            'how-to-assign-module-level-permissions-in-cmgalaxy' => 60,
-            'understanding-module-permissions-in-cmgalaxy' => 70,
-            'understanding-module-permissions-in-cmg'      => 80,
-            'how-to-invite-a-new-user-to-cmgalaxy'         => 90,
-            'step-by-step-guide-to-inviting-a-user-in-cmgalaxy' => 100,
-            'how-to-assign-role-during-user-invitation-in-cmg' => 110,
-            'how-to-review-and-approve-user-invitations'   => 120,
-            'what-happens-after-sending-an-invitation'     => 130,
-            'understanding-invitation-status'              => 140,
-            'how-to-manage-user-access-from-the-account-detail' => 150,
-            'how-to-edit-user-permissions-after-invitation-in' => 160,
-            'how-to-remove-or-deactivate-a-user-in-cmgalaxy' => 170,
-            'how-to-mark-a-user-as-inactive-in-cmgalaxy'   => 180,
-            'how-to-reactivate-an-inactive-user-in-cmgalaxy' => 190,
-            'how-to-assign-new-account-access-to-an-existing' => 200,
-            'how-to-manage-users-from-the-master'          => 210,
-            'how-to-remove-a-user-completely-from-cmgalaxy' => 220,
-            'how-to-manage-users-at-the-account-level-in-cmg' => 230,
-            'difference-between-master-level-and-account-level' => 240,
-            'how-to-assign-a-user-to-multiple-accounts'    => 250,
-            'how-to-view-assigned-accounts-for-a-user-in-cmg' => 260,
-            'how-to-restrict-user-access-to-specific-accounts' => 270,
-            'admin-view-vs-business-head-view-vs-account-manag' => 280,
-            'what-can-an-account-manager-see-in-cmgalaxy'  => 290,
-            'business-head-dashboard-access-explained-in-cmg' => 300,
-            'why-cant-i-invite-a-user-in-cmgalaxy'         => 310,
-            'fix-invitation-not-received-in-cmgalaxy'       => 320,
-            'fix-user-cannot-access-assigned-account-in-cmg' => 330,
-            'fix-permission-changes-not-reflecting-in-cmgalaxy' => 340,
-            'fix-unable-to-remove-a-user-in-cmgalaxy'      => 350,
-            'fix-account-not-visible-to-assigned-user-in-cmg' => 360,
-            'how-to-structure-user-roles-for-large-teams-in-cmg' => 370,
-            'how-to-assign-business-heads-for-multi-region' => 380,
-            'how-to-configure-hierarchical-access-control' => 390
+            'overview-of-user-roles-in-cmgalaxy'                         => 10,
+            'role-based-access-control-rbac-in-cmgalaxy'                 => 20,
+            'what-permissions-does-an-admin-have-in-cmgalaxy'            => 30,
+            'what-permissions-does-a-business-head-have-in-cmg'          => 40,
+            'what-permissions-does-an-account-manager-have-in'           => 50,
+            'how-to-assign-module-level-permissions-in-cmgalaxy'         => 60,
+            'understanding-module-permissions-in-cmgalaxy'               => 70,
+            'understanding-module-permissions-in-cmg'                    => 80,
+            'how-to-invite-a-new-user-to-cmgalaxy'                       => 90,
+            'step-by-step-guide-to-inviting-a-user-in-cmgalaxy'          => 100,
+            'how-to-assign-role-during-user-invitation-in-cmg'           => 110,
+            'how-to-review-and-approve-user-invitations'                 => 120,
+            'what-happens-after-sending-an-invitation'                   => 130,
+            'understanding-invitation-status'                            => 140,
+            'how-to-manage-user-access-from-the-account-detail'          => 150,
+            'how-to-edit-user-permissions-after-invitation-in'           => 160,
+            'how-to-remove-or-deactivate-a-user-in-cmgalaxy'             => 170,
+            'how-to-mark-a-user-as-inactive-in-cmgalaxy'                 => 180,
+            'how-to-reactivate-an-inactive-user-in-cmgalaxy'             => 190,
+            'how-to-assign-new-account-access-to-an-existing'            => 200,
+            'how-to-manage-users-from-the-master'                        => 210,
+            'how-to-remove-a-user-completely-from-cmgalaxy'              => 220,
+            'how-to-manage-users-at-the-account-level-in-cmg'            => 230,
+            'difference-between-master-level-and-account-level'          => 240,
+            'how-to-assign-a-user-to-multiple-accounts'                  => 250,
+            'how-to-view-assigned-accounts-for-a-user-in-cmg'            => 260,
+            'how-to-restrict-user-access-to-specific-accounts'           => 270,
+            'admin-view-vs-business-head-view-vs-account-manag'          => 280,
+            'what-can-an-account-manager-see-in-cmgalaxy'                => 290,
+            'business-head-dashboard-access-explained-in-cmg'            => 300,
+            'why-cant-i-invite-a-user-in-cmgalaxy'                       => 310,
+            'fix-invitation-not-received-in-cmgalaxy'                    => 320,
+            'fix-user-cannot-access-assigned-account-in-cmg'             => 330,
+            'fix-permission-changes-not-reflecting-in-cmgalaxy'          => 340,
+            'fix-unable-to-remove-a-user-in-cmgalaxy'                    => 350,
+            'fix-account-not-visible-to-assigned-user-in-cmg'            => 360,
+            'how-to-structure-user-roles-for-large-teams-in-cmg'         => 370,
+            'how-to-assign-business-heads-for-multi-region'              => 380,
+            'how-to-configure-hierarchical-access-control'               => 390,
+
         );
     }
-
-    $slug_a = isset($a->slug) ? $a->slug : '';
-    $slug_b = isset($b->slug) ? $b->slug : '';
 
     $pos_sub_a = isset($docy_subcat_order[$slug_a]) ? $docy_subcat_order[$slug_a] : 9999;
     $pos_sub_b = isset($docy_subcat_order[$slug_b]) ? $docy_subcat_order[$slug_b] : 9999;
 
-    if ($pos_sub_a !== $pos_sub_b) {
-        return ($pos_sub_a < $pos_sub_b) ? -1 : 1;
+    if ($pos_sub_a !== 9999 || $pos_sub_b !== 9999) {
+        if ($pos_sub_a !== $pos_sub_b) {
+            return ($pos_sub_a < $pos_sub_b) ? -1 : 1;
+        }
     }
 
     // 3. Top-level categories ordering
@@ -1035,33 +1040,49 @@ function cmgalaxy_sort_terms_by_order( $a, $b ) {
             'getting-started'           => 1,
             'account management'        => 2,
             'account mangement'         => 2,
+            'account-management'        => 2,
             'user management'           => 3,
             'user manegement'           => 3,
+            'user-management'           => 3,
             'funnel attribution'        => 4,
+            'funnel-attribution'        => 4,
             'integrations'              => 5,
             'main dashboard'            => 6,
+            'main-dashboard'            => 6,
+            'main_dashboard'            => 6,
             'master dashboard'          => 7,
+            'master-dashboard'          => 7,
             'google dashboard'          => 8,
+            'google-dashboard'          => 8,
             'meta dashboard'            => 9,
+            'meta-dashboard'            => 9,
             'linkedin dashboard'        => 10,
+            'linkedin-dashboard'        => 10,
             'amazon dashboard'          => 11,
+            'amazon-dashboard'          => 11,
             'teads dashboard'           => 12,
+            'teads-dashboard'           => 12,
             'milestone'                 => 13,
             'recommendation'            => 14,
             'pinterest dashboard'       => 15,
+            'pinterest-dashboard'       => 15,
             'dv360 dashboard'           => 16,
+            'dv360-dashboard'           => 16,
             'notification center'       => 17,
+            'notification-center'       => 17,
             'ticket/ support'           => 18,
             'tickets / supports'        => 18,
             'tickets / support'         => 18,
+            'tickets-supports'          => 18,
             'reporting hub'             => 19,
+            'reporting-hub'             => 19,
             'lex'                       => 20,
-            'user journey'              => 21
+            'user journey'              => 21,
+            'user-journey'              => 21,
+            'utm parameters guidelines' => 22,
+            'utm-parameters-guidelines' => 22
         );
     }
-
-    $name_a = strtolower(trim($a->name));
-    $name_b = strtolower(trim($b->name));
 
     $pos_top_a = isset($docy_top_order[$name_a]) ? $docy_top_order[$name_a] : (isset($docy_top_order[$slug_a]) ? $docy_top_order[$slug_a] : 9999);
     $pos_top_b = isset($docy_top_order[$name_b]) ? $docy_top_order[$name_b] : (isset($docy_top_order[$slug_b]) ? $docy_top_order[$slug_b] : 9999);
@@ -1194,7 +1215,8 @@ function docy_docs_custom_order( $query ) {
         $is_docs = true;
     }
 
-    if ( $is_docs ) {
+    // Apply exact Docy ordering (menu_order ASC, date ASC) to all docs, doc categories, and category archives
+    if ( $is_docs || $query->is_tax('doc_category') || $query->is_category() || $query->is_tax('doc_tag') || $query->is_tax('doc_dir') || $query->is_post_type_archive('docs') ) {
         $query->set( 'order', 'ASC' );
         $query->set( 'orderby', 'menu_order date' );
         $query->set( 'posts_per_page', -1 );

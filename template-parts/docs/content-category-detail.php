@@ -41,7 +41,7 @@ if (!empty($subcategories) && !is_wp_error($subcategories)) {
                 ]
             ],
             'posts_per_page' => -1,
-            'orderby'        => ['menu_order' => 'ASC', 'ID' => 'ASC'],
+            'orderby'        => ['menu_order' => 'ASC', 'date' => 'ASC', 'ID' => 'ASC'],
         ]);
         if ($sub_articles->have_posts()) {
             $valid_subcategories[] = [
@@ -64,7 +64,7 @@ $direct_articles = new WP_Query([
         ]
     ],
     'posts_per_page' => -1,
-    'orderby'        => ['menu_order' => 'ASC', 'ID' => 'ASC'],
+    'orderby'        => ['menu_order' => 'ASC', 'date' => 'ASC', 'ID' => 'ASC'],
 ]);
 ?>
 
