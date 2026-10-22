@@ -66,7 +66,7 @@ $sidebar_img_url = file_exists(get_template_directory() . '/assets/images/sideba
                 </nav>
 
                 <!-- Category Header -->
-                <h1 class="single-doc-title" style="font-size: 38px; font-weight: 700; color: #111827; line-height: 1.2; margin: 12px 0 14px 0;">
+                <h1 class="single-doc-title" style="font-size: 38px; font-weight: 600; color: #111827; line-height: 1.2; margin: 12px 0 14px 0;">
                     <?php echo esc_html($term_name); ?>
                 </h1>
 

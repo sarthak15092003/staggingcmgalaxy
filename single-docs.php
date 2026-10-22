@@ -417,7 +417,7 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
 
                             if ($related_query->have_posts()) : ?>
                                 <div style="margin-top: 40px; padding: 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
-                                    <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 16px 0;">Related Guides & Articles</h3>
+                                    <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0 0 16px 0;">Related Guides & Articles</h3>
                                     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
                                         <?php while ($related_query->have_posts()) : $related_query->the_post(); ?>
                                             <li>

@@ -241,7 +241,7 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
     <div class="mobile_menu_header">
         <a href="<?php echo esc_url($docs_url); ?>" style="display: flex !important; align-items: center !important; gap: 8px !important; text-decoration: none !important;">
             <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 28px !important; width: 28px !important; object-fit: contain !important; flex-shrink: 0 !important; display: block !important;">
-            <span class="cmgalaxy-mobile-logo-text" style="font-size: 15px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Knowledge Base</span>
+            <span class="cmgalaxy-mobile-logo-text" style="font-size: 15px !important; font-weight: 600 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Knowledge Base</span>
         </a>
         <div class="close_nav" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -274,7 +274,7 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
     <div class="mobile_menu_header">
         <div class="mobile_logo" style="display: flex !important; align-items: center !important; gap: 8px !important;">
             <img src="<?php echo esc_url($brand_icon_url); ?>" alt="CMGalaxy Logo" style="height: 25px !important; width: 25px !important; object-fit: contain !important; display: block !important;">
-            <span style="font-size: 15px !important; font-weight: 700 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Documentation</span>
+            <span style="font-size: 15px !important; font-weight: 600 !important; color: #111827 !important; letter-spacing: -0.2px !important; white-space: nowrap !important;">Documentation</span>
         </div>
         <div class="close_modern_sidebar" style="cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; width: 36px !important; height: 36px !important; border-radius: 50% !important;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -713,7 +713,7 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
     background: #059669 !important;
     color: #ffffff !important;
     font-size: 13px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -890,7 +890,7 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
 .search-highlight {
     background: transparent !important;
     color: #0f172a !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     padding: 0 !important;
 }
 
@@ -1205,7 +1205,7 @@ body.lex-drawer-open .lex-side-trigger {
 
     .cmgalaxy-mobile-logo-text {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
         color: #111827 !important;
         font-size: 16px !important;
         letter-spacing: -0.2px !important;
