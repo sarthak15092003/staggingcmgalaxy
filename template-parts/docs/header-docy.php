@@ -892,27 +892,38 @@ body.search-popup-active .cmgalaxy-ask-lex-btn {
 
 .ask-ai-suggestion {
     border-top: 1px solid #f1f5f9 !important;
-    background: #f8fafc !important;
+    background: #ffffff !important;
+    border-bottom-left-radius: 14px !important;
+    border-bottom-right-radius: 14px !important;
+    overflow: hidden !important;
 }
 
 .ask-ai-item {
-    padding: 12px 16px !important;
+    padding: 12px 18px !important;
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 14px !important;
     cursor: pointer !important;
+    transition: background 0.15s ease !important;
 }
 
 .ask-ai-item:hover {
-    background: #eff6ff !important;
+    background: #f8fafc !important;
 }
 
 .ask-ai-text {
     font-size: 14px !important;
-    font-weight: 600 !important;
-    color: #1d4ed8 !important;
+    font-weight: 500 !important;
+    color: #2563eb !important;
+    line-height: 1.4 !important;
 }
 
+.ask-ai-sub {
+    font-size: 12px !important;
+    color: #64748b !important;
+    line-height: 1.3 !important;
+    margin-top: 2px !important;
+}
 .search-highlight {
     background: transparent !important;
     color: #0f172a !important;
@@ -1829,6 +1840,20 @@ body.lex-drawer-open .lex-side-trigger {
                 );
             }
 
+            // Ask Lex Item at bottom matching docs.cmgalaxy.com
+            var safeQ = $('<div>').text(q).html();
+            $container.append(
+                '<div class="ask-ai-suggestion">' +
+                    '<div class="ask-ai-item cmg-suggest-ask-lex" data-query="' + safeQ + '">' +
+                        '<img src="' + lexLogo + '" alt="Lex" style="width: 22px; height: 22px; object-fit: contain; flex-shrink: 0;">' +
+                        '<div class="ask-ai-content">' +
+                            '<div class="ask-ai-text">Ask Lex: \'' + safeQ + '\'</div>' +
+                            '<div class="ask-ai-sub">Get an AI-powered answer instantly</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            );
+
             $container.addClass('active').show();
             if ($container[0]) {
                 $container[0].style.setProperty('display', 'block', 'important');
@@ -1838,8 +1863,15 @@ body.lex-drawer-open .lex-side-trigger {
         $(document).on('click', '.cmg-suggest-ask-lex, #cmg-suggest-ask-lex', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var queryText = $(this).attr('data-query') || $(this).find('em').text().replace(/^"|"$/g, '');
-            $('.cmgalaxy-search-suggestions').hide();
+            var queryText = $(this).attr('data-query');
+            if (!queryText) {
+                var $match = $(this).find('.ask-ai-text').text().match(/Ask Lex:\s*['"]?([^'"]+)['"]?/i);
+                queryText = $match ? $match[1] : '';
+            }
+            $('.cmgalaxy-search-suggestions').removeClass('active').hide();
+            $('.cmgalaxy-search-suggestions').each(function() {
+                this.style.setProperty('display', 'none', 'important');
+            });
             openDrawer(queryText);
         });
 
