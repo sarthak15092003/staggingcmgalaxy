@@ -3,7 +3,7 @@
  * Exact CMGalaxy / Docy Search Banner Component
  */
 
-$fallback_bg = get_template_directory_uri() . '/assets/images/indexbg.svg';
+$fallback_bg = get_template_directory_uri() . '/assets/images/indexbg.svg?v=1.1';
 $placeholder = 'Search documentation, guides, troubleshooting...';
 ?>
 
