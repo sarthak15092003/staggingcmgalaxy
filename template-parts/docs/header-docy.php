@@ -217,13 +217,49 @@ $brand_icon_url = 'https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/c
             </div>
         </div>
         <div class="mobile_menu_right">
-            <!-- Single Hamburger Menu on Right matching docs.cmgalaxy.com -->
+            <!-- Mobile Search Icon Button -->
+            <button type="button" class="mobile-search-toggle-btn" id="cmg-mobile-search-toggle" aria-label="Search Documentation">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+
+            <!-- Mobile Ask Lex AI Button -->
+            <button type="button" class="mobile-ask-lex-btn" id="cmg-mobile-ask-lex" aria-label="Ask Lex AI Assistant" title="Ask Lex AI Assistant">
+                <img src="<?php echo esc_url($lex_logo_url); ?>" alt="" class="mobile-ask-lex-logo">
+                <span>Ask Lex</span>
+            </button>
+
+            <!-- Single Hamburger Menu on Right -->
             <button type="button" class="navbar-toggler mobile_menu_btn" id="cmg-mobile-menu-btn" aria-label="Toggle Navigation">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 6H21M3 12H21M3 18H21" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
         </div>
+    </div>
+
+    <!-- Expandable Mobile Search Bar -->
+    <div class="cmgalaxy-mobile-search-bar" id="cmgalaxy-mobile-search-bar">
+        <form action="<?php echo esc_url($docs_url); ?>" class="cmgalaxy-mobile-search-form" method="get" role="search" style="margin: 0; padding: 0;">
+            <input type="hidden" name="post_type" value="docs">
+            <div class="mobile-search-input-wrap search-input-wrapper">
+                <svg class="mobile-search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" 
+                       name="s"
+                       id="cmgalaxy-mobile-search-input" 
+                       class="cmgalaxy-mobile-search-input use-cmgalaxy-live-search-input" 
+                       placeholder="Search documentation..." 
+                       autocomplete="off">
+                <button type="button" class="cmgalaxy-mobile-search-close" id="cmgalaxy-mobile-search-close" aria-label="Close search">&times;</button>
+                <span class="cmgalaxy-search-loader" aria-hidden="true"></span>
+                <div class="cmgalaxy-search-suggestions" id="search-suggestions-mobile"></div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1165,10 +1201,130 @@ body.lex-drawer-open .lex-side-trigger {
         gap: 10px !important;
     }
 
+    
     .mobile_main_menu .mobile_menu_right {
         display: flex !important;
         align-items: center !important;
+        gap: 8px !important;
     }
+
+    .mobile-search-toggle-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        border: none !important;
+        background: transparent !important;
+        color: #1e293b !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        transition: background 0.15s ease !important;
+    }
+
+    .mobile-search-toggle-btn:hover,
+    .mobile-search-toggle-btn:active {
+        background: #f1f5f9 !important;
+    }
+
+    .mobile-ask-lex-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 5px !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 9999px !important;
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        white-space: nowrap !important;
+        transition: all 0.15s ease !important;
+    }
+
+    .mobile-ask-lex-btn:hover,
+    .mobile-ask-lex-btn:active {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    .mobile-ask-lex-logo {
+        width: 16px !important;
+        height: 16px !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+
+    /* Expandable Mobile Search Bar */
+    .cmgalaxy-mobile-search-bar {
+        display: none;
+        padding: 10px 16px 12px 16px !important;
+        background: #ffffff !important;
+        border-top: 1px solid #f1f5f9 !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+        z-index: 100003 !important;
+    }
+
+    .cmgalaxy-mobile-search-bar.active {
+        display: block !important;
+    }
+
+    .mobile-search-input-wrap {
+        position: relative !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .mobile-search-icon-svg {
+        position: absolute !important;
+        left: 14px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        pointer-events: none !important;
+    }
+
+    .cmgalaxy-mobile-search-input {
+        width: 100% !important;
+        height: 40px !important;
+        line-height: 40px !important;
+        padding: 0 38px 0 38px !important;
+        background: #ffffff !important;
+        border: 1.5px solid #60a5fa !important;
+        border-radius: 9999px !important;
+        font-size: 14px !important;
+        color: #1e293b !important;
+        outline: none !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2) !important;
+    }
+
+    .cmgalaxy-mobile-search-close {
+        position: absolute !important;
+        right: 10px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 26px !important;
+        height: 26px !important;
+        border: none !important;
+        background: transparent !important;
+        color: #2563eb !important;
+        font-size: 22px !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+
+
 
     .cmgalaxy-mobile-logo {
         display: flex !important;
@@ -1457,6 +1613,36 @@ body.lex-drawer-open .lex-side-trigger {
             $('body').removeClass('menu-is-opened').addClass('menu-is-closed');
         }
 
+        
+        // Mobile Search Toggle & Ask Lex Triggers
+        $(document).on('click', '#cmg-mobile-ask-lex', function(e) {
+            e.preventDefault();
+            openDrawer('');
+        });
+
+        $(document).on('click', '#cmg-mobile-search-toggle', function(e) {
+            e.preventDefault();
+            var $bar = $('#cmgalaxy-mobile-search-bar');
+            if ($bar.hasClass('active')) {
+                $bar.removeClass('active');
+                $('#cmgalaxy-search-backdrop').removeClass('active');
+            } else {
+                $bar.addClass('active');
+                $('#cmgalaxy-search-backdrop').addClass('active');
+                setTimeout(function() {
+                    $('#cmgalaxy-mobile-search-input').focus();
+                }, 100);
+            }
+        });
+
+        $(document).on('click', '#cmgalaxy-mobile-search-close', function(e) {
+            e.preventDefault();
+            $('#cmgalaxy-mobile-search-bar').removeClass('active');
+            $('#cmgalaxy-mobile-search-input').val('');
+            $('#search-suggestions-mobile').empty().hide();
+            $('#cmgalaxy-search-backdrop').removeClass('active');
+        });
+
         $(document).on('click', '.mobile_menu_btn, #cmg-mobile-menu-btn', openMobileMenu);
         $(document).on('click', '.close_nav, #cmg-click-capture', closeMobileMenu);
 
@@ -1478,7 +1664,7 @@ body.lex-drawer-open .lex-side-trigger {
         });
 
         // Live Search Input Listener (Both Top Bar and Hero Banner)
-        var searchInputsSelector = '#cmgalaxy-search-input, #searchInput, .cmgalaxy-search-input, .use-cmgalaxy-live-search-input, .stylish-search__input';
+        var searchInputsSelector = '#cmgalaxy-search-input, #searchInput, .cmgalaxy-search-input, .use-cmgalaxy-live-search-input, .stylish-search__input, #cmgalaxy-mobile-search-input, .cmgalaxy-mobile-search-input';
 
         $(document).on('input', searchInputsSelector, function() {
             var $input = $(this);
