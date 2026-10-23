@@ -462,7 +462,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                     </div>
 
                                     <?php if ($has_children) : ?>
-                                        <div class="sub-subcategories cmgalaxy-sortable-sub-sub" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; margin-bottom: 10px; border-left: 1px solid #e2e8f0; margin-left: 55px;">
+                                        <div class="sub-subcategories cmgalaxy-sortable-sub-sub" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; margin-bottom: 10px; border-left: none; margin-left: 55px;">
                                             
                                             <?php 
                                              // Render Sub-subcategories (Level 3)
