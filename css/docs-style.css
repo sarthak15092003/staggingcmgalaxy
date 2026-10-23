@@ -358,15 +358,15 @@ body.page-template-page-all-categories,
 .sidebar-back-btn {
     display: flex;
     align-items: center;
-    padding: 10px 14px;
-    margin-bottom: 16px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
     background: #f8fafc;
     border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    border-radius: 6px;
     color: #475569;
     font-weight: 500;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 13.5px;
     transition: all 0.2s;
 }
 
@@ -376,17 +376,18 @@ body.page-template-page-all-categories,
 }
 
 .sidebar-section {
-    margin-bottom: 6px;
+    margin-bottom: 2px;
 }
 
 .section-header {
     display: flex;
     align-items: center;
-    padding: 15px 16px !important;
-    border-radius: 8px;
+    padding: 8px 12px !important;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
+    min-height: 38px;
 }
 
 .section-header:hover {
@@ -398,9 +399,9 @@ body.page-template-page-all-categories,
 }
 
 .section-icon {
-    width: 22px;
-    height: 22px;
-    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -440,12 +441,12 @@ body.page-template-page-all-categories,
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 48px !important;
-    min-width: 48px !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    padding: 0 12px !important;
-    margin-right: -8px !important;
+    width: 22px !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    min-height: 22px !important;
+    padding: 0 !important;
+    margin-right: 0 !important;
     margin-left: auto !important;
     cursor: pointer !important;
     flex-shrink: 0 !important;
@@ -457,6 +458,8 @@ body.page-template-page-all-categories,
 
 .expand-icon svg {
     pointer-events: none !important;
+    width: 16px !important;
+    height: 16px !important;
 }
 
 .section-header.active .expand-icon,
@@ -715,10 +718,10 @@ body.page-template-page-all-categories,
 .docs-main-wrapper .docs-container,
 .docs-container {
     width: 100% !important;
-    max-width: 1440px !important;
-    padding-left: 28px !important;
-    padding-right: 28px !important;
-    margin: 0 auto !important;
+    max-width: 100% !important;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
 }
 
