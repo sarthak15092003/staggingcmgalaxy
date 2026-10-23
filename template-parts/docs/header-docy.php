@@ -1875,30 +1875,6 @@ body.lex-drawer-open .lex-side-trigger {
             $('#cmgalaxy-search-backdrop').removeClass('active');
         });
 
-        // Dedicated toggle handler for expand arrows inside mobile drawer
-        $(document).on('click', '#cmg-mobile-side-menu .expand-icon, #cmg-mobile-side-menu .expand-icon-subcat', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var $icon = $(this);
-            var isSubcat = $icon.hasClass('expand-icon-subcat');
-            var $parent = isSubcat ? $icon.closest('.subsection-item') : $icon.closest('.section-header');
-            var targetId = $parent.data('target');
-            if (targetId) {
-                var $target = $('#' + targetId);
-                if ($target.length) {
-                    if ($target.is(':visible')) {
-                        $target.slideUp(200);
-                        $parent.removeClass('active expanded');
-                        $icon.removeClass('expanded');
-                    } else {
-                        $target.slideDown(200);
-                        $parent.addClass('active expanded');
-                        $icon.addClass('expanded');
-                    }
-                }
-            }
-        });
-
         $(document).on('click', '.mobile_menu_btn, #cmg-mobile-menu-btn', openMobileMenu);
         $(document).on('click', '.close_nav, #cmg-click-capture', closeMobileMenu);
 
@@ -1906,6 +1882,12 @@ body.lex-drawer-open .lex-side-trigger {
         $(document).on('click', '#cmg-mobile-side-menu a, #cmg-modern-sidebar-drawer a', function(e) {
             var $link = $(this);
             if (!$link.closest('.expand-icon').length && !$link.closest('.expand-icon-subcat').length && !$link.hasClass('section-header')) {
+                // If it's a category/subcategory header link on single docs view, it's an accordion toggle, don't close drawer
+                if ($('body').hasClass('single-docs') || $('body').hasClass('single-post')) {
+                    if ($link.hasClass('section-title') || $link.hasClass('subsection-title')) {
+                        return;
+                    }
+                }
                 var href = $link.attr('href');
                 if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
                     closeAllDrawers();

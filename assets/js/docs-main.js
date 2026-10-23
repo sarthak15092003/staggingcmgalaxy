@@ -8,9 +8,12 @@
         
         // 1. Sidebar Category Accordion Toggles
         $(document).on('click', '.section-header.expandable', function(e) {
-            var isIconClick = $(e.target).closest('.expand-icon').length > 0;
+            var $target = $(e.target);
+            var isIconClick = $target.closest('.expand-icon').length > 0;
+            var isLinkClick = $target.closest('a.section-title').length > 0;
+            
             // If clicked on title link and NOT on the expand icon
-            if (!isIconClick && $(e.target).closest('a.section-title').length) {
+            if (isLinkClick && !isIconClick) {
                 // On single doc view, clicking category title also toggles
                 if ($('body').hasClass('single-docs') || $('body').hasClass('single-post')) {
                     // allow toggle
@@ -20,18 +23,24 @@
             }
             
             e.preventDefault();
+            e.stopPropagation();
+            
             var $header = $(this);
             var targetId = $header.data('target');
+            if (!targetId) return;
+
             var $content = $('#' + targetId);
+            if (!$content.length) return;
+
             var $icon = $header.find('.expand-icon');
+            var isOpen = $header.hasClass('active') || $icon.hasClass('expanded');
             
-            var isCurrentlyOpen = $content.is(':visible');
-            if (isCurrentlyOpen) {
-                $content.slideUp(200);
+            if (isOpen) {
+                $content.stop(true, false).slideUp(200);
                 $header.removeClass('active');
                 $icon.removeClass('expanded');
             } else {
-                $content.slideDown(200);
+                $content.stop(true, false).slideDown(200);
                 $header.addClass('active');
                 $icon.addClass('expanded');
             }
@@ -39,9 +48,12 @@
 
         // 2. Subcategory Item Accordion Toggles
         $(document).on('click', '.subsection-item.expandable-subcat', function(e) {
-            var isIconClick = $(e.target).closest('.expand-icon-subcat').length > 0;
+            var $target = $(e.target);
+            var isIconClick = $target.closest('.expand-icon-subcat').length > 0;
+            var isLinkClick = $target.closest('a.subsection-title').length > 0;
+            
             // If clicked on title link and NOT on the expand icon
-            if (!isIconClick && $(e.target).closest('a.subsection-title').length) {
+            if (isLinkClick && !isIconClick) {
                 // In single doc view, clicking subcategory title toggles instead of reloading
                 if ($('body').hasClass('single-docs') || $('body').hasClass('single-post')) {
                     // allow toggle
@@ -51,66 +63,26 @@
             }
             
             e.preventDefault();
+            e.stopPropagation();
+            
             var $item = $(this);
             var targetId = $item.data('target');
+            if (!targetId) return;
+
             var $subList = $('#' + targetId);
+            if (!$subList.length) return;
+
             var $icon = $item.find('.expand-icon-subcat');
+            var isOpen = $item.hasClass('expanded') || $icon.hasClass('expanded');
             
-            var isCurrentlyOpen = $subList.is(':visible');
-            if (isCurrentlyOpen) {
-                $subList.slideUp(200);
+            if (isOpen) {
+                $subList.stop(true, false).slideUp(200);
                 $item.removeClass('expanded');
                 $icon.removeClass('expanded');
             } else {
-                $subList.slideDown(200);
+                $subList.stop(true, false).slideDown(200);
                 $item.addClass('expanded');
                 $icon.addClass('expanded');
-            }
-        });
-
-        // Dedicated click handler for category expand icon
-        $(document).on('click', '.expand-icon', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var $header = $(this).closest('.section-header.expandable');
-            if ($header.length) {
-                var targetId = $header.data('target');
-                var $content = $('#' + targetId);
-                var $icon = $(this);
-                
-                var isCurrentlyOpen = $content.is(':visible');
-                if (isCurrentlyOpen) {
-                    $content.slideUp(200);
-                    $header.removeClass('active');
-                    $icon.removeClass('expanded');
-                } else {
-                    $content.slideDown(200);
-                    $header.addClass('active');
-                    $icon.addClass('expanded');
-                }
-            }
-        });
-
-        // Dedicated click handler for subcategory expand icon
-        $(document).on('click', '.expand-icon-subcat', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var $item = $(this).closest('.subsection-item.expandable-subcat');
-            if ($item.length) {
-                var targetId = $item.data('target');
-                var $subList = $('#' + targetId);
-                var $icon = $(this);
-                
-                var isCurrentlyOpen = $subList.is(':visible');
-                if (isCurrentlyOpen) {
-                    $subList.slideUp(200);
-                    $item.removeClass('expanded');
-                    $icon.removeClass('expanded');
-                } else {
-                    $subList.slideDown(200);
-                    $item.addClass('expanded');
-                    $icon.addClass('expanded');
-                }
             }
         });
 
