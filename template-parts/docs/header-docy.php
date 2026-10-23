@@ -1724,7 +1724,9 @@ body.lex-drawer-open .lex-side-trigger {
     }
     .mobile-sidebar-container .section-header.active .expand-icon,
     .mobile-sidebar-container .section-header .expand-icon.expanded,
-    .mobile-sidebar-container .expand-icon.expanded {
+    .mobile-sidebar-container .expand-icon.expanded,
+    .mobile-sidebar-container .subsection-item.expanded .expand-icon-subcat,
+    .mobile-sidebar-container .expand-icon-subcat.expanded {
         transform: rotate(90deg) !important;
         color: #4b5563 !important;
     }

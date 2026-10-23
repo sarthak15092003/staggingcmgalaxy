@@ -454,8 +454,8 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                         </a>
                                         <?php if ($has_children) : ?>
                                             <span class="expand-icon-subcat <?php echo ($is_sub_active && $has_children) ? 'expanded' : ''; ?>" aria-label="Toggle Subcategory" style="color: #64748b; margin-left: 12px; margin-right: 0; display: inline-flex; transition: transform 0.3s;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                                    <path d="M15 6L9 12.0001L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="9 18 15 12 9 6"></polyline>
                                                 </svg>
                                             </span>
                                         <?php endif; ?>
