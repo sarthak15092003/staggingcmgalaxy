@@ -787,7 +787,7 @@ body.page-template-page-all-categories,
     max-width: 240px !important;
     width: 240px !important;
     min-width: 240px !important;
-    margin-right: 36px !important;
+    margin-right: 0 !important;
     padding-right: 0 !important;
     padding-left: 0 !important;
     padding-top: 0 !important;
