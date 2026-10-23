@@ -86,30 +86,40 @@
             }
         });
 
-        // 3. Dynamic Table of Contents (TOC) Generator & ScrollSpy
-        var $contentArea = $('.doc-article-content').first();
-        if (!$contentArea.length) {
-            $contentArea = $('.blog_single_item, .editor-content, article').first();
-        }
+        // 3. Dynamic Table of Contents (TOC) Generator & ScrollSpy (Docy exact match)
         var $tocContainer = $('#docy-toc, #docy-tocs-mobile');
         
-        if ($contentArea.length && $tocContainer.length) {
-            // ONLY select headings in the main article body.
-            // Explicitly filter out feedback box, related guides, or footer headings!
-            var $headings = $contentArea.find('h2, h3').filter(function() {
+        if ($tocContainer.length) {
+            var $title = $('.single-doc-title, .post-title, article h1').first();
+            var $contentArea = $('.doc-article-content, .blog_single_item, .editor-content, article').first();
+            
+            var $subHeadings = $contentArea.find('h2, h3, h4').filter(function() {
                 var $h = $(this);
-                if ($h.closest('.cm-feedback-wrapper, #cm-feedback-form, .related-guides, .cm-related-wrapper, footer, .tags-area').length > 0) {
+                if ($h.closest('.cm-feedback-wrapper, #cm-feedback-form, .related-guides, .related-articles-section, .cm-related-wrapper, footer, .tags-area').length > 0) {
                     return false;
                 }
                 var hid = ($h.attr('id') || '').toLowerCase();
                 var htxt = $h.text().toLowerCase();
-                if (hid.indexOf('feedback') !== -1 || htxt.indexOf('improve our product') !== -1 || htxt.indexOf('related guides') !== -1) {
+                if (hid.indexOf('feedback') !== -1 || htxt.indexOf('improve our product') !== -1 || htxt.indexOf('related guides') !== -1 || htxt.indexOf('related articles') !== -1) {
                     return false;
                 }
                 return true;
             });
+
+            var allHeadings = [];
+            if ($title.length) {
+                if (!$title.attr('id')) {
+                    $title.attr('id', 'doc-heading-title');
+                }
+                allHeadings.push($title[0]);
+            }
+            $subHeadings.each(function() {
+                allHeadings.push(this);
+            });
+            var $headings = $(allHeadings);
             
             if ($headings.length > 0) {
+                $('.docs-col-toc, .category-right-sidebar-col, .doc-sidebar').show();
                 var tocListHtml = '<ul class="nav flex-column">';
                 var emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2300}-\u{23FF}\u{200D}\u{FE0F}]/gu;
                 
@@ -223,8 +233,6 @@
 
                 $(window).on('scroll', updateTocScrollSpy);
                 updateTocScrollSpy();
-            } else {
-                $('.docs-col-toc').hide();
             }
         }
 

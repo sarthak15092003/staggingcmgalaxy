@@ -22,7 +22,7 @@ $first_term = ($terms && !is_wp_error($terms)) ? $terms[0] : null;
 $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link('docs') : home_url('/docs/');
 ?>
 
-<div class="docs-main-wrapper" style="padding-top: 0; padding-bottom: 72px;">
+<div class="docs-main-wrapper" style="padding-top: 24px; padding-bottom: 72px;">
     <div class="docs-container">
         
         <div class="docs-layout-row">
@@ -55,7 +55,7 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                     
                     <article id="post-<?php the_ID(); ?>" <?php post_class('doc-article-item'); ?>>
                         
-                        <h1 class="single-doc-title"><?php the_title(); ?></h1>
+                        <h1 class="single-doc-title" id="doc-heading-title"><?php the_title(); ?></h1>
                         
                         <!-- Author & Meta Box -->
                         <?php
@@ -452,7 +452,7 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
             <!-- Right TOC Column (Sticky) -->
             <div class="docs-col-toc category-right-sidebar-col doc-sidebar">
                 <div class="doc-toc-wrap">
-                    <div class="doc-toc-title">On this page</div>
+                    <div class="doc-toc-title">On this Page</div>
                     <nav id="docy-toc"></nav>
                 </div>
             </div>
