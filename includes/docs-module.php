@@ -1511,22 +1511,57 @@ function cmg_render_docs_order_manager_page() {
                 </select>
             </form>
 
-            <!-- Reordering Action Toolbar -->
-            <div style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <span style="font-weight: 700; font-size: 13.5px; color: #334155;">Order Method:</span>
-                    <button type="button" id="cmg-btn-fcfs" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-                        🟢 First Come First Serve (Oldest 1, 2, 3...)
-                    </button>
-                    <button type="button" id="cmg-btn-fcls" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-                        🟡 First Come Last Serve (Newest 1, 2, 3...)
-                    </button>
-                    <button type="button" id="cmg-auto-number-btn" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-                        🔢 Auto-Number (1, 2, 3, 4...)
-                    </button>
+            <!-- Action Toolbar: Order & Paywall Access -->
+            <div style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                <!-- Row 1: Order Sequence Controls -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span style="font-weight: 700; font-size: 13.5px; color: #334155; min-width: 105px;">Order Method:</span>
+                        <button type="button" id="cmg-btn-fcfs" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                            🟢 First Come First Serve (Oldest 1, 2, 3...)
+                        </button>
+                        <button type="button" id="cmg-btn-fcls" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                            🟡 First Come Last Serve (Newest 1, 2, 3...)
+                        </button>
+                        <button type="button" id="cmg-auto-number-btn" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                            🔢 Auto-Number (1, 2, 3, 4...)
+                        </button>
+                    </div>
+                    <div style="font-size: 12.5px; color: #64748b;">
+                        🖐️ <strong>Tip:</strong> Drag rows up/down to set custom sequence.
+                    </div>
                 </div>
-                <div style="font-size: 12.5px; color: #64748b;">
-                    🖐️ <strong>Tip:</strong> Drag rows up/down to set custom sequence.
+
+                <!-- Row 2: Paywall Gating & Filtering Options -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span style="font-weight: 700; font-size: 13.5px; color: #334155; min-width: 105px;">Paywall Gate:</span>
+                        <button type="button" id="cmg-btn-all-gated" class="button button-secondary" style="font-weight: 600; font-size: 13px; color: #b91c1c; border-color: #fca5a5; display: inline-flex; align-items: center; gap: 6px;" title="Set all articles to Gated">
+                            🔒 Mark All Gated
+                        </button>
+                        <button type="button" id="cmg-btn-all-free" class="button button-secondary" style="font-weight: 600; font-size: 13px; color: #15803d; border-color: #86efac; display: inline-flex; align-items: center; gap: 6px;" title="Set all articles to Non-Gated (Free)">
+                            🌐 Mark All Non-Gated (Free)
+                        </button>
+                        <button type="button" id="cmg-btn-gated-first" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;" title="Move Gated articles to top and renumber 1, 2, 3...">
+                            ↕️ Gated First (1, 2, 3...)
+                        </button>
+                        <button type="button" id="cmg-btn-free-first" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;" title="Move Non-Gated articles to top and renumber 1, 2, 3...">
+                            ↕️ Non-Gated First (1, 2, 3...)
+                        </button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 12.5px; font-weight: 600; color: #64748b;">Filter:</span>
+                        <button type="button" class="cmg-filter-btn active" data-filter="all">
+                            All (<span id="cmg-count-all"><?php echo count($articles); ?></span>)
+                        </button>
+                        <button type="button" class="cmg-filter-btn" data-filter="gated">
+                            🔒 Gated (<span id="cmg-count-gated">0</span>)
+                        </button>
+                        <button type="button" class="cmg-filter-btn" data-filter="free">
+                            🌐 Non-Gated (<span id="cmg-count-free">0</span>)
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1542,7 +1577,12 @@ function cmg_render_docs_order_manager_page() {
                             <th style="width: 55px; text-align: center; font-weight: 600; color: #475569;">#</th>
                             <th style="width: 85px; font-weight: 600; color: #475569;">Order</th>
                             <th style="font-weight: 600; color: #475569;">Article Title</th>
-                            <th style="width: 160px; text-align: center; font-weight: 600; color: #475569;">Paywall Gate</th>
+                            <th style="width: 170px; text-align: center; font-weight: 600; color: #475569;">
+                                <label style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; user-select: none; margin: 0;" title="Toggle Gated for All Articles">
+                                    <input type="checkbox" id="cmg-master-gated-toggle" style="margin: 0; cursor: pointer;">
+                                    <span>Paywall Gate</span>
+                                </label>
+                            </th>
                             <th style="width: 140px; text-align: center; font-weight: 600; color: #475569;">Actions</th>
                         </tr>
                     </thead>
@@ -1561,7 +1601,7 @@ function cmg_render_docs_order_manager_page() {
                                     $clean_order = $index + 1;
                                 }
                             ?>
-                                <tr data-post-id="<?php echo esc_attr($art->ID); ?>" data-post-date="<?php echo esc_attr(strtotime($art->post_date)); ?>" class="cmg-draggable-row" draggable="true" style="cursor: move;">
+                                <tr data-post-id="<?php echo esc_attr($art->ID); ?>" data-post-date="<?php echo esc_attr(strtotime($art->post_date)); ?>" data-is-gated="<?php echo $is_gated ? '1' : '0'; ?>" class="cmg-draggable-row" draggable="true" style="cursor: move;">
                                     <td style="text-align: center; color: #94a3b8; width: 45px; user-select: none;">
                                         <span style="font-size: 17px; cursor: move;" title="Drag to reorder">⠿</span>
                                     </td>
@@ -1582,9 +1622,9 @@ function cmg_render_docs_order_manager_page() {
                                         </div>
                                     </td>
                                     <td style="text-align: center;">
-                                        <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: <?php echo $is_gated ? '#dc2626' : '#64748b'; ?>;">
-                                            <input type="checkbox" class="cmg-gated-checkbox" name="gated[<?php echo esc_attr($art->ID); ?>]" value="1" <?php checked($is_gated, true); ?>>
-                                            <span><?php echo $is_gated ? '🔒 Gated' : 'Free'; ?></span>
+                                        <label class="cmg-gated-badge-label" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12.5px; font-weight: 700; padding: 4px 11px; border-radius: 20px; transition: all 0.15s ease; <?php echo $is_gated ? 'background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;' : 'background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;'; ?>">
+                                            <input type="checkbox" class="cmg-gated-checkbox" name="gated[<?php echo esc_attr($art->ID); ?>]" value="1" <?php checked($is_gated, true); ?> style="cursor: pointer; margin: 0;">
+                                            <span class="cmg-gated-text"><?php echo $is_gated ? '🔒 Gated' : '🌐 Free'; ?></span>
                                         </label>
                                     </td>
                                     <td style="text-align: center;">
@@ -1630,13 +1670,37 @@ function cmg_render_docs_order_manager_page() {
     .cmg-draggable-row.drag-over-row {
         border-top: 3px solid #2563eb !important;
     }
+    .cmg-filter-btn {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #475569;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .cmg-filter-btn:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+    .cmg-filter-btn.active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+    }
+    .cmg-gated-badge-label:hover {
+        filter: brightness(0.97);
+    }
     </style>
 
     <script>
     jQuery(document).ready(function($) {
         
         function renumberRows() {
-            $('#cmg-articles-tbody tr').each(function(index) {
+            var count = 0;
+            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function(index) {
                 var num = index + 1;
                 $(this).find('.row-num-badge').text(num);
                 $(this).find('.cmg-order-input').val(num);
@@ -1652,11 +1716,155 @@ function cmg_render_docs_order_manager_page() {
             }
         }
 
+        function updateGatedStats() {
+            var total = $('#cmg-articles-tbody tr.cmg-draggable-row').length;
+            var gated = $('#cmg-articles-tbody .cmg-gated-checkbox:checked').length;
+            var free = total - gated;
+
+            $('#cmg-count-all').text(total);
+            $('#cmg-count-gated').text(gated);
+            $('#cmg-count-free').text(free);
+
+            var $master = $('#cmg-master-gated-toggle');
+            if (total > 0 && gated === total) {
+                $master.prop('checked', true).prop('indeterminate', false);
+            } else if (gated === 0) {
+                $master.prop('checked', false).prop('indeterminate', false);
+            } else {
+                $master.prop('checked', false).prop('indeterminate', true);
+            }
+        }
+
+        function setRowGatedState($row, isGated) {
+            var $chk = $row.find('.cmg-gated-checkbox');
+            var $badge = $row.find('.cmg-gated-badge-label');
+            var $txt = $row.find('.cmg-gated-text');
+
+            $chk.prop('checked', isGated);
+            $row.attr('data-is-gated', isGated ? '1' : '0');
+
+            if (isGated) {
+                $badge.css({
+                    'background': '#fef2f2',
+                    'color': '#dc2626',
+                    'border': '1px solid #fecaca'
+                });
+                $txt.text('🔒 Gated');
+            } else {
+                $badge.css({
+                    'background': '#f0fdf4',
+                    'color': '#16a34a',
+                    'border': '1px solid #bbf7d0'
+                });
+                $txt.text('🌐 Free');
+            }
+        }
+
+        // Change individual row gated state
+        $(document).on('change', '.cmg-gated-checkbox', function() {
+            var isGated = $(this).is(':checked');
+            var $row = $(this).closest('tr');
+            setRowGatedState($row, isGated);
+            updateGatedStats();
+
+            // Re-apply active filter if needed
+            var currentFilter = $('.cmg-filter-btn.active').data('filter');
+            if (currentFilter && currentFilter !== 'all') {
+                applyFilter(currentFilter);
+            }
+        });
+
+        // Master toggle in table header
+        $('#cmg-master-gated-toggle').on('change', function() {
+            var checked = $(this).is(':checked');
+            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function() {
+                setRowGatedState($(this), checked);
+            });
+            updateGatedStats();
+            showNotification(checked ? 'Marked all articles as 🔒 Gated. Click "Save Order & Access Settings" to apply.' : 'Marked all articles as 🌐 Free. Click "Save Order & Access Settings" to apply.', true);
+        });
+
+        // Mark All Gated button
+        $('#cmg-btn-all-gated').on('click', function(e) {
+            e.preventDefault();
+            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function() {
+                setRowGatedState($(this), true);
+            });
+            updateGatedStats();
+            showNotification('Marked all articles as 🔒 Gated. Click "Save Order & Access Settings" to apply.', true);
+        });
+
+        // Mark All Free button
+        $('#cmg-btn-all-free').on('click', function(e) {
+            e.preventDefault();
+            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function() {
+                setRowGatedState($(this), false);
+            });
+            updateGatedStats();
+            showNotification('Marked all articles as 🌐 Free (Non-Gated). Click "Save Order & Access Settings" to apply.', true);
+        });
+
+        // Sort: Gated First
+        $('#cmg-btn-gated-first').on('click', function(e) {
+            e.preventDefault();
+            var $tbody = $('#cmg-articles-tbody');
+            var rows = $tbody.find('tr.cmg-draggable-row').get();
+            rows.sort(function(a, b) {
+                var gatedA = $(a).attr('data-is-gated') === '1' ? 1 : 0;
+                var gatedB = $(b).attr('data-is-gated') === '1' ? 1 : 0;
+                return gatedB - gatedA; // 1s before 0s
+            });
+            $.each(rows, function(idx, row) {
+                $tbody.append(row);
+            });
+            renumberRows();
+            showNotification('Sorted with 🔒 Gated articles first (1, 2, 3...). Click "Save Order & Access Settings" to apply.', true);
+        });
+
+        // Sort: Non-Gated (Free) First
+        $('#cmg-btn-free-first').on('click', function(e) {
+            e.preventDefault();
+            var $tbody = $('#cmg-articles-tbody');
+            var rows = $tbody.find('tr.cmg-draggable-row').get();
+            rows.sort(function(a, b) {
+                var gatedA = $(a).attr('data-is-gated') === '1' ? 1 : 0;
+                var gatedB = $(b).attr('data-is-gated') === '1' ? 1 : 0;
+                return gatedA - gatedB; // 0s before 1s
+            });
+            $.each(rows, function(idx, row) {
+                $tbody.append(row);
+            });
+            renumberRows();
+            showNotification('Sorted with 🌐 Non-Gated (Free) articles first (1, 2, 3...). Click "Save Order & Access Settings" to apply.', true);
+        });
+
+        // Filter View (All / Gated / Free)
+        function applyFilter(filter) {
+            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function() {
+                var isGated = $(this).attr('data-is-gated') === '1';
+                if (filter === 'all') {
+                    $(this).show();
+                } else if (filter === 'gated') {
+                    if (isGated) $(this).show(); else $(this).hide();
+                } else if (filter === 'free') {
+                    if (!isGated) $(this).show(); else $(this).hide();
+                }
+            });
+        }
+
+        $('.cmg-filter-btn').on('click', function(e) {
+            e.preventDefault();
+            $('.cmg-filter-btn').removeClass('active');
+            $(this).addClass('active');
+            var filter = $(this).data('filter');
+            applyFilter(filter);
+        });
+
         // 1. First Come First Serve (Oldest 1, 2, 3...)
         $('#cmg-btn-fcfs').on('click', function(e) {
             e.preventDefault();
             var $tbody = $('#cmg-articles-tbody');
-            var rows = $tbody.find('tr').get();
+            var rows = $tbody.find('tr.cmg-draggable-row').get();
             rows.sort(function(a, b) {
                 var dateA = parseInt($(a).data('post-date'), 10) || 0;
                 var dateB = parseInt($(b).data('post-date'), 10) || 0;
@@ -1673,7 +1881,7 @@ function cmg_render_docs_order_manager_page() {
         $('#cmg-btn-fcls').on('click', function(e) {
             e.preventDefault();
             var $tbody = $('#cmg-articles-tbody');
-            var rows = $tbody.find('tr').get();
+            var rows = $tbody.find('tr.cmg-draggable-row').get();
             rows.sort(function(a, b) {
                 var dateA = parseInt($(a).data('post-date'), 10) || 0;
                 var dateB = parseInt($(b).data('post-date'), 10) || 0;
@@ -1742,6 +1950,9 @@ function cmg_render_docs_order_manager_page() {
             });
         }
 
+        // Initialize Gated statistics and header on load
+        updateGatedStats();
+
         // 5. 1-Click Sync with Live Docy
         $('#cmg-sync-live-docy-btn').on('click', function(e) {
             e.preventDefault();
@@ -1773,7 +1984,7 @@ function cmg_render_docs_order_manager_page() {
 
             var orders = {};
             var gated = {};
-            $('#cmg-articles-tbody tr').each(function() {
+            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function() {
                 var pid = $(this).data('post-id');
                 var ord = $(this).find('.cmg-order-input').val();
                 var isGated = $(this).find('.cmg-gated-checkbox').is(':checked') ? 1 : 0;
@@ -1787,15 +1998,15 @@ function cmg_render_docs_order_manager_page() {
                 gated: gated,
                 _ajax_nonce: '<?php echo wp_create_nonce("cmg_save_order_nonce"); ?>'
             }, function(response) {
-                $btn.prop('disabled', false).text('💾 Save Order (1, 2, 3...)');
+                $btn.prop('disabled', false).text('💾 Save Order (1, 2, 3...) & Access Settings');
                 if (response.success) {
-                    showNotification('Order saved successfully as 1, 2, 3... and reflected everywhere!', true);
+                    showNotification('Order saved successfully as 1, 2, 3... and gated access updated!', true);
                     setTimeout(function() { location.reload(); }, 1200);
                 } else {
                     showNotification(response.data.message || 'Error saving', false);
                 }
             }).fail(function() {
-                $btn.prop('disabled', false).text('💾 Save Order (1, 2, 3...)');
+                $btn.prop('disabled', false).text('💾 Save Order (1, 2, 3...) & Access Settings');
                 alert('Connection error occurred.');
             });
         });
