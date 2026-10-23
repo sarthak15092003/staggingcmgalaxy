@@ -480,13 +480,13 @@ body.page-template-page-all-categories,
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 7px 12px 7px 24px !important;
+    padding: 10px 14px 10px 55px !important;
     border-radius: 6px !important;
     cursor: pointer !important;
     transition: background-color 0.15s ease !important;
     user-select: none !important;
     margin: 1px 0 !important;
-    min-height: 32px !important;
+    min-height: 40px !important;
 }
 
 .subsection-item:hover {
@@ -500,7 +500,7 @@ body.page-template-page-all-categories,
 
 .subsection-item .subsection-title {
     color: #475569 !important;
-    font-size: 13.5px !important;
+    font-size: 14px !important;
     font-weight: 500 !important;
     text-decoration: none !important;
     flex: 1 !important;
@@ -550,31 +550,32 @@ body.page-template-page-all-categories,
     color: #161c52 !important;
 }
 
-/* Left Sidebar Subcategories & Direct Posts List (Clean - No grey line) */
+/* Left Sidebar Subcategories & Direct Posts List (Exact Docy Match with 1px border and 55px margin) */
 .sub-subcategories {
-    border-left: none !important;
+    border-left: 1px solid #e2e8f0 !important;
     padding-left: 0 !important;
-    margin-left: 0 !important;
+    margin-left: 55px !important;
+    margin-bottom: 10px !important;
 }
 
 .sidebar-subcat-post-item {
     position: relative !important;
-    padding: 5px 12px 5px 36px !important;
-    transition: background-color 0.15s ease !important;
+    padding: 10px 0 10px 15px !important;
+    transition: background-color 0.2s ease, color 0.2s ease !important;
     border-radius: 6px !important;
-    margin: 1px 0 !important;
-    min-height: 28px !important;
+    margin: 0 !important;
+    min-height: 38px !important;
     display: flex !important;
     align-items: center !important;
 }
 
 .sidebar-subcat-post-item:hover {
-    background-color: #f8fafc !important;
+    background-color: #f1f5f9 !important;
 }
 
 .sidebar-subcat-post-item a {
     color: #64748b !important;
-    font-size: 13px !important;
+    font-size: 13.5px !important;
     text-decoration: none !important;
     display: flex !important;
     align-items: center !important;
@@ -590,7 +591,7 @@ body.page-template-page-all-categories,
 
 .sidebar-subcat-post-item:hover a,
 .sidebar-subcat-post-item:hover a span {
-    color: #0f172a !important;
+    color: #1d4ed8 !important;
 }
 
 /* Active Left Sidebar Article Pill Indicator */
@@ -601,28 +602,59 @@ body.page-template-page-all-categories,
 .sidebar-subcat-post-item.active-article a,
 .sidebar-subcat-post-item.active-article a span,
 .sidebar-subcat-post-item a.active {
-    color: #2563eb !important;
+    color: #3B82F6 !important;
     font-weight: 500 !important;
+}
+
+.sidebar-subcat-post-item.active-article:hover a,
+.sidebar-subcat-post-item.active-article:hover a span {
+    color: #3B82F6 !important;
 }
 
 .sidebar-subcat-post-item .active-indicator-bar {
     position: absolute !important;
-    left: 24px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
+    left: -1px !important;
+    top: 0 !important;
+    bottom: 0 !important;
     width: 2px !important;
-    height: 16px !important;
-    background: #2563eb !important;
-    border-radius: 2px !important;
+    height: 100% !important;
+    transform: none !important;
+    background: #3B82F6 !important;
+    border-radius: 0 !important;
+    z-index: 2 !important;
+}
+
+/* Level 3 sub-subcategory item */
+.sidebar-sub-subcat-item {
+    position: relative !important;
+    padding: 10px 0 10px 8px !important;
+    transition: background-color 0.2s ease, color 0.2s ease !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.sidebar-sub-subcat-item .active-indicator-bar {
+    position: absolute !important;
+    left: -1px !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 2px !important;
+    height: 100% !important;
+    background: #3B82F6 !important;
+    border-radius: 0 !important;
     z-index: 2 !important;
 }
 
 /* Fallback direct posts when no subcategories exist */
-.sidebar-section > .sidebar-content > .sidebar-subcat-post-item {
-    padding-left: 24px !important;
+.sidebar-section > .section-content > .sidebar-subcat-post-item,
+.section-content > .sidebar-subcat-post-item {
+    padding: 10px 0 10px 35px !important;
 }
-.sidebar-section > .sidebar-content > .sidebar-subcat-post-item .active-indicator-bar {
-    left: 12px !important;
+.sidebar-section > .section-content > .sidebar-subcat-post-item .active-indicator-bar,
+.section-content > .sidebar-subcat-post-item .active-indicator-bar {
+    left: 20px !important;
+}
 }
 
 /* Eliminate buggy pseudo-element line that collided with article text */

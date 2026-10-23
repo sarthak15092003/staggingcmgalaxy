@@ -371,14 +371,16 @@ $sidebar_instance_id = uniqid('docs_sb_');
                             foreach ($main_direct_posts as $main_post) {
                                 $rendered_post_ids[] = $main_post->ID;
                                 $is_current_post = $is_single_doc && ($current_post_id == $main_post->ID);
+                                $post_color = $is_current_post ? '#3B82F6' : '#64748b';
+                                $post_weight = $is_current_post ? '500' : '400';
                                 $post_wrapper_class = 'sidebar-subcat-post-item' . ($is_current_post ? ' active-article' : '');
                                 ?>
-                                <div class="<?php echo esc_attr($post_wrapper_class); ?>" style="padding: 6px 12px 6px 20px; position: relative;">
+                                <div class="<?php echo esc_attr($post_wrapper_class); ?> cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($main_post->post_title); ?>" style="padding: 10px 0 10px 35px; position: relative;">
                                     <?php if ($is_current_post): ?>
-                                        <div class="active-indicator-bar" style="position: absolute; left: 4px; top: 50%; transform: translateY(-50%); width: 2.5px; height: 18px; background: #2563eb; border-radius: 3px;"></div>
+                                        <div class="active-indicator-bar" style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
                                     <?php endif; ?>
-                                    <a href="<?php echo esc_url(get_permalink($main_post->ID)); ?>" title="<?php echo esc_attr($main_post->post_title); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($main_post->post_title); ?>">
-                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;"><?php echo esc_html($main_post->post_title); ?></span>
+                                    <a href="<?php echo esc_url(get_permalink($main_post->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($main_post->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; line-height: 1.4; width: 100%;">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($main_post->post_title); ?></span>
                                     </a>
                                 </div>
                                 <?php
@@ -445,22 +447,22 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                 $has_children = $has_sub_posts || $has_sub_subcats;
                                 $subcat_expanded_class = ($is_sub_active && $has_children) ? ' expanded' : '';
                             ?>
-                                <div class="cmgalaxy-subcat-wrapper" data-term-id="<?php echo esc_attr($sub->term_id); ?>" style="margin: 2px 0;">
-                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page active-subcat' : ''; ?> <?php echo $has_children ? 'expandable-subcat' : ''; ?><?php echo $subcat_expanded_class; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="display:flex; align-items:center; justify-content:space-between; padding: 8px 14px 8px 24px; border-radius: 6px; cursor:pointer;">
-                                        <a href="<?php echo esc_url($sub_link); ?>" class="subsection-title cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sub->name); ?>" style="color: <?php echo $is_sub_active ? '#161c52' : '#475569'; ?>; font-size: 13.5px; font-weight: <?php echo $is_sub_active ? '600' : '500'; ?>; text-decoration: none; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            <?php echo esc_html($sub->name); ?>
+                                <div class="cmgalaxy-subcat-wrapper" data-term-id="<?php echo esc_attr($sub->term_id); ?>">
+                                    <div class="subsection-item <?php echo $is_sub_active ? 'current-page active-subcat' : ''; ?> <?php echo $has_children ? 'expandable-subcat' : ''; ?><?php echo $subcat_expanded_class; ?>" data-target="<?php echo esc_attr($sub_target_id); ?>" style="padding-left: 55px; display: flex; align-items: center; padding-top: 10px; padding-bottom: 10px; cursor: pointer; justify-content: space-between;">
+                                        <a href="<?php echo esc_url($sub_link); ?>" class="subsection-title cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sub->name); ?>" style="color:#475569; font-weight:<?php echo $is_sub_active ? '600' : '500'; ?>; font-size: 14px; text-decoration: none; flex: 1; padding-right: 10px; display: flex; align-items: center; justify-content: space-between; width: 100%; overflow: hidden;">
+                                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($sub->name); ?></span>
                                         </a>
                                         <?php if ($has_children) : ?>
-                                            <span class="expand-icon-subcat <?php echo ($is_sub_active && $has_children) ? 'expanded' : ''; ?>" aria-label="Toggle Subcategory">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                            <span class="expand-icon-subcat <?php echo ($is_sub_active && $has_children) ? 'expanded' : ''; ?>" aria-label="Toggle Subcategory" style="color: #64748b; margin-left: 12px; margin-right: 0; display: inline-flex; transition: transform 0.3s;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M15 6L9 12.0001L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                                 </svg>
                                             </span>
                                         <?php endif; ?>
                                     </div>
 
                                     <?php if ($has_children) : ?>
-                                        <div class="sub-subcategories" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; margin-left: 0;">
+                                        <div class="sub-subcategories cmgalaxy-sortable-sub-sub" id="<?php echo esc_attr($sub_target_id); ?>" style="display: <?php echo $is_sub_active ? 'block' : 'none'; ?>; padding-left: 0; margin-bottom: 10px; border-left: 1px solid #e2e8f0; margin-left: 55px;">
                                             
                                             <?php 
                                              // Render Sub-subcategories (Level 3)
@@ -481,29 +483,31 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                     $ss_link = get_term_link($ss->term_id, $sec_tax);
                                                     $ss_link = is_wp_error($ss_link) ? '#' : $ss_link;
                                                     ?>
-                                                    <div class="sidebar-sub-subcat-group" style="padding: 4px 0 4px 10px;">
-                                                        <a href="<?php echo esc_url($ss_link); ?>" style="color: #64748b; font-size: 13px; font-weight: 600; text-decoration: none; display: block; padding: 4px 8px;">
-                                                             <?php echo esc_html($ss->name); ?>
-                                                        </a>
-                                                        <?php if (!empty($ss_posts)): ?>
-                                                            <div style="margin-left: 12px;">
-                                                                <?php foreach ($ss_posts as $ssp): 
-                                                                    $rendered_post_ids[] = $ssp->ID;
-                                                                    $is_cur = ($current_post_id == $ssp->ID);
-                                                                    $is_ssp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($ssp->ID);
-                                                                ?>
-                                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 6px 12px 6px 36px; position: relative;">
-                                                                        <?php if ($is_cur): ?>
-                                                                            <div class="active-indicator-bar" style="position: absolute; left: 24px; top: 50%; transform: translateY(-50%); width: 2px; height: 16px; background: #2563eb; border-radius: 2px;"></div>
-                                                                        <?php endif; ?>
-                                                                        <a href="<?php echo esc_url(get_permalink($ssp->ID)); ?>" title="<?php echo esc_attr($ssp->post_title); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($ssp->post_title); ?>" style="display:flex; align-items:center;">
-                                                                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($ssp->post_title); ?></span>
-                                                                        </a>
-                                                                    </div>
-                                                                <?php endforeach; ?>
-                                                            </div>
+                                                    <div class="sidebar-sub-subcat-item cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($ss->name); ?>" data-term-id="<?php echo esc_attr($ss->term_id); ?>" style="padding: 10px 0 10px 8px; position: relative;">
+                                                        <?php if ($is_ss_active): ?>
+                                                            <div class="active-indicator-bar" style="position: absolute; left: -1px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
                                                         <?php endif; ?>
+                                                        <a href="<?php echo esc_url($ss_link); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($ss->name); ?>" style="color: <?php echo $is_ss_active ? '#3B82F6' : '#64748b'; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $is_ss_active ? '500' : '400'; ?>; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; width: 100%; overflow: hidden;">
+                                                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($ss->name); ?></span>
+                                                        </a>
                                                     </div>
+                                                    <?php if (!empty($ss_posts)): ?>
+                                                        <?php foreach ($ss_posts as $ssp): 
+                                                            $rendered_post_ids[] = $ssp->ID;
+                                                            $is_cur = ($current_post_id == $ssp->ID);
+                                                            $post_color = $is_cur ? '#3B82F6' : '#64748b';
+                                                            $post_weight = $is_cur ? '500' : '400';
+                                                        ?>
+                                                            <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?> cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($ssp->post_title); ?>" style="padding: 10px 0 10px 20px; position: relative;">
+                                                                <?php if ($is_cur): ?>
+                                                                    <div class="active-indicator-bar" style="position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
+                                                                <?php endif; ?>
+                                                                <a href="<?php echo esc_url(get_permalink($ssp->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($ssp->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; line-height: 1.4; width: 100%;">
+                                                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($ssp->post_title); ?></span>
+                                                                </a>
+                                                            </div>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
                                                 <?php }
                                             }
 
@@ -512,14 +516,15 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                 foreach ($sub_posts as $sp) :
                                                     $rendered_post_ids[] = $sp->ID;
                                                     $is_cur = ($current_post_id == $sp->ID);
-                                                    $is_sp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($sp->ID);
+                                                    $post_color = $is_cur ? '#3B82F6' : '#64748b';
+                                                    $post_weight = $is_cur ? '500' : '400';
                                                 ?>
-                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?>" style="padding: 6px 12px 6px 36px; position: relative;">
+                                                    <div class="sidebar-subcat-post-item <?php echo $is_cur ? 'active-article' : ''; ?> cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sp->post_title); ?>" style="padding: 10px 0 10px 15px; position: relative;">
                                                         <?php if ($is_cur): ?>
-                                                            <div class="active-indicator-bar" style="position: absolute; left: 24px; top: 50%; transform: translateY(-50%); width: 2px; height: 16px; background: #2563eb; border-radius: 2px;"></div>
+                                                            <div class="active-indicator-bar" style="position: absolute; left: -1px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
                                                         <?php endif; ?>
-                                                        <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" title="<?php echo esc_attr($sp->post_title); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sp->post_title); ?>" style="display:flex; align-items:center;">
-                                                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"><?php echo esc_html($sp->post_title); ?></span>
+                                                        <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sp->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; line-height: 1.4; width: 100%;">
+                                                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($sp->post_title); ?></span>
                                                         </a>
                                                     </div>
                                                 <?php endforeach; 
