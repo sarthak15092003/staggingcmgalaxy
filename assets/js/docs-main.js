@@ -236,7 +236,48 @@
             }
         }
 
-        // 4. Docs Feedback Handler is managed interactively in the single-docs template (with reason prompts and DB capture)
+        // 4. CM Custom Tooltip for Sidebar (Exact Docy Match)
+        if (!$('.cm-custom-tooltip').length) {
+            var $tt = $('<div class="cm-custom-tooltip"></div>').appendTo('body');
+            var ttHideTimer = null;
+
+            $(document).on('mouseenter', '.cm-tooltip-target, .sidebar-subcat-post-item a, .subsection-item .subsection-title', function(e) {
+                if ($(window).width() <= 1024) return;
+
+                var $el = $(this);
+                var text = $el.attr('data-cm-tooltip') || $el.attr('title') || $el.find('span').text().trim() || $el.text().trim();
+                if (!text) return;
+
+                if (ttHideTimer) {
+                    clearTimeout(ttHideTimer);
+                    ttHideTimer = null;
+                }
+
+                $tt.text(text);
+                $tt.addClass('cm-tooltip-visible');
+
+                var rect = this.getBoundingClientRect();
+                var $sidebar = $el.closest('.modern-sidebar');
+                var sidebarRight = $sidebar.length ? $sidebar[0].getBoundingClientRect().right : rect.right;
+
+                var topPos = Math.max(10, (rect.top + (rect.height / 2) - ($tt.outerHeight() / 2)));
+                var leftPos = (sidebarRight - 15);
+
+                $tt.css({
+                    top: topPos + 'px',
+                    left: leftPos + 'px'
+                });
+            });
+
+            $(document).on('mouseleave', '.cm-tooltip-target, .sidebar-subcat-post-item a, .subsection-item .subsection-title', function(e) {
+                if ($(window).width() <= 1024) return;
+                ttHideTimer = setTimeout(function() {
+                    $tt.removeClass('cm-tooltip-visible');
+                }, 50);
+            });
+        }
+
+        // 5. Docs Feedback Handler is managed interactively in the single-docs template (with reason prompts and DB capture)
     });
 
 })(jQuery);

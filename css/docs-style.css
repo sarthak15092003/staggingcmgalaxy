@@ -352,7 +352,10 @@ body.page-template-page-all-categories,
 }
 
 .modern-sidebar {
-    padding-right: 12px;
+    width: 100% !important;
+    max-width: 240px !important;
+    padding-right: 8px !important;
+    box-sizing: border-box !important;
 }
 
 .sidebar-back-btn {
@@ -745,23 +748,25 @@ body.page-template-page-all-categories,
     align-items: flex-start !important;
 }
 
-/* 1. Left Sidebar Column: 20% */
+/* 1. Left Sidebar Column: 240px wide + 36px gap before divider (Docy exact match) */
 .docs-col-sidebar,
 .category-left-sidebar-col {
-    flex: 0 0 20% !important;
-    max-width: 20% !important;
-    width: 20% !important;
-    min-width: 280px !important;
+    flex: 0 0 240px !important;
+    max-width: 240px !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    margin-right: 36px !important;
     padding-right: 0 !important;
     padding-left: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 40px !important;
     box-sizing: border-box !important;
-    background: #ffffff !important;
+    background: transparent !important;
     position: sticky !important;
     top: calc(var(--cmg-adminbar-height, 0px) + 107px) !important;
     max-height: calc(100vh - var(--cmg-adminbar-height, 0px) - 117px) !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
     scrollbar-width: thin !important;
     scrollbar-color: transparent transparent !important;
     transition: scrollbar-color 0.25s ease !important;
@@ -809,38 +814,35 @@ body.page-template-page-all-categories,
     background: #94a3b8 !important;
 }
 
-/* 2. Main Content Column: 60% with TOC, 80% without TOC */
+/* 2. Main Content Column: fills remaining space with 36px left padding (Docy exact match) */
 .docs-col-content,
 .category-main-col {
-    flex: 0 0 60% !important;
-    max-width: 60% !important;
-    width: 60% !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
     border-left: 1px solid #e2e8f0 !important;
     padding-top: 8px !important;
-    padding-left: 30px !important;
-    padding-right: 30px !important;
+    padding-left: 36px !important;
+    padding-right: 36px !important;
     padding-bottom: 0 !important;
     box-sizing: border-box !important;
-    min-width: 0 !important;
 }
 
 .category-main-col.no-toc,
 .docs-col-content.no-toc,
 .category-main-col:not(.has-toc-sidebar) {
-    flex: 0 0 80% !important;
-    max-width: 80% !important;
-    width: 80% !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
 }
 
-/* 3. Right TOC Column: 20% */
+/* 3. Right TOC Column: 240px sticky */
 .docs-col-toc,
 .category-right-sidebar-col,
 .doc-sidebar {
-    flex: 0 0 20% !important;
-    max-width: 20% !important;
-    width: 20% !important;
+    flex: 0 0 240px !important;
+    max-width: 240px !important;
+    width: 240px !important;
     border-left: none !important;
-    padding-left: 24px !important;
+    padding-left: 20px !important;
     padding-right: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 40px !important;
@@ -852,6 +854,56 @@ body.page-template-page-all-categories,
     scrollbar-width: thin !important;
     scrollbar-color: transparent transparent !important;
     transition: scrollbar-color 0.25s ease !important;
+}
+
+/* ==========================================================================
+   CM CUSTOM TOOLTIP (EXACT DOCY MATCH)
+   ========================================================================== */
+.cm-custom-tooltip {
+    position: fixed !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    padding: 8px 14px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12) !important;
+    z-index: 999999 !important;
+    pointer-events: none !important;
+    border: 1px solid #e5e7eb !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.15s ease, visibility 0.15s ease !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    line-height: 1.4 !important;
+}
+
+.cm-custom-tooltip.cm-tooltip-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.cm-custom-tooltip::before {
+    content: '' !important;
+    position: absolute !important;
+    right: 100% !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    border-width: 5px 6px 5px 0 !important;
+    border-style: solid !important;
+    border-color: transparent #ffffff transparent transparent !important;
+    filter: drop-shadow(-2px 0 1px rgba(0,0,0,0.04)) !important;
+}
+
+@media (max-width: 1024px) {
+    .cm-custom-tooltip,
+    .cm-custom-tooltip.cm-tooltip-visible {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
 }
 
 .docs-col-toc:hover,
