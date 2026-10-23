@@ -70,14 +70,25 @@ $sidebar_img_url = file_exists(get_template_directory() . '/assets/images/sideba
                     <?php echo esc_html($term_name); ?>
                 </h1>
 
-                <!-- Meta Line (Author & Articles Count) -->
-                <div class="doc-author-meta-box" style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
-                    <div class="author-avatar" style="width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                        <img src="https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/cropped-Group-1000004539-300x300-1.webp" alt="CMGalaxy" style="width: 20px; height: 20px; object-fit: contain; display: block;" />
+                <!-- Meta Line (Author & Articles Count & Advanced Setting) -->
+                <div class="doc-author-meta-box" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="author-avatar" style="width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                            <img src="https://y9xt93xns6.onrocket.site/wp-content/uploads/2026/10/cropped-Group-1000004539-300x300-1.webp" alt="CMGalaxy" style="width: 20px; height: 20px; object-fit: contain; display: block;" />
+                        </div>
+                        <div class="author-info" style="font-size: 14px; color: #6b7280; line-height: 1.4;">
+                            By &nbsp;<span style="color: #374151; font-weight: 600;">CMGalaxy</span> &nbsp;&middot;&nbsp; <?php echo intval($articles_count); ?> articles
+                        </div>
                     </div>
-                    <div class="author-info" style="font-size: 14px; color: #6b7280; line-height: 1.4;">
-                        By &nbsp;<span style="color: #374151; font-weight: 600;">CMGalaxy</span> &nbsp;&middot;&nbsp; <?php echo intval($articles_count); ?> articles
-                    </div>
+                    <?php if (current_user_can('edit_posts')) : ?>
+                        <button type="button" class="cmg-open-advanced-order-modal-btn" data-cat-id="<?php echo esc_attr($current_term_id); ?>">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Advanced Setting</span>
+                        </button>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Articles & Subcategories List -->

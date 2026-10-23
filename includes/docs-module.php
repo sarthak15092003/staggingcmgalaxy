@@ -1430,7 +1430,10 @@ function cmg_render_docs_order_manager_page() {
                         Manage exact sidebar article ordering and customer paywall gating matching live Docy.
                     </p>
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button type="button" class="button cmg-open-advanced-order-modal-btn" data-cat-id="<?php echo esc_attr($selected_cat_id); ?>" style="background: #ffffff; border-color: #2563eb; color: #2563eb; font-weight: 600; padding: 6px 16px; font-size: 13.5px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                        ⚙️ Advanced Setting (FCFS / FCLS / Custom)
+                    </button>
                     <button type="button" id="cmg-sync-live-docy-btn" class="button button-primary" style="background: #2563eb; border-color: #2563eb; padding: 6px 18px; font-size: 13.5px; font-weight: 600; border-radius: 6px; cursor: pointer;">
                         ⚡ 1-Click Sync Order with Live Docy
                     </button>
@@ -2081,4 +2084,266 @@ function lex_chat_query_handler() {
 }
 add_action('wp_ajax_lex_chat_query', 'lex_chat_query_handler');
 add_action('wp_ajax_nopriv_lex_chat_query', 'lex_chat_query_handler');
+
+/**
+ * 14. Advanced Order Settings Modal Hooks & AJAX Handlers
+ */
+
+// Footer modal loader for front-end and admin
+add_action('wp_footer', 'cmg_render_advanced_order_modal_footer');
+add_action('admin_footer', 'cmg_render_advanced_order_modal_footer');
+function cmg_render_advanced_order_modal_footer() {
+    if (current_user_can('edit_posts')) {
+        get_template_part('template-parts/docs/modal-advanced-order');
+    }
+}
+
+// 1. AJAX: Get Categories Hierarchy
+function cmg_ajax_get_advanced_order_categories() {
+    check_ajax_referer('cmg_adv_order_nonce');
+    if (!current_user_can('edit_posts')) {
+        wp_send_json_error(array('message' => 'Permission denied.'));
+    }
+
+    $selected_id = isset($_POST['selected_cat_id']) ? intval($_POST['selected_cat_id']) : 0;
+
+    $top_terms = get_terms(array(
+        'taxonomy'   => array('doc_category', 'category'),
+        'parent'     => 0,
+        'hide_empty' => false,
+        'orderby'    => 'name',
+        'order'      => 'ASC'
+    ));
+
+    $categories_list = array();
+    global $wpdb;
+
+    if (!empty($top_terms) && !is_wp_error($top_terms)) {
+        foreach ($top_terms as $top) {
+            if (strtolower($top->slug) === 'uncategorized') continue;
+
+            $count = (int) $wpdb->get_var($wpdb->prepare("
+                SELECT COUNT(p.ID) FROM {$wpdb->posts} p
+                INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                WHERE tt.term_id = %d AND p.post_type IN ('docs', 'post') AND p.post_status = 'publish'
+            ", $top->term_id));
+
+            $categories_list[] = array(
+                'id'            => $top->term_id,
+                'name'          => html_entity_decode($top->name),
+                'slug'          => $top->slug,
+                'depth'         => 0,
+                'article_count' => $count
+            );
+
+            // Fetch child subcategories
+            $children = get_terms(array(
+                'taxonomy'   => $top->taxonomy,
+                'parent'     => $top->term_id,
+                'hide_empty' => false,
+                'orderby'    => 'name',
+                'order'      => 'ASC'
+            ));
+
+            if (!empty($children) && !is_wp_error($children)) {
+                foreach ($children as $child) {
+                    $child_count = (int) $wpdb->get_var($wpdb->prepare("
+                        SELECT COUNT(p.ID) FROM {$wpdb->posts} p
+                        INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                        INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                        WHERE tt.term_id = %d AND p.post_type IN ('docs', 'post') AND p.post_status = 'publish'
+                    ", $child->term_id));
+
+                    $categories_list[] = array(
+                        'id'            => $child->term_id,
+                        'name'          => html_entity_decode($child->name),
+                        'slug'          => $child->slug,
+                        'depth'         => 1,
+                        'article_count' => $child_count
+                    );
+
+                    // Level 3 sub-subcategories if any
+                    $sub_children = get_terms(array(
+                        'taxonomy'   => $child->taxonomy,
+                        'parent'     => $child->term_id,
+                        'hide_empty' => false
+                    ));
+                    if (!empty($sub_children) && !is_wp_error($sub_children)) {
+                        foreach ($sub_children as $sc) {
+                            $sc_count = (int) $wpdb->get_var($wpdb->prepare("
+                                SELECT COUNT(p.ID) FROM {$wpdb->posts} p
+                                INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                                INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                                WHERE tt.term_id = %d AND p.post_type IN ('docs', 'post') AND p.post_status = 'publish'
+                            ", $sc->term_id));
+
+                            $categories_list[] = array(
+                                'id'            => $sc->term_id,
+                                'name'          => html_entity_decode($sc->name),
+                                'slug'          => $sc->slug,
+                                'depth'         => 2,
+                                'article_count' => $sc_count
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (!$selected_id && !empty($categories_list)) {
+        $selected_id = $categories_list[0]['id'];
+    }
+
+    wp_send_json_success(array(
+        'categories' => $categories_list,
+        'active_id'  => $selected_id
+    ));
+}
+add_action('wp_ajax_cmg_get_advanced_order_categories', 'cmg_ajax_get_advanced_order_categories');
+
+// 2. AJAX: Get Articles and Subcategories for Selected Category
+function cmg_ajax_get_advanced_order_data() {
+    check_ajax_referer('cmg_adv_order_nonce');
+    if (!current_user_can('edit_posts')) {
+        wp_send_json_error(array('message' => 'Permission denied.'));
+    }
+
+    $cat_id = isset($_POST['cat_id']) ? intval($_POST['cat_id']) : 0;
+    if (!$cat_id) {
+        wp_send_json_error(array('message' => 'Invalid category ID.'));
+    }
+
+    $term = get_term($cat_id);
+    if (!$term || is_wp_error($term)) {
+        wp_send_json_error(array('message' => 'Category not found.'));
+    }
+
+    global $wpdb;
+
+    // Articles in this category/subcategory
+    $articles_raw = $wpdb->get_results($wpdb->prepare("
+        SELECT p.ID, p.post_title, p.post_date, p.menu_order
+        FROM {$wpdb->posts} p
+        INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+        INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+        WHERE tt.term_id = %d
+        AND p.post_type IN ('docs', 'post')
+        AND p.post_status = 'publish'
+        ORDER BY p.menu_order ASC, p.post_date ASC, p.ID ASC
+    ", $cat_id));
+
+    $articles = array();
+    if (!empty($articles_raw)) {
+        foreach ($articles_raw as $art) {
+            $articles[] = array(
+                'id'             => $art->ID,
+                'title'          => html_entity_decode($art->post_title),
+                'date'           => $art->post_date,
+                'date_timestamp' => strtotime($art->post_date),
+                'date_formatted' => date_i18n('M j, Y', strtotime($art->post_date)),
+                'order'          => intval($art->menu_order)
+            );
+        }
+    }
+
+    // Subcategories under this term (if any)
+    $subcats_raw = get_terms(array(
+        'taxonomy'   => $term->taxonomy,
+        'parent'     => $cat_id,
+        'hide_empty' => false,
+        'orderby'    => 'term_id',
+        'order'      => 'ASC'
+    ));
+
+    $subcategories = array();
+    if (!empty($subcats_raw) && !is_wp_error($subcats_raw)) {
+        foreach ($subcats_raw as $sc) {
+            $order_val = get_term_meta($sc->term_id, '_cmgalaxy_sidebar_order', true);
+            $subcategories[] = array(
+                'id'    => $sc->term_id,
+                'title' => html_entity_decode($sc->name),
+                'slug'  => $sc->slug,
+                'order' => ($order_val !== '' && $order_val !== false) ? intval($order_val) : 999
+            );
+        }
+    }
+
+    $saved_method = get_term_meta($cat_id, '_cmg_article_order_method', true);
+    if (empty($saved_method)) {
+        $saved_method = 'fcfs';
+    }
+
+    wp_send_json_success(array(
+        'cat_id'        => $cat_id,
+        'cat_name'      => html_entity_decode($term->name),
+        'order_method'  => $saved_method,
+        'articles'      => $articles,
+        'subcategories' => $subcategories
+    ));
+}
+add_action('wp_ajax_cmg_get_advanced_order_data', 'cmg_ajax_get_advanced_order_data');
+
+// 3. AJAX: Save Advanced Order
+function cmg_ajax_save_advanced_order() {
+    check_ajax_referer('cmg_adv_order_nonce');
+    if (!current_user_can('edit_posts')) {
+        wp_send_json_error(array('message' => 'Permission denied.'));
+    }
+
+    $cat_id       = isset($_POST['cat_id']) ? intval($_POST['cat_id']) : 0;
+    $scope        = isset($_POST['scope']) ? sanitize_text_field($_POST['scope']) : 'articles';
+    $order_method = isset($_POST['order_method']) ? sanitize_text_field($_POST['order_method']) : 'custom';
+    $ordered_ids  = isset($_POST['ordered_ids']) && is_array($_POST['ordered_ids']) ? array_map('intval', $_POST['ordered_ids']) : array();
+
+    if (!$cat_id || empty($ordered_ids)) {
+        wp_send_json_error(array('message' => 'Invalid parameters provided.'));
+    }
+
+    global $wpdb;
+
+    if ($scope === 'articles') {
+        // Save preferred order method on the term
+        update_term_meta($cat_id, '_cmg_article_order_method', $order_method);
+
+        // Update menu_order sequentially (10, 20, 30...)
+        $order_num = 10;
+        foreach ($ordered_ids as $post_id) {
+            $wpdb->update(
+                $wpdb->posts,
+                array('menu_order' => $order_num),
+                array('ID' => $post_id)
+            );
+            clean_post_cache($post_id);
+            $order_num += 10;
+        }
+
+        clean_term_cache($cat_id);
+        wp_cache_flush();
+
+        wp_send_json_success(array(
+            'message' => 'Article order updated successfully! Applying everywhere...'
+        ));
+    } elseif ($scope === 'subcategories') {
+        update_term_meta($cat_id, '_cmg_subcat_order_method', $order_method);
+
+        $order_num = 10;
+        foreach ($ordered_ids as $term_id) {
+            update_term_meta($term_id, '_cmgalaxy_sidebar_order', $order_num);
+            clean_term_cache($term_id);
+            $order_num += 10;
+        }
+
+        clean_term_cache($cat_id);
+        wp_cache_flush();
+
+        wp_send_json_success(array(
+            'message' => 'Subcategories order updated successfully! Applying everywhere...'
+        ));
+    }
+
+    wp_send_json_error(array('message' => 'Unknown scope.'));
+}
+add_action('wp_ajax_cmg_save_advanced_order', 'cmg_ajax_save_advanced_order');
 
