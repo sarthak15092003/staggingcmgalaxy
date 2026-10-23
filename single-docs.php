@@ -22,7 +22,7 @@ $first_term = ($terms && !is_wp_error($terms)) ? $terms[0] : null;
 $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link('docs') : home_url('/docs/');
 ?>
 
-<div class="docs-main-wrapper" style="padding-top: 24px; padding-bottom: 72px;">
+<div class="docs-main-wrapper" style="padding-top: 0; padding-bottom: 72px;">
     <div class="docs-container">
         
         <div class="docs-layout-row">

@@ -60,7 +60,7 @@ if (!empty($terms) && !is_wp_error($terms)) {
 }
 ?>
 
-<div class="docs-main-wrapper" style="padding-top: 32px; padding-bottom: 64px;">
+<div class="docs-main-wrapper" style="padding-top: 0; padding-bottom: 64px;">
     <div class="docs-container">
         <div class="docs-layout-row">
             

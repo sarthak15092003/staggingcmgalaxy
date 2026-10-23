@@ -24,6 +24,7 @@ body.page-template-page-all-categories,
     background: #ffffff;
     min-height: 80vh;
     font-weight: 400;
+    padding-top: 0 !important;
 }
 
 /* Base Headings & Text Weights */
@@ -780,7 +781,7 @@ body.page-template-page-all-categories,
     align-items: flex-start !important;
 }
 
-/* 1. Left Sidebar Column: 240px wide + 36px gap before divider (Docy exact match) */
+/* 1. Left Sidebar Column: 240px wide (No adjoining line, inward padding) */
 .docs-col-sidebar,
 .category-left-sidebar-col {
     flex: 0 0 240px !important;
@@ -790,8 +791,10 @@ body.page-template-page-all-categories,
     margin-right: 0 !important;
     padding-right: 0 !important;
     padding-left: 0 !important;
-    padding-top: 0 !important;
+    padding-top: 24px !important;
     padding-bottom: 40px !important;
+    border-right: none !important;
+    border-left: none !important;
     box-sizing: border-box !important;
     background: transparent !important;
     position: sticky !important;
@@ -846,13 +849,14 @@ body.page-template-page-all-categories,
     background: #94a3b8 !important;
 }
 
-/* 2. Main Content Column: fills remaining space with 36px left padding (Docy exact match) */
+/* 2. Main Content Column: fills remaining space with 36px left inward gap, no adjoining line */
 .docs-col-content,
 .category-main-col {
     flex: 1 1 0% !important;
     min-width: 0 !important;
-    border-left: 1px solid #e2e8f0 !important;
-    padding-top: 8px !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding-top: 24px !important;
     padding-left: 36px !important;
     padding-right: 36px !important;
     padding-bottom: 0 !important;
@@ -874,9 +878,10 @@ body.page-template-page-all-categories,
     max-width: 240px !important;
     width: 240px !important;
     border-left: none !important;
+    border-right: none !important;
     padding-left: 20px !important;
     padding-right: 0 !important;
-    padding-top: 0 !important;
+    padding-top: 24px !important;
     padding-bottom: 40px !important;
     box-sizing: border-box !important;
     position: sticky !important;
