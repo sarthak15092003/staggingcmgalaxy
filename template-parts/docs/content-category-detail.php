@@ -77,8 +77,8 @@ $direct_articles = new WP_Query([
             $count = $item['count'];
         ?>
             <div class="tw-cat-articles-card">
-                <div class="tw-subcategory-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none');" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                    <h3 class="tw-subcategory-title" style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                <div class="tw-subcategory-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none');">
+                    <h3 class="tw-subcategory-title">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
@@ -87,15 +87,6 @@ $direct_articles = new WP_Query([
                         </div>
                         <span class="tw-subcategory-count">(<?php echo intval($count); ?> articles)</span>
                     </h3>
-                    <?php if (current_user_can('edit_posts')) : ?>
-                        <button type="button" class="cmg-open-advanced-order-modal-btn cmg-subcat-order-btn" data-cat-id="<?php echo esc_attr($subcat->term_id); ?>" onclick="event.stopPropagation();" title="Rearrange article order in <?php echo esc_attr($subcat->name); ?>">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="3"></circle>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                            </svg>
-                            <span>Advanced Setting</span>
-                        </button>
-                    <?php endif; ?>
                 </div>
 
                 <div class="tw-subcategory-articles" style="display: block; border-top: 1px solid #e5e7eb;">

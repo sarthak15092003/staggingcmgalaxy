@@ -1383,40 +1383,90 @@ add_action('admin_menu', 'cmg_docs_order_manager_admin_menu');
 function cmg_render_docs_order_manager_page() {
     global $wpdb;
     
-    // Get all doc categories
-    $categories = get_terms(array(
+    // Get all top-level doc categories and their subcategories hierarchically
+    $top_categories = get_terms(array(
         'taxonomy'   => array('doc_category', 'category'),
+        'parent'     => 0,
         'hide_empty' => false,
         'orderby'    => 'name',
         'order'      => 'ASC'
     ));
 
+    $categories = array();
+    if (!empty($top_categories) && !is_wp_error($top_categories)) {
+        foreach ($top_categories as $top) {
+            if (strtolower($top->slug) === 'uncategorized') continue;
+            $categories[] = array(
+                'id'    => $top->term_id,
+                'name'  => $top->name,
+                'count' => $top->count,
+                'depth' => 0
+            );
+
+            // Subcategories
+            $children = get_terms(array(
+                'taxonomy'   => $top->taxonomy,
+                'parent'     => $top->term_id,
+                'hide_empty' => false,
+                'orderby'    => 'name',
+                'order'      => 'ASC'
+            ));
+            if (!empty($children) && !is_wp_error($children)) {
+                foreach ($children as $child) {
+                    $categories[] = array(
+                        'id'    => $child->term_id,
+                        'name'  => $child->name,
+                        'count' => $child->count,
+                        'depth' => 1
+                    );
+                    
+                    // Sub-subcategories (Level 3)
+                    $sub_children = get_terms(array(
+                        'taxonomy'   => $child->taxonomy,
+                        'parent'     => $child->term_id,
+                        'hide_empty' => false
+                    ));
+                    if (!empty($sub_children) && !is_wp_error($sub_children)) {
+                        foreach ($sub_children as $sc) {
+                            $categories[] = array(
+                                'id'    => $sc->term_id,
+                                'name'  => $sc->name,
+                                'count' => $sc->count,
+                                'depth' => 2
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     $selected_cat_id = isset($_GET['cat_id']) ? intval($_GET['cat_id']) : 0;
-    if (!$selected_cat_id && !empty($categories) && !is_wp_error($categories)) {
+    if (!$selected_cat_id && !empty($categories)) {
         // Default to Getting started or Onboarding if found
         foreach ($categories as $cat) {
-            if ($cat->slug === 'getting-started' || $cat->slug === 'onboarding') {
-                $selected_cat_id = $cat->term_id;
+            if ($cat['name'] === 'Getting started' || $cat['name'] === 'Onboarding') {
+                $selected_cat_id = $cat['id'];
                 break;
             }
         }
         if (!$selected_cat_id) {
-            $selected_cat_id = $categories[0]->term_id;
+            $selected_cat_id = $categories[0]['id'];
         }
     }
 
-    // Fetch posts in this category ordered by menu_order ASC, ID ASC (Docy exact order)
+    // Fetch posts in this category ordered by menu_order ASC, post_date ASC, ID ASC
     $articles = array();
     if ($selected_cat_id) {
         $articles = $wpdb->get_results($wpdb->prepare("
-            SELECT p.ID, p.post_title, p.post_name, p.menu_order, p.post_status
+            SELECT p.ID, p.post_title, p.post_name, p.post_date, p.menu_order, p.post_status
             FROM {$wpdb->posts} p
             INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
             INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
             WHERE tt.term_id = %d
             AND p.post_type IN ('docs', 'post')
             AND p.post_status = 'publish'
-            ORDER BY p.menu_order ASC, p.ID ASC
+            ORDER BY p.menu_order ASC, p.post_date ASC, p.ID ASC
         ", $selected_cat_id));
     }
     ?>
@@ -1427,37 +1477,60 @@ function cmg_render_docs_order_manager_page() {
                 <div>
                     <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0;">Article Order & Gated Access Manager</h1>
                     <p style="color: #64748b; font-size: 14.5px; margin: 0;">
-                        Manage exact sidebar article ordering and customer paywall gating matching live Docy.
+                        Rearrange article order (1, 2, 3...) using First Come First Serve, First Come Last Serve, or Drag & Drop.
                     </p>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <button type="button" class="button cmg-open-advanced-order-modal-btn" data-cat-id="<?php echo esc_attr($selected_cat_id); ?>" style="background: #ffffff; border-color: #2563eb; color: #2563eb; font-weight: 600; padding: 6px 16px; font-size: 13.5px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                        ⚙️ Advanced Setting (FCFS / FCLS / Custom)
+                    <button type="button" id="cmg-save-orders-top-btn" class="button button-primary" style="background: #10b981; border-color: #10b981; font-weight: 600; padding: 6px 20px; font-size: 13.5px; border-radius: 6px; cursor: pointer;">
+                        💾 Save Order (1, 2, 3...)
                     </button>
-                    <button type="button" id="cmg-sync-live-docy-btn" class="button button-primary" style="background: #2563eb; border-color: #2563eb; padding: 6px 18px; font-size: 13.5px; font-weight: 600; border-radius: 6px; cursor: pointer;">
-                        ⚡ 1-Click Sync Order with Live Docy
+                    <button type="button" id="cmg-sync-live-docy-btn" class="button" style="padding: 6px 14px; font-size: 13px; border-radius: 6px; cursor: pointer;">
+                        ⚡ 1-Click Sync Order
                     </button>
                 </div>
             </div>
 
             <!-- Category Selector Filter -->
-            <form method="get" action="" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; background: #f8fafc; padding: 14px 18px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <form method="get" action="" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: #f8fafc; padding: 14px 18px; border-radius: 8px; border: 1px solid #e2e8f0;">
                 <input type="hidden" name="post_type" value="docs">
                 <input type="hidden" name="page" value="cmgalaxy-docs-order-manager">
                 
-                <label for="cat_id" style="font-weight: 600; font-size: 14px; color: #334155;">Select Category:</label>
-                <select name="cat_id" id="cat_id" onchange="this.form.submit()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; min-width: 260px;">
-                    <?php if (!empty($categories) && !is_wp_error($categories)) : ?>
-                        <?php foreach ($categories as $cat) : ?>
-                            <option value="<?php echo esc_attr($cat->term_id); ?>" <?php selected($selected_cat_id, $cat->term_id); ?>>
-                                <?php echo esc_html($cat->name); ?> (<?php echo intval($cat->count); ?> articles)
+                <label for="cat_id" style="font-weight: 700; font-size: 14px; color: #334155;">Select Category or Subcategory:</label>
+                <select name="cat_id" id="cat_id" onchange="this.form.submit()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; min-width: 320px;">
+                    <?php if (!empty($categories)) : ?>
+                        <?php foreach ($categories as $cat) : 
+                            $prefix = '';
+                            if ($cat['depth'] === 1) $prefix = '— ';
+                            if ($cat['depth'] === 2) $prefix = '—— ';
+                        ?>
+                            <option value="<?php echo esc_attr($cat['id']); ?>" <?php selected($selected_cat_id, $cat['id']); ?>>
+                                <?php echo esc_html($prefix . $cat['name']); ?> (<?php echo intval($cat['count']); ?> articles)
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
             </form>
 
-            <div id="cmg-manager-notification" style="display: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500;"></div>
+            <!-- Reordering Action Toolbar -->
+            <div style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span style="font-weight: 700; font-size: 13.5px; color: #334155;">Order Method:</span>
+                    <button type="button" id="cmg-btn-fcfs" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                        🟢 First Come First Serve (Oldest 1, 2, 3...)
+                    </button>
+                    <button type="button" id="cmg-btn-fcls" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                        🟡 First Come Last Serve (Newest 1, 2, 3...)
+                    </button>
+                    <button type="button" id="cmg-auto-number-btn" class="button button-secondary" style="font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                        🔢 Auto-Number (1, 2, 3, 4...)
+                    </button>
+                </div>
+                <div style="font-size: 12.5px; color: #64748b;">
+                    🖐️ <strong>Tip:</strong> Drag rows up/down to set custom sequence.
+                </div>
+            </div>
+
+            <div id="cmg-manager-notification" style="display: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 600;"></div>
 
             <!-- Articles Ordering Table -->
             <form id="cmg-order-form">
@@ -1465,10 +1538,11 @@ function cmg_render_docs_order_manager_page() {
                 <table class="wp-list-table widefat fixed striped posts" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: none;">
                     <thead>
                         <tr>
-                            <th style="width: 70px; text-align: center; font-weight: 600; color: #475569;">#</th>
-                            <th style="width: 90px; font-weight: 600; color: #475569;">Order</th>
+                            <th style="width: 45px; text-align: center; color: #94a3b8;"></th>
+                            <th style="width: 55px; text-align: center; font-weight: 600; color: #475569;">#</th>
+                            <th style="width: 85px; font-weight: 600; color: #475569;">Order</th>
                             <th style="font-weight: 600; color: #475569;">Article Title</th>
-                            <th style="width: 170px; text-align: center; font-weight: 600; color: #475569;">Paywall Gate</th>
+                            <th style="width: 160px; text-align: center; font-weight: 600; color: #475569;">Paywall Gate</th>
                             <th style="width: 140px; text-align: center; font-weight: 600; color: #475569;">Actions</th>
                         </tr>
                     </thead>
@@ -1478,13 +1552,24 @@ function cmg_render_docs_order_manager_page() {
                                 $is_gated = cmg_is_post_restricted_to_logged_in($art->ID);
                                 $preview_url = add_query_arg('preview_gate', '1', get_permalink($art->ID));
                                 $edit_url = get_edit_post_link($art->ID);
+                                
+                                // Clean sequential order (1, 2, 3, 4... instead of 10, 20, 30...)
+                                $clean_order = intval($art->menu_order);
+                                if ($clean_order % 10 === 0 && $clean_order >= 10 && $clean_order <= 500) {
+                                    $clean_order = intval($clean_order / 10);
+                                } elseif ($clean_order <= 0 || $clean_order >= 9000) {
+                                    $clean_order = $index + 1;
+                                }
                             ?>
-                                <tr data-post-id="<?php echo esc_attr($art->ID); ?>">
-                                    <td style="text-align: center; color: #94a3b8; font-weight: 600;">
+                                <tr data-post-id="<?php echo esc_attr($art->ID); ?>" data-post-date="<?php echo esc_attr(strtotime($art->post_date)); ?>" class="cmg-draggable-row" draggable="true" style="cursor: move;">
+                                    <td style="text-align: center; color: #94a3b8; width: 45px; user-select: none;">
+                                        <span style="font-size: 17px; cursor: move;" title="Drag to reorder">⠿</span>
+                                    </td>
+                                    <td style="text-align: center; color: #64748b; font-weight: 700;" class="row-num-badge">
                                         <?php echo intval($index + 1); ?>
                                     </td>
                                     <td>
-                                        <input type="number" class="cmg-order-input" name="order[<?php echo esc_attr($art->ID); ?>]" value="<?php echo esc_attr($art->menu_order); ?>" style="width: 70px; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; text-align: center; font-weight: 600;">
+                                        <input type="number" class="cmg-order-input" name="order[<?php echo esc_attr($art->ID); ?>]" value="<?php echo esc_attr($clean_order); ?>" style="width: 65px; padding: 4px 6px; border-radius: 4px; border: 1px solid #cbd5e1; text-align: center; font-weight: 700; color: #0f172a;">
                                     </td>
                                     <td>
                                         <div style="font-weight: 600; color: #0f172a; font-size: 14px;">
@@ -1493,7 +1578,7 @@ function cmg_render_docs_order_manager_page() {
                                             </a>
                                         </div>
                                         <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
-                                            slug: <?php echo esc_html($art->post_name); ?>
+                                            slug: <?php echo esc_html($art->post_name); ?> &nbsp;&middot;&nbsp; published: <?php echo date_i18n('M j, Y', strtotime($art->post_date)); ?>
                                         </div>
                                     </td>
                                     <td style="text-align: center;">
@@ -1514,8 +1599,8 @@ function cmg_render_docs_order_manager_page() {
                             <?php endforeach; ?>
                         <?php else : ?>
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 32px; color: #64748b;">
-                                    No articles found in this category.
+                                <td colspan="6" style="text-align: center; padding: 32px; color: #64748b;">
+                                    No articles found in this category or subcategory.
                                 </td>
                             </tr>
                         <?php endif; ?>
@@ -1524,11 +1609,11 @@ function cmg_render_docs_order_manager_page() {
 
                 <?php if (!empty($articles)) : ?>
                     <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
-                        <button type="button" id="cmg-auto-number-btn" class="button" style="font-size: 13px;">
-                            Auto-Assign (10, 20, 30...)
+                        <button type="button" class="button cmg-quick-renumber-btn" style="font-size: 13px;">
+                            Reset Sequence (1, 2, 3, 4...)
                         </button>
-                        <button type="button" id="cmg-save-orders-btn" class="button button-primary" style="background: #10b981; border-color: #10b981; font-weight: 600; padding: 6px 24px; font-size: 14px; border-radius: 6px;">
-                            💾 Save Order & Access Settings
+                        <button type="button" id="cmg-save-orders-btn" class="button button-primary" style="background: #10b981; border-color: #10b981; font-weight: 700; padding: 7px 26px; font-size: 14px; border-radius: 6px;">
+                            💾 Save Order (1, 2, 3...) & Access Settings
                         </button>
                     </div>
                 <?php endif; ?>
@@ -1537,45 +1622,151 @@ function cmg_render_docs_order_manager_page() {
         </div>
     </div>
 
+    <style>
+    .cmg-draggable-row.dragging {
+        opacity: 0.45;
+        background: #eff6ff !important;
+    }
+    .cmg-draggable-row.drag-over-row {
+        border-top: 3px solid #2563eb !important;
+    }
+    </style>
+
     <script>
     jQuery(document).ready(function($) {
-        // Auto-assign numbers 10, 20, 30...
-        $('#cmg-auto-number-btn').on('click', function(e) {
-            e.preventDefault();
-            var step = 10;
-            var num = 10;
-            $('#cmg-articles-tbody tr').each(function() {
+        
+        function renumberRows() {
+            $('#cmg-articles-tbody tr').each(function(index) {
+                var num = index + 1;
+                $(this).find('.row-num-badge').text(num);
                 $(this).find('.cmg-order-input').val(num);
-                num += step;
             });
+        }
+
+        function showNotification(msg, isSuccess) {
+            var $note = $('#cmg-manager-notification');
+            if (isSuccess) {
+                $note.css({'background': '#ecfdf5', 'color': '#065f46', 'border': '1px solid #a7f3d0'}).text(msg).show();
+            } else {
+                $note.css({'background': '#fef2f2', 'color': '#991b1b', 'border': '1px solid #fecaca'}).text(msg).show();
+            }
+        }
+
+        // 1. First Come First Serve (Oldest 1, 2, 3...)
+        $('#cmg-btn-fcfs').on('click', function(e) {
+            e.preventDefault();
+            var $tbody = $('#cmg-articles-tbody');
+            var rows = $tbody.find('tr').get();
+            rows.sort(function(a, b) {
+                var dateA = parseInt($(a).data('post-date'), 10) || 0;
+                var dateB = parseInt($(b).data('post-date'), 10) || 0;
+                return dateA - dateB;
+            });
+            $.each(rows, function(idx, row) {
+                $tbody.append(row);
+            });
+            renumberRows();
+            showNotification('Sorted by First Come First Serve (Oldest First: 1, 2, 3...). Click "Save Order" to apply.', true);
         });
 
-        // 1-Click Sync with Live Docy
+        // 2. First Come Last Serve (Newest 1, 2, 3...)
+        $('#cmg-btn-fcls').on('click', function(e) {
+            e.preventDefault();
+            var $tbody = $('#cmg-articles-tbody');
+            var rows = $tbody.find('tr').get();
+            rows.sort(function(a, b) {
+                var dateA = parseInt($(a).data('post-date'), 10) || 0;
+                var dateB = parseInt($(b).data('post-date'), 10) || 0;
+                return dateB - dateA;
+            });
+            $.each(rows, function(idx, row) {
+                $tbody.append(row);
+            });
+            renumberRows();
+            showNotification('Sorted by First Come Last Serve (Newest First: 1, 2, 3...). Click "Save Order" to apply.', true);
+        });
+
+        // 3. Auto-assign numbers (1, 2, 3, 4...)
+        $('#cmg-auto-number-btn, .cmg-quick-renumber-btn').on('click', function(e) {
+            e.preventDefault();
+            renumberRows();
+            showNotification('Renumbered sequence to 1, 2, 3, 4... Click "Save Order" to apply.', true);
+        });
+
+        // 4. Native HTML5 Drag and Drop Reordering
+        var draggedRow = null;
+        var tbody = document.getElementById('cmg-articles-tbody');
+        if (tbody) {
+            var rows = tbody.querySelectorAll('.cmg-draggable-row');
+            rows.forEach(function(row) {
+                row.addEventListener('dragstart', function(e) {
+                    draggedRow = this;
+                    this.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                row.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                    rows.forEach(function(r) { r.classList.remove('drag-over-row'); });
+                    renumberRows();
+                });
+
+                row.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (draggedRow !== this) {
+                        this.classList.add('drag-over-row');
+                    }
+                });
+
+                row.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over-row');
+                });
+
+                row.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over-row');
+                    if (draggedRow && draggedRow !== this) {
+                        var allRows = Array.from(tbody.querySelectorAll('.cmg-draggable-row'));
+                        var draggedIdx = allRows.indexOf(draggedRow);
+                        var targetIdx = allRows.indexOf(this);
+
+                        if (draggedIdx < targetIdx) {
+                            tbody.insertBefore(draggedRow, this.nextSibling);
+                        } else {
+                            tbody.insertBefore(draggedRow, this);
+                        }
+                        renumberRows();
+                    }
+                });
+            });
+        }
+
+        // 5. 1-Click Sync with Live Docy
         $('#cmg-sync-live-docy-btn').on('click', function(e) {
             e.preventDefault();
             var $btn = $(this);
-            $btn.prop('disabled', true).text('Syncing with Live Docy...');
+            $btn.prop('disabled', true).text('Syncing...');
 
             $.post(ajaxurl, {
                 action: 'cmg_sync_live_docy_order',
                 _ajax_nonce: '<?php echo wp_create_nonce("cmg_sync_docy_nonce"); ?>'
             }, function(response) {
-                $btn.prop('disabled', false).text('⚡ 1-Click Sync Order with Live Docy');
-                var $note = $('#cmg-manager-notification');
+                $btn.prop('disabled', false).text('⚡ 1-Click Sync Order');
                 if (response.success) {
-                    $note.css({'background': '#ecfdf5', 'color': '#065f46', 'border': '1px solid #a7f3d0'}).text(response.data.message).show();
+                    showNotification(response.data.message, true);
                     setTimeout(function() { location.reload(); }, 1200);
                 } else {
-                    $note.css({'background': '#fef2f2', 'color': '#991b1b', 'border': '1px solid #fecaca'}).text(response.data.message || 'Error syncing').show();
+                    showNotification(response.data.message || 'Error syncing', false);
                 }
             }).fail(function() {
-                $btn.prop('disabled', false).text('⚡ 1-Click Sync Order with Live Docy');
+                $btn.prop('disabled', false).text('⚡ 1-Click Sync Order');
                 alert('Connection error occurred.');
             });
         });
 
-        // Save Orders and Gated Status
-        $('#cmg-save-orders-btn').on('click', function(e) {
+        // 6. Save Orders and Gated Status (1, 2, 3...)
+        $('#cmg-save-orders-btn, #cmg-save-orders-top-btn').on('click', function(e) {
             e.preventDefault();
             var $btn = $(this);
             $btn.prop('disabled', true).text('Saving...');
@@ -1596,19 +1787,19 @@ function cmg_render_docs_order_manager_page() {
                 gated: gated,
                 _ajax_nonce: '<?php echo wp_create_nonce("cmg_save_order_nonce"); ?>'
             }, function(response) {
-                $btn.prop('disabled', false).text('💾 Save Order & Access Settings');
-                var $note = $('#cmg-manager-notification');
+                $btn.prop('disabled', false).text('💾 Save Order (1, 2, 3...)');
                 if (response.success) {
-                    $note.css({'background': '#ecfdf5', 'color': '#065f46', 'border': '1px solid #a7f3d0'}).text(response.data.message).show();
-                    setTimeout(function() { $note.fadeOut(); }, 3000);
+                    showNotification('Order saved successfully as 1, 2, 3... and reflected everywhere!', true);
+                    setTimeout(function() { location.reload(); }, 1200);
                 } else {
-                    $note.css({'background': '#fef2f2', 'color': '#991b1b', 'border': '1px solid #fecaca'}).text(response.data.message || 'Error saving').show();
+                    showNotification(response.data.message || 'Error saving', false);
                 }
             }).fail(function() {
-                $btn.prop('disabled', false).text('💾 Save Order & Access Settings');
+                $btn.prop('disabled', false).text('💾 Save Order (1, 2, 3...)');
                 alert('Connection error occurred.');
             });
         });
+
     });
     </script>
     <?php
@@ -2089,11 +2280,11 @@ add_action('wp_ajax_nopriv_lex_chat_query', 'lex_chat_query_handler');
  * 14. Advanced Order Settings Modal Hooks & AJAX Handlers
  */
 
-// Footer modal loader for front-end and admin
-add_action('wp_footer', 'cmg_render_advanced_order_modal_footer');
+// Footer modal loader for admin only (not front-end)
 add_action('admin_footer', 'cmg_render_advanced_order_modal_footer');
 function cmg_render_advanced_order_modal_footer() {
-    if (current_user_can('edit_posts')) {
+    global $pagenow;
+    if (current_user_can('edit_posts') && isset($_GET['page']) && $_GET['page'] === 'cmgalaxy-docs-order-manager') {
         get_template_part('template-parts/docs/modal-advanced-order');
     }
 }
@@ -2307,8 +2498,8 @@ function cmg_ajax_save_advanced_order() {
         // Save preferred order method on the term
         update_term_meta($cat_id, '_cmg_article_order_method', $order_method);
 
-        // Update menu_order sequentially (10, 20, 30...)
-        $order_num = 10;
+        // Update menu_order sequentially (1, 2, 3, 4...)
+        $order_num = 1;
         foreach ($ordered_ids as $post_id) {
             $wpdb->update(
                 $wpdb->posts,
@@ -2316,23 +2507,23 @@ function cmg_ajax_save_advanced_order() {
                 array('ID' => $post_id)
             );
             clean_post_cache($post_id);
-            $order_num += 10;
+            $order_num += 1;
         }
 
         clean_term_cache($cat_id);
         wp_cache_flush();
 
         wp_send_json_success(array(
-            'message' => 'Article order updated successfully! Applying everywhere...'
+            'message' => 'Article order updated successfully as 1, 2, 3...! Applying everywhere...'
         ));
     } elseif ($scope === 'subcategories') {
         update_term_meta($cat_id, '_cmg_subcat_order_method', $order_method);
 
-        $order_num = 10;
+        $order_num = 1;
         foreach ($ordered_ids as $term_id) {
             update_term_meta($term_id, '_cmgalaxy_sidebar_order', $order_num);
             clean_term_cache($term_id);
-            $order_num += 10;
+            $order_num += 1;
         }
 
         clean_term_cache($cat_id);
