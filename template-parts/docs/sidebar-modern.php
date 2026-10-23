@@ -350,7 +350,7 @@ $sidebar_instance_id = uniqid('docs_sb_');
                     <div class="section-icon">
                         <img src="<?php echo esc_url($sec['icon']); ?>" alt="" />
                     </div>
-                    <a href="<?php echo esc_url($term_link); ?>" class="section-title"><?php echo esc_html($sec['title']); ?></a>
+                    <a href="<?php echo esc_url($term_link); ?>" class="section-title cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sec['title']); ?>"><?php echo esc_html($sec['title']); ?></a>
                     <?php if ($has_content) : ?>
                         <span class="expand-icon <?php echo $is_active_cat ? 'expanded' : ''; ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -589,3 +589,98 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+
+<!-- CM Custom Tooltip for Modern Sidebar (Exact Docy Match) -->
+<style>
+.cm-custom-tooltip {
+    position: fixed !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    padding: 8px 14px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12) !important;
+    z-index: 999999 !important;
+    pointer-events: none !important;
+    border: 1px solid #e5e7eb !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.15s ease, visibility 0.15s ease !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    line-height: 1.4 !important;
+}
+.cm-custom-tooltip.cm-tooltip-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.cm-custom-tooltip::before {
+    content: '' !important;
+    position: absolute !important;
+    right: 100% !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    border-width: 5px 6px 5px 0 !important;
+    border-style: solid !important;
+    border-color: transparent #ffffff transparent transparent !important;
+    filter: drop-shadow(-2px 0 1px rgba(0,0,0,0.04)) !important;
+}
+@media (max-width: 1024px) {
+    .cm-custom-tooltip,
+    .cm-custom-tooltip.cm-tooltip-visible {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+}
+</style>
+<script>
+(function() {
+    var tt = document.getElementById('cm-global-sidebar-tooltip');
+    if (!tt) {
+        tt = document.createElement('div');
+        tt.id = 'cm-global-sidebar-tooltip';
+        tt.className = 'cm-custom-tooltip';
+        document.body.appendChild(tt);
+    }
+
+    var hideTimer = null;
+
+    document.addEventListener('mouseover', function(e) {
+        if (window.innerWidth <= 1024) return;
+
+        var link = e.target.closest('.cm-tooltip-target');
+        if (!link) return;
+
+        var text = link.getAttribute('data-cm-tooltip') || link.getAttribute('title');
+        if (!text) return;
+
+        if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+
+        tt.textContent = text;
+        tt.classList.add('cm-tooltip-visible');
+
+        var rect = link.getBoundingClientRect();
+        var sidebar = link.closest('.modern-sidebar') || link.closest('.docs-col-sidebar') || link.closest('.category-left-sidebar-col');
+        var sidebarRight = sidebar ? sidebar.getBoundingClientRect().right : rect.right;
+
+        tt.style.top = Math.max(10, (rect.top + (rect.height / 2) - (tt.offsetHeight / 2))) + 'px';
+        tt.style.left = (sidebarRight - 15) + 'px';
+    }, true);
+
+    document.addEventListener('mouseout', function(e) {
+        if (window.innerWidth <= 1024) return;
+
+        var link = e.target.closest('.cm-tooltip-target');
+        if (!link) return;
+
+        if (e.relatedTarget && link.contains(e.relatedTarget)) return;
+
+        hideTimer = setTimeout(function() {
+            tt.classList.remove('cm-tooltip-visible');
+        }, 50);
+    }, true);
+})();
+</script>

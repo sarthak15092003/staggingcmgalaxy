@@ -246,14 +246,14 @@ function cmg_enqueue_docs_assets() {
             'cmg-docs-style',
             get_template_directory_uri() . '/css/docs-style.css',
             array('cmg-docs-google-fonts'),
-            filemtime(get_template_directory() . '/css/docs-style.css')
+            time()
         );
 
         wp_enqueue_script(
             'cmg-docs-main',
             get_template_directory_uri() . '/assets/js/docs-main.js',
             array('jquery'),
-            filemtime(get_template_directory() . '/assets/js/docs-main.js'),
+            time(),
             true
         );
 
@@ -2081,3 +2081,4 @@ function lex_chat_query_handler() {
 }
 add_action('wp_ajax_lex_chat_query', 'lex_chat_query_handler');
 add_action('wp_ajax_nopriv_lex_chat_query', 'lex_chat_query_handler');
+

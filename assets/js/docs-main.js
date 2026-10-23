@@ -237,45 +237,52 @@
         }
 
         // 4. CM Custom Tooltip for Sidebar (Exact Docy Match)
-        if (!$('.cm-custom-tooltip').length) {
-            var $tt = $('<div class="cm-custom-tooltip"></div>').appendTo('body');
-            var ttHideTimer = null;
+        (function() {
+            var tt = document.getElementById('cm-global-sidebar-tooltip');
+            if (!tt) {
+                tt = document.createElement('div');
+                tt.id = 'cm-global-sidebar-tooltip';
+                tt.className = 'cm-custom-tooltip';
+                document.body.appendChild(tt);
+            }
 
-            $(document).on('mouseenter', '.cm-tooltip-target, .sidebar-subcat-post-item a, .subsection-item .subsection-title', function(e) {
-                if ($(window).width() <= 1024) return;
+            var hideTimer = null;
 
-                var $el = $(this);
-                var text = $el.attr('data-cm-tooltip') || $el.attr('title') || $el.find('span').text().trim() || $el.text().trim();
+            document.addEventListener('mouseover', function(e) {
+                if (window.innerWidth <= 1024) return;
+
+                var link = e.target.closest('.cm-tooltip-target');
+                if (!link) return;
+
+                var text = link.getAttribute('data-cm-tooltip') || link.getAttribute('title');
                 if (!text) return;
 
-                if (ttHideTimer) {
-                    clearTimeout(ttHideTimer);
-                    ttHideTimer = null;
-                }
+                if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
 
-                $tt.text(text);
-                $tt.addClass('cm-tooltip-visible');
+                tt.textContent = text;
+                tt.classList.add('cm-tooltip-visible');
 
-                var rect = this.getBoundingClientRect();
-                var $sidebar = $el.closest('.modern-sidebar');
-                var sidebarRight = $sidebar.length ? $sidebar[0].getBoundingClientRect().right : rect.right;
+                var rect = link.getBoundingClientRect();
+                var sidebar = link.closest('.modern-sidebar') || link.closest('.docs-col-sidebar') || link.closest('.category-left-sidebar-col');
+                var sidebarRight = sidebar ? sidebar.getBoundingClientRect().right : rect.right;
 
-                var topPos = Math.max(10, (rect.top + (rect.height / 2) - ($tt.outerHeight() / 2)));
-                var leftPos = (sidebarRight - 15);
+                tt.style.top = Math.max(10, (rect.top + (rect.height / 2) - (tt.offsetHeight / 2))) + 'px';
+                tt.style.left = (sidebarRight - 15) + 'px';
+            }, true);
 
-                $tt.css({
-                    top: topPos + 'px',
-                    left: leftPos + 'px'
-                });
-            });
+            document.addEventListener('mouseout', function(e) {
+                if (window.innerWidth <= 1024) return;
 
-            $(document).on('mouseleave', '.cm-tooltip-target, .sidebar-subcat-post-item a, .subsection-item .subsection-title', function(e) {
-                if ($(window).width() <= 1024) return;
-                ttHideTimer = setTimeout(function() {
-                    $tt.removeClass('cm-tooltip-visible');
+                var link = e.target.closest('.cm-tooltip-target');
+                if (!link) return;
+
+                if (e.relatedTarget && link.contains(e.relatedTarget)) return;
+
+                hideTimer = setTimeout(function() {
+                    tt.classList.remove('cm-tooltip-visible');
                 }, 50);
-            });
-        }
+            }, true);
+        })();
 
         // 5. Docs Feedback Handler is managed interactively in the single-docs template (with reason prompts and DB capture)
     });
