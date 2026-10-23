@@ -339,10 +339,16 @@ body.page-template-page-all-categories,
 .category-left-sidebar-col {
     background: #ffffff !important;
     position: sticky;
-    top: calc(var(--cmg-adminbar-height, 0px) + 130px);
-    max-height: calc(100vh - var(--cmg-adminbar-height, 0px) - 150px);
+    top: calc(var(--cmg-adminbar-height, 0px) + 107px);
+    max-height: calc(100vh - var(--cmg-adminbar-height, 0px) - 117px);
     overflow-y: auto;
-    scrollbar-width: thin;
+    scrollbar-width: thin !important;
+    scrollbar-color: transparent transparent !important;
+    transition: scrollbar-color 0.25s ease !important;
+}
+
+.category-left-sidebar-col:hover {
+    scrollbar-color: #cbd5e1 transparent !important;
 }
 
 .modern-sidebar {
@@ -709,9 +715,9 @@ body.page-template-page-all-categories,
 .docs-main-wrapper .docs-container,
 .docs-container {
     width: 100% !important;
-    max-width: 100% !important;
-    padding-left: 30px !important;
-    padding-right: 30px !important;
+    max-width: 1440px !important;
+    padding-left: 28px !important;
+    padding-right: 28px !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
 }
@@ -736,23 +742,58 @@ body.page-template-page-all-categories,
     padding-right: 0 !important;
     padding-left: 0 !important;
     padding-top: 0 !important;
-    padding-bottom: 60px !important;
+    padding-bottom: 40px !important;
     box-sizing: border-box !important;
     background: #ffffff !important;
     position: sticky !important;
-    top: calc(var(--cmg-adminbar-height, 0px) + 130px) !important;
-    max-height: calc(100vh - var(--cmg-adminbar-height, 0px) - 150px) !important;
+    top: calc(var(--cmg-adminbar-height, 0px) + 107px) !important;
+    max-height: calc(100vh - var(--cmg-adminbar-height, 0px) - 117px) !important;
     overflow-y: auto !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: transparent transparent !important;
+    transition: scrollbar-color 0.25s ease !important;
 }
 
+.docs-col-sidebar:hover,
+.category-left-sidebar-col:hover,
+.modern-sidebar:hover {
+    scrollbar-color: #cbd5e1 transparent !important;
+}
+
+/* Custom Slim Scrollbar on Hover (Exact Docy Match) */
 .docs-col-sidebar::-webkit-scrollbar,
 .category-left-sidebar-col::-webkit-scrollbar,
 .modern-sidebar::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
+    display: block !important;
+    width: 5px !important;
+    height: 5px !important;
+    background: transparent !important;
+}
+
+.docs-col-sidebar::-webkit-scrollbar-track,
+.category-left-sidebar-col::-webkit-scrollbar-track,
+.modern-sidebar::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+.docs-col-sidebar::-webkit-scrollbar-thumb,
+.category-left-sidebar-col::-webkit-scrollbar-thumb,
+.modern-sidebar::-webkit-scrollbar-thumb {
+    background: transparent !important;
+    border-radius: 999px !important;
+    transition: background 0.25s ease !important;
+}
+
+.docs-col-sidebar:hover::-webkit-scrollbar-thumb,
+.category-left-sidebar-col:hover::-webkit-scrollbar-thumb,
+.modern-sidebar:hover::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+}
+
+.docs-col-sidebar::-webkit-scrollbar-thumb:hover,
+.category-left-sidebar-col::-webkit-scrollbar-thumb:hover,
+.modern-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8 !important;
 }
 
 /* 2. Main Content Column: 60% with TOC, 80% without TOC */
@@ -762,7 +803,7 @@ body.page-template-page-all-categories,
     max-width: 60% !important;
     width: 60% !important;
     border-left: 1px solid #e2e8f0 !important;
-    padding-top: 20px !important;
+    padding-top: 8px !important;
     padding-left: 30px !important;
     padding-right: 30px !important;
     padding-bottom: 0 !important;
@@ -789,24 +830,43 @@ body.page-template-page-all-categories,
     padding-left: 24px !important;
     padding-right: 0 !important;
     padding-top: 0 !important;
-    padding-bottom: 60px !important;
+    padding-bottom: 40px !important;
     box-sizing: border-box !important;
     position: sticky !important;
-    top: calc(var(--cmg-adminbar-height, 0px) + 130px) !important;
-    max-height: calc(100vh - var(--cmg-adminbar-height, 0px) - 150px) !important;
+    top: calc(var(--cmg-adminbar-height, 0px) + 107px) !important;
+    max-height: calc(100vh - var(--cmg-adminbar-height, 0px) - 117px) !important;
     overflow-y: auto !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: transparent transparent !important;
+    transition: scrollbar-color 0.25s ease !important;
+}
+
+.docs-col-toc:hover,
+.category-right-sidebar-col:hover,
+.doc-sidebar:hover {
+    scrollbar-color: #cbd5e1 transparent !important;
 }
 
 .docs-col-toc::-webkit-scrollbar,
 .category-right-sidebar-col::-webkit-scrollbar,
-.doc-sidebar::-webkit-scrollbar,
-.doc-toc-wrap::-webkit-scrollbar,
-#docy-toc::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
+.doc-sidebar::-webkit-scrollbar {
+    display: block !important;
+    width: 5px !important;
+    background: transparent !important;
+}
+
+.docs-col-toc::-webkit-scrollbar-thumb,
+.category-right-sidebar-col::-webkit-scrollbar-thumb,
+.doc-sidebar::-webkit-scrollbar-thumb {
+    background: transparent !important;
+    border-radius: 999px !important;
+    transition: background 0.25s ease !important;
+}
+
+.docs-col-toc:hover::-webkit-scrollbar-thumb,
+.category-right-sidebar-col:hover::-webkit-scrollbar-thumb,
+.doc-sidebar:hover::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
 }
 
 @media (max-width: 1024px) {
