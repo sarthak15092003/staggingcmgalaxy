@@ -248,13 +248,14 @@
 
             var hideTimer = null;
 
-            document.addEventListener('mouseover', function(e) {
+            function handleMouseOver(e) {
                 if (window.innerWidth <= 1024) return;
 
-                var link = e.target.closest('.cm-tooltip-target');
-                if (!link) return;
+                var item = e.target.closest('.sidebar-subcat-post-item, .cm-tooltip-target, .subsection-item, .section-header');
+                if (!item) return;
 
-                var text = link.getAttribute('data-cm-tooltip') || link.getAttribute('title');
+                var targetEl = item.matches('.cm-tooltip-target') ? item : (item.querySelector('.cm-tooltip-target') || item.querySelector('a') || item);
+                var text = targetEl.getAttribute('data-cm-tooltip') || targetEl.getAttribute('title') || item.getAttribute('data-cm-tooltip') || (targetEl.querySelector('span') ? targetEl.querySelector('span').textContent.trim() : targetEl.textContent.trim());
                 if (!text) return;
 
                 if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
@@ -262,26 +263,29 @@
                 tt.textContent = text;
                 tt.classList.add('cm-tooltip-visible');
 
-                var rect = link.getBoundingClientRect();
-                var sidebar = link.closest('.modern-sidebar') || link.closest('.docs-col-sidebar') || link.closest('.category-left-sidebar-col');
-                var sidebarRight = sidebar ? sidebar.getBoundingClientRect().right : rect.right;
+                var rect = item.getBoundingClientRect();
+                var sidebar = item.closest('.modern-sidebar') || item.closest('.docs-col-sidebar') || item.closest('.category-left-sidebar-col');
+                var sidebarRight = sidebar ? sidebar.getBoundingClientRect().right : (rect.right + 20);
 
                 tt.style.top = Math.max(10, (rect.top + (rect.height / 2) - (tt.offsetHeight / 2))) + 'px';
                 tt.style.left = (sidebarRight - 15) + 'px';
-            }, true);
+            }
 
-            document.addEventListener('mouseout', function(e) {
+            function handleMouseOut(e) {
                 if (window.innerWidth <= 1024) return;
 
-                var link = e.target.closest('.cm-tooltip-target');
-                if (!link) return;
+                var item = e.target.closest('.sidebar-subcat-post-item, .cm-tooltip-target, .subsection-item, .section-header');
+                if (!item) return;
 
-                if (e.relatedTarget && link.contains(e.relatedTarget)) return;
+                if (e.relatedTarget && item.contains(e.relatedTarget)) return;
 
                 hideTimer = setTimeout(function() {
                     tt.classList.remove('cm-tooltip-visible');
                 }, 50);
-            }, true);
+            }
+
+            document.addEventListener('mouseover', handleMouseOver, true);
+            document.addEventListener('mouseout', handleMouseOut, true);
         })();
 
         // 5. Docs Feedback Handler is managed interactively in the single-docs template (with reason prompts and DB capture)
