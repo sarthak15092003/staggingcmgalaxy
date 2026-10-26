@@ -379,15 +379,8 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                     <?php if ($is_current_post): ?>
                                         <div class="active-indicator-bar" style="position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
                                     <?php endif; ?>
-                                    <?php $is_mp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($main_post->ID); ?>
-                                    <a href="<?php echo esc_url(get_permalink($main_post->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($main_post->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; width: 100%;">
+                                    <a href="<?php echo esc_url(get_permalink($main_post->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($main_post->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; line-height: 1.4; width: 100%;">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($main_post->post_title); ?></span>
-                                        <?php if ($is_mp_gated): ?>
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-left: 6px;" title="Gated Article">
-                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                            </svg>
-                                        <?php endif; ?>
                                     </a>
                                 </div>
                                 <?php
@@ -509,15 +502,8 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                                 <?php if ($is_cur): ?>
                                                                     <div class="active-indicator-bar" style="position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
                                                                 <?php endif; ?>
-                                                                <?php $is_ssp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($ssp->ID); ?>
-                                                                <a href="<?php echo esc_url(get_permalink($ssp->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($ssp->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; width: 100%;">
+                                                                <a href="<?php echo esc_url(get_permalink($ssp->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($ssp->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; line-height: 1.4; width: 100%;">
                                                                     <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($ssp->post_title); ?></span>
-                                                                    <?php if ($is_ssp_gated): ?>
-                                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-left: 6px;" title="Gated Article">
-                                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                                        </svg>
-                                                                    <?php endif; ?>
                                                                 </a>
                                                             </div>
                                                         <?php endforeach; ?>
@@ -537,15 +523,8 @@ $sidebar_instance_id = uniqid('docs_sb_');
                                                         <?php if ($is_cur): ?>
                                                             <div class="active-indicator-bar" style="position: absolute; left: -1px; top: 0; bottom: 0; width: 2px; background: #3B82F6;"></div>
                                                         <?php endif; ?>
-                                                        <?php $is_sp_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in($sp->ID); ?>
-                                                        <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sp->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; width: 100%;">
+                                                        <a href="<?php echo esc_url(get_permalink($sp->ID)); ?>" class="cm-tooltip-target" data-cm-tooltip="<?php echo esc_attr($sp->post_title); ?>" style="color: <?php echo $post_color; ?>; font-size: 13.5px; text-decoration: none; font-weight: <?php echo $post_weight; ?>; display: flex; align-items: center; line-height: 1.4; width: 100%;">
                                                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; pointer-events: none;"><?php echo esc_html($sp->post_title); ?></span>
-                                                            <?php if ($is_sp_gated): ?>
-                                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-left: 6px;" title="Gated Article">
-                                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                                </svg>
-                                                            <?php endif; ?>
                                                         </a>
                                                     </div>
                                                 <?php endforeach; 

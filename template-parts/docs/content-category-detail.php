@@ -90,23 +90,10 @@ $direct_articles = new WP_Query([
                 </div>
 
                 <div class="tw-subcategory-articles" style="display: block; border-top: 1px solid #e5e7eb;">
-                    <?php while ($sub_articles->have_posts()) : $sub_articles->the_post(); 
-                        $is_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
-                    ?>
+                    <?php while ($sub_articles->have_posts()) : $sub_articles->the_post(); ?>
                         <a href="<?php the_permalink(); ?>" class="tw-article-row">
                             <div class="tw-article-content">
-                                <div class="tw-article-title" style="display: flex; align-items: center; gap: 8px;">
-                                    <span><?php the_title(); ?></span>
-                                    <?php if ($is_gated): ?>
-                                        <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 12px; line-height: 1;">
-                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                            </svg>
-                                            Gated
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
+                                <h4 class="tw-article-title"><?php the_title(); ?></h4>
                                 <p class="tw-article-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
                             </div>
                             <div class="tw-article-arrow">
@@ -124,23 +111,10 @@ $direct_articles = new WP_Query([
     <?php if (empty($valid_subcategories) && $direct_articles->have_posts()) : ?>
         <div class="tw-cat-articles-card">
             <div class="tw-subcategory-articles" style="display: block;">
-                <?php while ($direct_articles->have_posts()) : $direct_articles->the_post(); 
-                    $is_gated = function_exists('cmg_is_post_restricted_to_logged_in') && cmg_is_post_restricted_to_logged_in(get_the_ID());
-                ?>
+                <?php while ($direct_articles->have_posts()) : $direct_articles->the_post(); ?>
                     <a href="<?php the_permalink(); ?>" class="tw-article-row">
                         <div class="tw-article-content">
-                            <div class="tw-article-title" style="display: flex; align-items: center; gap: 8px;">
-                                <span><?php the_title(); ?></span>
-                                <?php if ($is_gated): ?>
-                                    <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 12px; line-height: 1;">
-                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                        </svg>
-                                        Gated
-                                    </span>
-                                <?php endif; ?>
-                            </div>
+                            <h4 class="tw-article-title"><?php the_title(); ?></h4>
                             <p class="tw-article-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '...')); ?></p>
                         </div>
                         <div class="tw-article-arrow">

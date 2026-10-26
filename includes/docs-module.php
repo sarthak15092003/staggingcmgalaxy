@@ -766,16 +766,16 @@ function cmg_render_paywall_gate($post_id = null) {
     $raw_post_content = get_post_field('post_content', $post_id);
     $formatted_content = wpautop($raw_post_content);
     
-    // Split content into block chunks (paragraphs, headings, lists, etc.)
-    $blocks = preg_split('/(<\/p>|<\/h[1-6]>|<\/div>|<\/ul>|<\/ol>)/i', $formatted_content, -1, PREG_SPLIT_DELIM_CAPTURE);
+    // Split content into block chunks (paragraphs, headings, lists, tables, etc.)
+    $blocks = preg_split('/(<\/p>|<\/h[1-6]>|<\/div>|<\/ul>|<\/ol>|<\/table>|<\/figure>|<\/blockquote>)/i', $formatted_content, -1, PREG_SPLIT_DELIM_CAPTURE);
     
     $teaser_html = '';
     $blurred_html = '';
     $block_count = 0;
     $max_teaser = 3; // Legible intro + heading + requirement intro line (clear / no blur)
 
-    if (is_array($blocks) && count($blocks) > 1) {
-        for ($k = 0; $k < count($blocks) - 1; $k += 2) {
+    if (is_array($blocks) && !empty($blocks)) {
+        for ($k = 0; $k < count($blocks); $k += 2) {
             $chunk = $blocks[$k] . (isset($blocks[$k + 1]) ? $blocks[$k + 1] : '');
             if (empty(trim(strip_tags($chunk)))) continue;
             
@@ -788,7 +788,7 @@ function cmg_render_paywall_gate($post_id = null) {
         }
     }
 
-    if (empty($teaser_html)) {
+    if (empty(trim(strip_tags($teaser_html)))) {
         $teaser_html = '<p>' . wp_trim_words(strip_tags($raw_post_content), 40) . '</p>';
     }
 
@@ -799,19 +799,23 @@ function cmg_render_paywall_gate($post_id = null) {
                       . '<p>Join thousands of professionals and teams who rely on CMGalaxy daily for complete technical accuracy and accelerated development.</p>';
     }
 
+    // Force balance HTML tags to ensure no unclosed tags swallow sticky overlay or right TOC
+    $teaser_html  = force_balance_tags($teaser_html);
+    $blurred_html = force_balance_tags($blurred_html);
+
     ob_start();
     ?>
     <div class="cmg-paywall-container">
         <!-- Top Teaser (Legible) -->
         <div class="cmg-teaser-content">
-            <?php echo wp_kses_post($teaser_html); ?>
+            <?php echo $teaser_html; ?>
         </div>
 
         <!-- Sticky Paywall Gate -->
         <div class="cmg-paywall-gate">
             <!-- Blurred Backdrop Content (scrolls underneath sticky card) -->
             <div class="cmg-blurred-backdrop" aria-hidden="true">
-                <?php echo wp_kses_post($blurred_html); ?>
+                <?php echo $blurred_html; ?>
             </div>
 
             <!-- Sticky Overlay with Centered Modal Card -->
