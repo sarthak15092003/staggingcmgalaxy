@@ -97,7 +97,7 @@
 
             var $subHeadings = $contentArea.find('h2, h3, h4').filter(function() {
                 var $h = $(this);
-                if ($h.closest('.cm-feedback-wrapper, #cm-feedback-form, .related-guides, .related-articles-section, .cm-related-wrapper, footer, .tags-area, .cmg-upgrade-card, .cmg-modal-overlay').length > 0) {
+                if ($h.closest('.cm-feedback-wrapper, #cm-feedback-form, .related-guides, .related-articles-section, .cm-related-wrapper, .post-navigation-cards, footer, .tags-area, .cmg-upgrade-card, .cmg-modal-overlay').length > 0) {
                     return false;
                 }
                 var hid = ($h.attr('id') || '').toLowerCase();

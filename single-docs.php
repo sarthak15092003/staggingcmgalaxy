@@ -441,6 +441,98 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                         });
                         </script>
 
+                        <!-- Post Navigation Cards (Previous / Next Post matching Docy) -->
+                        <?php
+                        $prev_post = null;
+                        $next_post = null;
+
+                        // 1. Try category-aware ordering first (matches exact sidebar menu_order)
+                        if ($first_term) {
+                            $nav_term = $first_term;
+                            if (!empty($terms) && is_array($terms)) {
+                                foreach ($terms as $t) {
+                                    if ($t->parent != 0) {
+                                        $nav_term = $t;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            $cat_post_ids = get_posts(array(
+                                'post_type'      => array('docs', 'post'),
+                                'post_status'    => 'publish',
+                                'posts_per_page' => -1,
+                                'tax_query'      => array(
+                                    array(
+                                        'taxonomy'         => $nav_term->taxonomy,
+                                        'field'            => 'term_id',
+                                        'terms'            => $nav_term->term_id,
+                                        'include_children' => false,
+                                    ),
+                                ),
+                                'orderby'        => array('menu_order' => 'ASC', 'date' => 'ASC', 'ID' => 'ASC'),
+                                'order'          => 'ASC',
+                                'fields'         => 'ids',
+                            ));
+
+                            if (!empty($cat_post_ids)) {
+                                $idx = array_search(get_the_ID(), $cat_post_ids);
+                                if ($idx !== false) {
+                                    if ($idx > 0) {
+                                        $prev_post = get_post($cat_post_ids[$idx - 1]);
+                                    }
+                                    if ($idx < count($cat_post_ids) - 1) {
+                                        $next_post = get_post($cat_post_ids[$idx + 1]);
+                                    }
+                                }
+                            }
+                        }
+
+                        // 2. Fallbacks if at boundary (exact Docy behavior)
+                        if (!$prev_post) {
+                            $candidate = get_adjacent_post(false, '', false);
+                            if ($candidate && (!$next_post || $candidate->ID !== $next_post->ID)) {
+                                $prev_post = $candidate;
+                            }
+                        }
+                        if (!$next_post) {
+                            $candidate = get_adjacent_post(false, '', true);
+                            if ($candidate && (!$prev_post || $candidate->ID !== $prev_post->ID)) {
+                                $next_post = $candidate;
+                            }
+                        }
+
+                        if ($prev_post || $next_post) : ?>
+                            <div class="post-navigation-cards mt-4 d-flex gap-3">
+                                <?php if ($prev_post) : ?>
+                                    <a href="<?php echo esc_url(get_permalink($prev_post)); ?>" class="nav-card prev-card">
+                                        <div class="nav-card-content">
+                                            <h5 class="mb-3"><?php echo esc_html(get_the_title($prev_post)); ?></h5>
+                                            <div class="nav-direction d-flex align-items-center">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2" style="margin-right: 6px;">
+                                                    <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+                                                Previous
+                                            </div>
+                                        </div>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if ($next_post) : ?>
+                                    <a href="<?php echo esc_url(get_permalink($next_post)); ?>" class="nav-card next-card">
+                                        <div class="nav-card-content text-end">
+                                            <h5 class="mb-3"><?php echo esc_html(get_the_title($next_post)); ?></h5>
+                                            <div class="nav-direction d-flex align-items-center justify-content-end" style="justify-content: flex-end;">
+                                                Next
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="ms-2" style="margin-left: 6px;">
+                                                    <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
 
                     </article>
 
