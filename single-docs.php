@@ -119,6 +119,44 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                             </div>
                         <?php endif; ?>
 
+                        <!-- Related Articles -->
+                        <?php
+                        if ($first_term) {
+                            $related_query = new WP_Query(array(
+                                'post_type'      => array('docs', 'post'),
+                                'tax_query'      => array(
+                                    array(
+                                        'taxonomy' => $first_term->taxonomy,
+                                        'field'    => 'term_id',
+                                        'terms'    => $first_term->term_id
+                                    )
+                                ),
+                                'post__not_in'   => array(get_the_ID()),
+                                'posts_per_page' => 4,
+                                'orderby'        => array('menu_order' => 'ASC', 'date' => 'ASC', 'ID' => 'ASC'),
+                                'order'          => 'ASC',
+                            ));
+
+                            if ($related_query->have_posts()) : ?>
+                                <div class="related-articles-section" style="margin-top: 2.5rem; margin-bottom: 2.5rem;">
+                                    <h5 class="fw-semibold mb-3" id="related-articles" style="color: #484A61 !important; font-size: 20px !important; font-weight: 600 !important; margin: 0 0 16px 0;">Related Articles</h5>
+                                    <ul class="list-unstyled mb-0" style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; padding: 0; margin: 0; list-style: none;">
+                                        <?php while ($related_query->have_posts()) : $related_query->the_post(); ?>
+                                            <li style="border-bottom: 1px solid #e5e7eb; margin: 0; padding: 0; list-style: none;">
+                                                <a href="<?php the_permalink(); ?>" class="d-flex justify-content-between align-items-center related-article-link">
+                                                    <span><?php the_title(); ?></span>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="related-article-icon">
+                                                        <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                        <?php endwhile; wp_reset_postdata(); ?>
+                                    </ul>
+                                </div>
+                            <?php endif;
+                        }
+                        ?>
+
                         <!-- Like / Dislike Feedback Box (Imported from Docy) -->
                         <div class="cm-feedback-wrapper">
                             <div class="cm-feedback-top">
@@ -403,43 +441,6 @@ $docs_home_url = get_post_type_archive_link('docs') ? get_post_type_archive_link
                         });
                         </script>
 
-                        <!-- Related Articles -->
-                        <?php
-                        if ($first_term) {
-                            $related_query = new WP_Query(array(
-                                'post_type'      => array('docs', 'post'),
-                                'tax_query'      => array(
-                                    array(
-                                        'taxonomy' => $first_term->taxonomy,
-                                        'field'    => 'term_id',
-                                        'terms'    => $first_term->term_id
-                                    )
-                                ),
-                                'post__not_in'   => array(get_the_ID()),
-                                'posts_per_page' => 4,
-                                'orderby'        => array('menu_order' => 'ASC', 'date' => 'ASC', 'ID' => 'ASC'),
-                                'order'          => 'ASC',
-                            ));
-
-                            if ($related_query->have_posts()) : ?>
-                                <div class="related-articles-section" style="margin-top: 3.0rem; margin-bottom: 1.5rem;">
-                                    <h5 class="fw-semibold mb-3" id="related-articles" style="color: #484A61 !important; font-size: 20px !important; font-weight: 600 !important; margin: 0 0 16px 0;">Related Articles</h5>
-                                    <ul class="list-unstyled mb-0" style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; padding: 0; margin: 0; list-style: none;">
-                                        <?php while ($related_query->have_posts()) : $related_query->the_post(); ?>
-                                            <li style="border-bottom: 1px solid #e5e7eb; margin: 0; padding: 0; list-style: none;">
-                                                <a href="<?php the_permalink(); ?>" class="d-flex justify-content-between align-items-center related-article-link">
-                                                    <span><?php the_title(); ?></span>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="related-article-icon">
-                                                        <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                        <?php endwhile; wp_reset_postdata(); ?>
-                                    </ul>
-                                </div>
-                            <?php endif;
-                        }
-                        ?>
 
                     </article>
 
