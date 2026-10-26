@@ -162,6 +162,7 @@
                 }
 
                 // Smooth scroll on TOC link click
+                var scrollTimeout = null;
                 $(document).on('click', '#docy-toc a, #docy-tocs-mobile a', function(e) {
                     var href = $(this).attr('href');
                     if (href && href.charAt(0) === '#') {
@@ -176,22 +177,39 @@
                             $('#docy-tocs').hide();
                             $('#toc-overlay').hide();
                             
-                            var headerHeight = 125;
+                            var headerHeight = 110;
                             var $header = $('.cmgalaxy-doc-header-wrap');
                             if ($header.length) {
-                                headerHeight = $header.outerHeight() || 125;
+                                headerHeight = $header.outerHeight() || 110;
                             }
-                            var gap = 45; // Generous breathing room gap below sticky header
-                            var offsetTop = Math.max(0, targetEl.offset().top - headerHeight - gap);
+                            var gap = 30; // Clean breathing room below sticky header
+                            var offsetTop = Math.max(0, Math.round(targetEl.offset().top - headerHeight - gap));
                             
-                            $('html, body').stop().animate({
-                                scrollTop: offsetTop
-                            }, 350, function() {
-                                setTimeout(function() {
-                                    isSmoothScrolling = false;
-                                    setActiveToc(targetId);
-                                }, 60);
-                            });
+                            if (scrollTimeout) {
+                                clearTimeout(scrollTimeout);
+                            }
+
+                            // Perform buttery smooth scroll
+                            if ('scrollBehavior' in document.documentElement.style) {
+                                window.scrollTo({
+                                    top: offsetTop,
+                                    behavior: 'smooth'
+                                });
+                            } else {
+                                $('html, body').stop().animate({
+                                    scrollTop: offsetTop
+                                }, 400);
+                            }
+
+                            if (window.history && window.history.pushState) {
+                                window.history.pushState(null, '', '#' + targetId);
+                            }
+
+                            // Keep scrollspy locked during scroll transition to prevent active item flickering/jerking
+                            scrollTimeout = setTimeout(function() {
+                                isSmoothScrolling = false;
+                                setActiveToc(targetId);
+                            }, 600);
                         }
                     }
                 });
@@ -212,8 +230,8 @@
                         return;
                     }
 
-                    var headerHeight = $('.cmgalaxy-doc-header-wrap').outerHeight() || 125;
-                    var scrollPos = scrollTop + headerHeight + 55;
+                    var headerHeight = $('.cmgalaxy-doc-header-wrap').outerHeight() || 110;
+                    var scrollPos = scrollTop + headerHeight + 50;
                     var activeId = '';
                     
                     $headings.each(function() {

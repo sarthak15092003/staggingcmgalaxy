@@ -235,6 +235,13 @@ add_action('wp', function() {
  */
 function cmg_enqueue_docs_assets() {
     if ( cmgalaxy_is_docs_page() ) {
+        $css_file = get_template_directory() . '/css/docs-style.css';
+        $css_ver  = file_exists($css_file) ? filemtime($css_file) : wp_get_theme()->get('Version');
+
+        $js_file  = get_template_directory() . '/assets/js/docs-main.js';
+        $js_ver   = file_exists($js_file) ? filemtime($js_file) : wp_get_theme()->get('Version');
+
+        // Enqueue Google Fonts
         wp_enqueue_style(
             'cmg-docs-google-fonts',
             'https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&family=Instrument+Sans:wght@400;500;600;700&display=swap',
@@ -242,18 +249,19 @@ function cmg_enqueue_docs_assets() {
             null
         );
 
+        // Enqueue Docs Stylesheet without waiting on external fonts
         wp_enqueue_style(
             'cmg-docs-style',
             get_template_directory_uri() . '/css/docs-style.css',
-            array('cmg-docs-google-fonts'),
-            time()
+            array(),
+            $css_ver
         );
 
         wp_enqueue_script(
             'cmg-docs-main',
             get_template_directory_uri() . '/assets/js/docs-main.js',
             array('jquery'),
-            time(),
+            $js_ver,
             true
         );
 
@@ -264,6 +272,85 @@ function cmg_enqueue_docs_assets() {
     }
 }
 add_action('wp_enqueue_scripts', 'cmg_enqueue_docs_assets', 20);
+
+/**
+ * Output Critical CSS and Preloads in <head> to eliminate FOUC on hard reloads
+ */
+add_action('wp_head', function() {
+    if ( function_exists('cmgalaxy_is_docs_page') && cmgalaxy_is_docs_page() ) {
+        $css_file = get_template_directory() . '/css/docs-style.css';
+        $css_ver  = file_exists($css_file) ? filemtime($css_file) : wp_get_theme()->get('Version');
+        $css_url  = get_template_directory_uri() . '/css/docs-style.css?ver=' . $css_ver;
+        ?>
+        <!-- Preload Docs CSS -->
+        <link rel="preload" href="<?php echo esc_url($css_url); ?>" as="style">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+        <!-- Critical Anti-FOUC & Suppression Styles -->
+        <style id="cmg-critical-docs-css">
+            /* Suppress marketing navbars immediately before render */
+            .ekit-template-content-header,
+            .cm-navbar,
+            .cmgalaxy-subnav-bar {
+                display: none !important;
+                height: 0 !important;
+                min-height: 0 !important;
+                max-height: 0 !important;
+                overflow: hidden !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+
+            :root {
+                --cmg-adminbar-height: 0px;
+                --cmg-header-height: 107px;
+                --cmg-drawer-top: 107px;
+            }
+
+            body.admin-bar {
+                --cmg-adminbar-height: 32px;
+            }
+
+            @media screen and (max-width: 782px) {
+                body.admin-bar {
+                    --cmg-adminbar-height: 46px;
+                }
+            }
+
+            .cmgalaxy-doc-header-wrap {
+                width: 100% !important;
+                background: #ffffff !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                position: sticky !important;
+                top: var(--cmg-adminbar-height, 0px) !important;
+                z-index: 99999 !important;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+            }
+
+            .cmgalaxy-doc-header-inner {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 16px 30px 0px !important;
+                box-sizing: border-box !important;
+            }
+
+            .cmgalaxy-header-main {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                width: 100% !important;
+                padding-bottom: 12px !important;
+                gap: 20px !important;
+            }
+        </style>
+        <?php
+    }
+}, 1);
 
 // Prevent aggressive 30-day edge caching on docs pages so updates deploy instantly
 add_action('send_headers', function() {
@@ -782,12 +869,10 @@ add_filter('rbcr_redirect_url', '__return_false', 999);
 add_filter('rbcr_allow_redirect', '__return_false', 999);
 
 /**
- * 5. Strip unwanted illustration/staging images from doc articles
+ * 5. Strip unwanted emojis from doc articles
  */
 function cmg_docs_strip_article_images($content) {
     if (is_singular('docs') || (is_single() && get_post_type() === 'docs')) {
-        $content = preg_replace('/<figure\b[^>]*>.*?<\/figure>/is', '', $content);
-        $content = preg_replace('/<img\b[^>]*\/?>/is', '', $content);
         $content = preg_replace('/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{1F600}-\x{1F64F}\x{1F680}-\x{1F6FF}\x{1F1E0}-\x{1F1FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{2300}-\x{23FF}\x{200D}\x{FE0F}]/u', '', $content);
     }
     return $content;

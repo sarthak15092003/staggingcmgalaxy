@@ -1188,10 +1188,20 @@ body.page-template-page-all-categories,
     color: #1d4ed8;
 }
 
-.doc-article-content img,
+.doc-article-content img {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 8px !important;
+    margin: 20px 0 !important;
+    display: block !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06) !important;
+}
+
 .doc-article-content figure,
 .doc-article-content .wp-block-image {
-    display: none !important;
+    max-width: 100% !important;
+    margin: 20px 0 !important;
+    display: block !important;
 }
 
 .doc-article-content table {
@@ -2522,7 +2532,8 @@ strong.search-highlight {
 
 /* Smooth TOC scroll offset & generous section gap */
 html {
-    scroll-padding-top: 170px !important;
+    scroll-behavior: smooth !important;
+    scroll-padding-top: 150px !important;
 }
 
 .doc-article-content h1,
