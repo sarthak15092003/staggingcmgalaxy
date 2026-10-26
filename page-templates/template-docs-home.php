@@ -85,7 +85,7 @@ if (!empty($docy_categories) && !is_wp_error($docy_categories)) {
             
             <div class="row">
                 <div class="col-12">
-                    <p class="category-intro lead mb-10" style="font-size: 18px; font-weight: 400; line-height: 170%; text-align: center; margin: 10px auto 45px; max-width: 900px; color: #484a61;">
+                    <p class="category-intro lead mb-10" style="font-size: 16px; font-weight: 400; line-height: 170%; text-align: center; margin: 10px auto 45px; max-width: 900px; color: #484a61;">
                         Your CMGalaxy questions, answered. Learn how to connect your platforms, read your attribution data, analyse creatives, and turn insights into better ROAS.
                     </p>
                 </div>
