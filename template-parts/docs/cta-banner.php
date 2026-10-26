@@ -54,7 +54,7 @@
         }
 
         .home-cta-banner__title {
-            font-size: 32px !important;
+            font-size: 28px !important;
             font-weight: 600 !important;
             line-height: 1.2 !important;
             color: #ffffff !important;
