@@ -95,8 +95,17 @@ $direct_articles = new WP_Query([
                     ?>
                         <a href="<?php the_permalink(); ?>" class="tw-article-row">
                             <div class="tw-article-content">
-                                <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
+                                <div class="tw-article-title" style="display: flex; align-items: center; gap: 8px;">
                                     <span><?php the_title(); ?></span>
+                                    <?php if ($is_gated): ?>
+                                        <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 12px; line-height: 1;">
+                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                            Gated
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
                                 <p class="tw-article-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18, '...')); ?></p>
                             </div>
@@ -120,8 +129,17 @@ $direct_articles = new WP_Query([
                 ?>
                     <a href="<?php the_permalink(); ?>" class="tw-article-row">
                         <div class="tw-article-content">
-                            <div class="tw-article-title" style="display: flex; align-items: center; gap: 6px;">
+                            <div class="tw-article-title" style="display: flex; align-items: center; gap: 8px;">
                                 <span><?php the_title(); ?></span>
+                                <?php if ($is_gated): ?>
+                                    <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 12px; line-height: 1;">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                        Gated
+                                    </span>
+                                <?php endif; ?>
                             </div>
                             <p class="tw-article-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '...')); ?></p>
                         </div>

@@ -83,37 +83,35 @@ $is_popup    = isset($args['is_popup']) && $args['is_popup'];
     width: 100% !important;
     height: 100% !important;
     pointer-events: none !important;
-    z-index: 15 !important;
+    z-index: 25 !important;
 }
 
 .cmg-paywall-card-wrap {
     position: -webkit-sticky !important;
     position: sticky !important;
-    top: max(80px, calc(50vh - 220px)) !important;
+    top: 100px !important;
     transform: none !important;
-    z-index: 20 !important;
+    z-index: 30 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     width: 100% !important;
     pointer-events: auto !important;
-    padding: 0 !important;
-    margin-top: 85px !important;
+    padding: 20px 0 !important;
+    margin-top: 10px !important;
     box-sizing: border-box !important;
 }
 
 /* Modal Box */
 .cmg-upgrade-card {
-    background: rgba(255, 255, 255, 0.98) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid #3b82f603 !important;
-    border-radius: 28px !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 24px !important;
     max-width: 580px !important;
     width: 100% !important;
-    padding: 48px 36px 40px !important;
+    padding: 44px 36px 38px !important;
     text-align: center !important;
-    box-shadow: 0 20px 50px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(59, 130, 246, 0.12) !important;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -121,6 +119,8 @@ $is_popup    = isset($args['is_popup']) && $args['is_popup'];
     margin: 0 auto !important;
     position: relative !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    opacity: 1 !important;
+    filter: none !important;
 }
 
 .cmg-lock-icon-wrap {
@@ -368,9 +368,9 @@ h2.cmg-upgrade-title,
     </div>
 
     <!-- Main Heading -->
-    <h2 class="cmg-upgrade-title" style="font-size: 32px !important; font-weight: 700 !important; line-height: 1.25 !important;">
+    <div class="cmg-upgrade-title" style="font-size: 32px !important; font-weight: 700 !important; line-height: 1.25 !important;">
         Access everything. Become <br> a customer today!
-    </h2>
+    </div>
 
     <!-- Subheading -->
     <p class="cmg-upgrade-desc" style="margin-bottom: 20px !important;">
