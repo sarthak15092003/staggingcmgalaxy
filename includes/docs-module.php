@@ -1986,6 +1986,47 @@ function cmg_render_docs_order_manager_page() {
             showNotification('Renumbered sequence to 1, 2, 3, 4... Click "Save Order" to apply.', true);
         });
 
+        // 3b. Interactive Order Input Change with Auto-Shift and Conflict Resolution
+        // When user types a new number (e.g., changes an article to '3' when another is already '3'),
+        // automatically move the row into that exact position and renumber cleanly!
+        $(document).on('change', '.cmg-order-input', function() {
+            var $row = $(this).closest('tr.cmg-draggable-row');
+            var rawVal = parseInt($(this).val(), 10);
+            var $tbody = $('#cmg-articles-tbody');
+            var $allRows = $tbody.find('tr.cmg-draggable-row');
+            var totalRows = $allRows.length;
+            var currentIdx = $allRows.index($row);
+
+            if (isNaN(rawVal) || rawVal < 1) {
+                rawVal = 1;
+            }
+            if (rawVal > totalRows) {
+                rawVal = totalRows;
+            }
+
+            var targetIdx = rawVal - 1;
+
+            if (targetIdx !== currentIdx) {
+                var otherRows = $allRows.not($row);
+                if (targetIdx >= otherRows.length) {
+                    $tbody.append($row);
+                } else {
+                    $row.insertBefore(otherRows.eq(targetIdx));
+                }
+
+                // Highlight moved row with a smooth visual flash
+                $row.css('background-color', '#fef08a');
+                setTimeout(function() {
+                    $row.css('transition', 'background-color 0.6s ease');
+                    $row.css('background-color', '');
+                }, 300);
+            }
+
+            // Renumber all rows sequentially so there are never any duplicate numbers or conflicts!
+            renumberRows();
+            showNotification('Article moved to position #' + rawVal + '. All positions adjusted sequentially without conflicts. Click "Save Order" to apply.', true);
+        });
+
         // 4. Native HTML5 Drag and Drop Reordering
         var draggedRow = null;
         var tbody = document.getElementById('cmg-articles-tbody');
@@ -2067,11 +2108,14 @@ function cmg_render_docs_order_manager_page() {
             var $btn = $(this);
             $btn.prop('disabled', true).text('Saving...');
 
+            // Always ensure numbers match visual row order sequentially
+            renumberRows();
+
             var orders = {};
             var gated = {};
-            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function() {
+            $('#cmg-articles-tbody tr.cmg-draggable-row').each(function(index) {
                 var pid = $(this).data('post-id');
-                var ord = $(this).find('.cmg-order-input').val();
+                var ord = index + 1; // Strictly guaranteed sequential order (1, 2, 3, 4...)
                 var isGated = $(this).find('.cmg-gated-checkbox').is(':checked') ? 1 : 0;
                 orders[pid] = ord;
                 gated[pid] = isGated;
@@ -2111,14 +2155,20 @@ add_action('wp_ajax_cmg_save_bulk_docs_order', function() {
     $orders = isset($_POST['orders']) && is_array($_POST['orders']) ? $_POST['orders'] : array();
     $gated  = isset($_POST['gated']) && is_array($_POST['gated']) ? $_POST['gated'] : array();
 
+    // Sort by requested order value to ensure strict unique integer sequencing (1, 2, 3, 4...)
+    asort($orders, SORT_NUMERIC);
+
     global $wpdb;
+    $seq = 1;
     foreach ($orders as $post_id => $order_val) {
         $pid = intval($post_id);
-        $ord = intval($order_val);
-        $wpdb->update($wpdb->posts, array('menu_order' => $ord), array('ID' => $pid));
+        if ($pid > 0) {
+            $wpdb->update($wpdb->posts, array('menu_order' => $seq), array('ID' => $pid));
+            $seq++;
 
-        $is_gated = isset($gated[$post_id]) && $gated[$post_id] == 1 ? '1' : '0';
-        update_post_meta($pid, '_cmg_is_gated', $is_gated);
+            $is_gated = isset($gated[$post_id]) && $gated[$post_id] == 1 ? '1' : '0';
+            update_post_meta($pid, '_cmg_is_gated', $is_gated);
+        }
     }
 
     wp_send_json_success(array('message' => 'Successfully updated article order and gated paywall access!'));
